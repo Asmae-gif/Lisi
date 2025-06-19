@@ -1,0 +1,17 @@
+{
+  "search_member": "البحث عن عضو",
+  "search_placeholder": "الاسم، الاسم الأول.",
+  "permanent_members": "الأعضاء الدائمون",
+  "associate_members": "الأعضاء المنتسبون",
+  "phd_students": "طلاب الدكتوراه",
+  "other_members": "أعضاء آخرون",
+  "undefined_status": "الحالة غير محددة",
+  "name": "الاسم",
+  "first_name": "الاسم الأول",
+  "email": "البريد الإلكتروني",
+  "biography": "السيرة الذاتية",
+  "external_links": "الروابط الخارجية",
+  "no_members_found": "لم يتم العثور على أعضاء.",
+  "loading": "جاري التحميل...",
+  "error_loading": "خطأ في تحميل الأعضاء"
+} 

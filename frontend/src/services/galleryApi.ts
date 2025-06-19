@@ -1,0 +1,96 @@
+import axiosClient from './axiosClient';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
+export interface Gallery {
+  id: number;
+  title: string;
+  description: string;
+  image_path: string;
+  galleriesable_id: number;
+  galleriesable_type: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CreateGalleryData {
+  title: string;
+  description: string;
+  image_path: string;
+  galleriesable_type: string;
+  galleriesable_id: number;
+}
+
+export interface UpdateGalleryData extends CreateGalleryData {
+  id: number;
+}
+
+class GalleryApiService {
+  // Endpoints publics
+  async getGalleries(galleriesableType?: string, galleriesableId?: number): Promise<Gallery[]> {
+    try {
+      let url = '/api/galleries';
+      if (galleriesableType && galleriesableId) {
+        url += `?galleriesable_type=${galleriesableType}&galleriesable_id=${galleriesableId}`;
+      }
+      // Si pas de paramètres, récupérer toutes les galeries
+      const response = await axiosClient.get(url);
+      return response.data.data || response.data;
+    } catch (error) {
+      console.error('Erreur lors de la récupération des galeries:', error);
+      throw error;
+    }
+  }
+
+  async getGalleryById(id: number): Promise<Gallery> {
+    try {
+      const response = await axiosClient.get(`/api/galleries/${id}`);
+      return response.data.data || response.data;
+    } catch (error) {
+      console.error(`Erreur lors de la récupération de la galerie ${id}:`, error);
+      throw error;
+    }
+  }
+
+  // Endpoints admin (protégés)
+  async getAllGalleries(): Promise<Gallery[]> {
+    try {
+      const response = await axiosClient.get('/api/admin/galleries');
+      return response.data.data || response.data;
+    } catch (error) {
+      console.error('Erreur lors de la récupération des galeries:', error);
+      throw error;
+    }
+  }
+
+  async createGallery(data: CreateGalleryData): Promise<Gallery> {
+    try {
+      const response = await axiosClient.post('/api/admin/galleries', data);
+      return response.data.data || response.data;
+    } catch (error) {
+      console.error('Erreur lors de la création de la galerie:', error);
+      throw error;
+    }
+  }
+
+  async updateGallery(id: number, data: Partial<CreateGalleryData>): Promise<Gallery> {
+    try {
+      const response = await axiosClient.put(`/api/admin/galleries/${id}`, data);
+      return response.data.data || response.data;
+    } catch (error) {
+      console.error(`Erreur lors de la mise à jour de la galerie ${id}:`, error);
+      throw error;
+    }
+  }
+
+  async deleteGallery(id: number): Promise<void> {
+    try {
+      await axiosClient.delete(`/api/admin/galleries/${id}`);
+    } catch (error) {
+      console.error(`Erreur lors de la suppression de la galerie ${id}:`, error);
+      throw error;
+    }
+  }
+}
+
+export const galleryApiService = new GalleryApiService();

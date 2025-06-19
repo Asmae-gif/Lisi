@@ -1,0 +1,359 @@
+import { useState, useEffect } from 'react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import { Link } from 'react-router-dom';
+import LoadingSkeleton from '@/components/common/LoadingSkeleton';
+import IconMapper from '@/components/common/IconMapper.tsx'
+import { getIconComponent } from '@/utils/iconUtils';
+import { useIndexSettingsAPI } from '@/hooks/useIndexSettingsAPI';
+import { 
+  IndexSettings, 
+  DEFAULT_INDEX_SETTINGS, 
+  DEFAULT_NEWS_ITEMS,
+  createMissionPillarsFromSettings,
+  createResearchDomainsFromSettings,
+  getMultilingualContent,
+} from '@/types/indexSettings';
+import DirectorMessage from '@/components/home/DirectorMessage';
+import KeyFigures from '@/components/home/KeyFigures';
+import AxesRecherche from '@/components/home/Axes_recherche';
+import { useTranslation } from 'react-i18next';
+import { buildImageUrl } from '@/utils/imageUtils';
+import { useLocation } from 'react-router-dom';
+
+
+const ICON_BG_COLORS = [
+  "bg-blue-100 group-hover:bg-blue-400 group-hover:text-white",
+  "bg-green-100 group-hover:bg-green-400 group-hover:text-white",
+  "bg-yellow-100 group-hover:bg-yellow-400 group-hover:text-white",
+  "bg-purple-100 group-hover:bg-purple-400 group-hover:text-white",
+  "bg-pink-100 group-hover:bg-pink-400 group-hover:text-white",
+  "bg-orange-100 group-hover:bg-orange-400 group-hover:text-white",
+  "bg-cyan-100 group-hover:bg-cyan-400 group-hover:text-white",
+  "bg-indigo-100 group-hover:bg-indigo-400 group-hover:text-white",
+];
+
+function useScrollToHash() {
+  const { hash } = useLocation();
+
+  useEffect(() => {
+    if (hash) {
+      const el = document.getElementById(hash.replace('#', ''));
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [hash]);
+}
+
+const Index = () => {
+  const { t, i18n } = useTranslation('index');
+  useScrollToHash();
+  
+  // Utiliser le hook au lieu de la logique directe
+  const { settings, loading, error, refreshSettings } = useIndexSettingsAPI();
+
+  useEffect(() => {
+    if (i18n.language === 'ar') {
+      document.body.dir = 'rtl';
+      document.body.lang = 'ar';
+    } else {
+      document.body.dir = 'ltr';
+      document.body.lang = i18n.language;
+    }
+  }, [i18n.language]);
+
+  // Fonction utilitaire pour récupérer le contenu dans la langue actuelle
+  const getContent = (baseKey: string, fallbackKey: string): string => {
+    return getMultilingualContent(settings, baseKey, i18n.language, fallbackKey) || t(fallbackKey);
+  };
+
+  // Statistiques dynamiques
+  const stats = [
+    { number: settings.nbr_membres, label: t('stats_membres') },
+    { number: settings.nbr_publications, label: t('stats_publications') },
+    { number: settings.nbr_projets , label: t('stats_projets') },
+    { number: settings.nbr_locaux , label: t('stats_locaux') }
+  ];
+
+  // Piliers de mission dynamiques avec icônes React
+  const dynamicMissionPillars = createMissionPillarsFromSettings(settings);
+
+  // Domaines de recherche dynamiques avec icônes React
+  const dynamicResearchDomains = createResearchDomainsFromSettings(settings);
+
+  // Affichage de l'état de chargement
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <LoadingSkeleton type="grid" rows={3} />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Affichage de l'erreur
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center max-w-lg mx-auto p-8">
+            <h2 className="text-2xl font-bold text-foreground mb-4">
+              {error === 'Request failed with status code 401' 
+                ? t('chargement_donnees')
+                : t('erreur_chargement')}
+            </h2>
+            <p className="text-muted-foreground mb-4">
+              {error === 'Request failed with status code 401'
+                ? t('utilisation_donnees_defaut')
+                : error}
+            </p>
+            {error !== 'Request failed with status code 401' && (
+              <button 
+                onClick={refreshSettings}
+                className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90"
+              >
+                {t('reessayer')}
+              </button>
+            )}
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main>
+        {/* Hero Section */}
+        <section className="relative bg-gradient-to-br from-primary/5 via-background to-accent/10 py-24 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              <div className="animate-fade-in">
+                {(() => {
+                  const titrePrincipal = getContent('hero_titre_principal', 'hero_titre_principal');
+                  const sousTitre = getContent('hero_sous_titre', 'hero_sous_titre');
+                  
+                  return (
+                    <>
+                      <h1 className="text-4xl font-bold text-gray-900 mb-6">
+                        <span className="block">{titrePrincipal}</span>
+                      </h1>
+                      <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                        {sousTitre}
+                      </p>
+                    </>
+                  );
+                })()}
+                <div className="flex flex-col sm:flex-row gap-4 mb-16">
+                  <Link
+                    to="/index#mission" 
+                    className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center group"
+                  >
+                    {t('decouvrir_mission')}
+                    <IconMapper iconKey="ArrowRight" className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                  <Link
+                    to="/recherche"
+                    className="border border-[#C2A060] text-[#C2A060] px-8 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors text-center"
+                  >
+                    {t('nos_domaines_recherche')}
+                  </Link>
+                </div>
+              </div>
+
+              <div className="relative animate-fade-in">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-3xl blur-3xl"></div>
+                <div className="relative bg-card rounded-3xl p-8 shadow-2xl border">
+                  <img 
+                    src={buildImageUrl(settings.hero_image_side)}
+                    alt={t('hero_image_side')}
+                    className="rounded-2xl w-full h-80 object-cover"
+                  />
+                  <div className="absolute -bottom-4 -right-4 bg-primary text-primary-foreground p-4 rounded-2xl shadow-lg">
+                    <IconMapper iconKey="Microscope" className="h-6 w-6" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <DirectorMessage />
+
+        {/* Mission du LISI */}
+        <section className="py-20 bg-background" id="mission">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <p className="text-primary font-semibold mb-4">{getContent('mission_sous_titre', 'mission_sous_titre')}</p>
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-8">
+                {getContent('mission_titre', 'mission_titre')}
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                {getContent('mission_description', 'mission_description')}
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-20">
+              <div className="space-y-6">
+                <p className="text-lg text-gray-800 leading-relaxed">
+                  {getContent('mission_texte_1', 'mission_texte_1')}
+                </p>
+                <p className="text-lg text-gray-800 leading-relaxed">
+                  {getContent('mission_texte_2', 'mission_texte_2')}
+                </p>
+              </div>
+              <div className="relative ">
+                
+              <img 
+  src={buildImageUrl(settings.mission_image)}
+  alt={t('alt_mission_image')}
+  className="relative rounded-2xl shadow-2xl w-full h-85 object-contain border"
+/>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {dynamicMissionPillars.map((pillar, index) => {
+                const IconComponent = getIconComponent(pillar.icon);
+                return (
+                  <div
+                  key={index}
+                  className="group relative overflow-hidden bg-card rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border"
+                >
+                  <div className="relative">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors duration-300 ${ICON_BG_COLORS[index % ICON_BG_COLORS.length]}`}>
+                      <IconComponent className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-foreground mb-3">{getContent(pillar.titleKey, pillar.titleKey)}</h3>
+                    <p className="text-muted-foreground leading-relaxed">{getContent(pillar.descriptionKey, pillar.descriptionKey)}</p>
+                  </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* Chiffres clés */}
+        <KeyFigures stats={stats} />
+
+         {/* Actualités */}
+         <section className="py-20 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center mb-12">
+              <div>
+                <p className="text-primary font-semibold mb-2">{settings.actualites_sous_titre}</p>
+                <h2 className="text-4xl font-bold text-foreground">{settings.actualites_titre}</h2>
+              </div>
+              <Link to="/publications" className="text-primary hover:text-primary/80 flex items-center font-medium group">
+                Toutes les actualités
+                <IconMapper iconKey="ArrowRight" className="ml-1 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {DEFAULT_NEWS_ITEMS.map((item, index) => (
+                <article key={index} className="bg-card rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm text-muted-foreground">{item.date}</span>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                      {item.category}
+                    </span>
+                  </div>
+                  <h3 className="font-bold text-foreground leading-tight text-lg mb-4">{item.title}</h3>
+                  <Link to="#" className="text-primary hover:text-primary/80 font-medium flex items-center group">
+                    Lire la suite
+                    <IconMapper iconKey="ArrowRight" className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Axes de recherche */}
+        
+          <section className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <p className="text-primary font-semibold mb-4">
+                {getContent('domaines_sous_titre', 'domaines_sous_titre')}
+              </p>
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-8">
+                {getContent('domaines_titre', 'domaines_titre')}
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+                {getContent('domaines_description', 'domaines_description')}
+              </p>
+            </div>
+            {<AxesRecherche 
+              sousTitre={getContent('domaines_sous_titre', 'domaines_sous_titre')}
+              titre={getContent('domaines_titre', 'domaines_titre')}
+              description={getContent('domaines_description', 'domaines_description')}
+              texteFinal={getContent('domaines_texte_final', 'domaines_texte_final')}
+            />}
+            <div className="text-center">
+              <p className="text-muted-foreground text-lg mb-8 max-w-3xl mx-auto">
+                {settings.domaines_texte_final}
+              </p>
+              <Link 
+                to="/recherche" 
+                className="inline-flex items-center bg-primary text-primary-foreground px-8 py-4 rounded-xl font-semibold hover:bg-primary/90 transition-all duration-300 hover:shadow-lg hover:scale-105"
+              >
+                Explorer nos recherches
+                <IconMapper iconKey="ArrowRight" className="ml-2 h-5 w-5" />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+
+        {/* Actualités 
+        <section className="py-20 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-8">
+                {getContent('actualites_titre', 'actualites_titre')}
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                {getContent('actualites_description', 'actualites_description')}
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {DEFAULT_NEWS_ITEMS.map((news, index) => (
+                <div key={index} className="bg-card rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border">
+                  <div className="w-full h-48 bg-muted rounded-xl mb-4 flex items-center justify-center">
+                    <IconMapper iconKey="Newspaper" className="h-12 w-12 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground mb-3">{news.title}</h3>
+                  <p className="text-muted-foreground mb-4 leading-relaxed">{news.category}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">{news.date}</span>
+                    <Link
+                      to="/actualites"
+                      className="text-primary hover:text-primary/80 font-medium flex items-center group"
+                    >
+                      {t('lire_plus')}
+                      <IconMapper iconKey="ArrowRight" className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>*/}
+
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default Index;

@@ -1,0 +1,17 @@
+{
+  "search_member": "Search for a member",
+  "search_placeholder": "Name, first name.",
+  "permanent_members": "Permanent Members",
+  "associate_members": "Associate Members",
+  "phd_students": "PhD Students",
+  "other_members": "Other Members",
+  "undefined_status": "Undefined Status",
+  "name": "Name",
+  "first_name": "First Name",
+  "email": "Email",
+  "biography": "Biography",
+  "external_links": "External Links",
+  "no_members_found": "No members found.",
+  "loading": "Loading...",
+  "error_loading": "Error loading members"
+} 

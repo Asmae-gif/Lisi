@@ -1,0 +1,97 @@
+/* Styles pour la direction RTL (arabe) */
+
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+[dir="rtl"] .flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .text-right {
+  text-align: right;
+}
+
+[dir="rtl"] .text-left {
+  text-align: left;
+}
+
+[dir="rtl"] .ml-auto {
+  margin-left: unset;
+  margin-right: auto;
+}
+
+[dir="rtl"] .mr-auto {
+  margin-right: unset;
+  margin-left: auto;
+}
+
+[dir="rtl"] .pl-4 {
+  padding-left: unset;
+  padding-right: 1rem;
+}
+
+[dir="rtl"] .pr-4 {
+  padding-right: unset;
+  padding-left: 1rem;
+}
+
+[dir="rtl"] .border-l {
+  border-left: unset;
+  border-right: 1px solid;
+}
+
+[dir="rtl"] .border-r {
+  border-right: unset;
+  border-left: 1px solid;
+}
+
+/* Animation pour les icônes en RTL */
+[dir="rtl"] .rotate-180 {
+  transform: rotate(-180deg);
+}
+
+/* Ajustements pour les dropdowns en RTL */
+[dir="rtl"] .dropdown-menu {
+  right: auto;
+  left: 0;
+}
+
+/* Ajustements pour les modals en RTL */
+[dir="rtl"] .modal-content {
+  text-align: right;
+}
+
+/* Ajustements pour les formulaires en RTL */
+[dir="rtl"] input,
+[dir="rtl"] textarea,
+[dir="rtl"] select {
+  text-align: right;
+}
+
+/* Ajustements pour les boutons en RTL */
+[dir="rtl"] .btn-icon {
+  flex-direction: row-reverse;
+}
+
+/* Ajustements pour les listes en RTL */
+[dir="rtl"] ul,
+[dir="rtl"] ol {
+  padding-right: 1.5rem;
+  padding-left: 0;
+}
+
+/* Ajustements pour les tableaux en RTL */
+[dir="rtl"] table {
+  direction: rtl;
+}
+
+[dir="rtl"] th,
+[dir="rtl"] td {
+  text-align: right;
+} 
