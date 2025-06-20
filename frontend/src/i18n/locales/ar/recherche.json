@@ -1,0 +1,12 @@
+{
+  "buttons": {
+    "view_projects": "عرض مشاريعنا",
+    "view_publications": "منشوراتنا"
+  },
+  "cards": {
+    "problematique": "المشكلة",
+    "objectif": "الهدف",
+    "approche": "النهج",
+    "resultats_attendus": "النتائج المتوقعة"
+  }
+} 

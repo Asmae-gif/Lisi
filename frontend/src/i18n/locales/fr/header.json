@@ -10,6 +10,25 @@
     "contact": "Contact",
     "gallery": "Galerie",
     "login": "Connexion",
-    "resources": "Ressources"
+    "resources": "Ressources",
+    "home": "Accueil",
+    "about": "À propos",
+    "team": "Équipe",
+    "logout": "Déconnexion",
+    "dashboard": "Tableau de bord",
+    "settings": "Paramètres",
+    "profile": "Profil",
+    "search": "Rechercher",
+    "language": "Langue",
+    "followUs": "Suivez-nous",
+    "newsletter": "Newsletter",
+    "newsletterDescription": "Inscrivez-vous pour recevoir nos dernières actualités",
+    "newsletterPlaceholder": "Votre email",
+    "newsletterSubscribe": "S'inscrire",
+    "legalNotice": "Mentions légales",
+    "privacyPolicy": "Politique de confidentialité",
+    "sitemap": "Plan du site",
+    "accessibility": "Accessibilité",
+    "contactInfoNotAvailable": "Informations de contact non disponibles"
   }
   

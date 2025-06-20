@@ -1,0 +1,31 @@
+{
+    "form": {
+      "name": "Full Name",
+      "namePlaceholder": "Your full name",
+      "email": "Email",
+      "emailPlaceholder": "your.email@example.com",
+      "subject": "Subject",
+      "subjectPlaceholder": "Subject of your message",
+      "message": "Message",
+      "messagePlaceholder": "Your message...",
+      "send": "Send Message"
+    },
+    "Adresse": "Address",
+    "Téléphone": "Phone",
+    "Email": "Email",
+    "Localisation": "Location",
+    "mapPlaceholder": "Interactive map (to be integrated)",
+    "mapLoading": "Loading map...",
+    "mapError": "Unable to load map",
+    "sendMessageTitle": "Send us a message",
+    "successTitle": "Message sent!",
+    "successDescription": "Thank you for your message. We will respond to you as soon as possible.",
+    "sendAnotherMessage": "Send another message",
+    "backToHome": "Back to home",
+    "requiredFields": "Required fields",
+    "requiredFieldsDescription": "Please fill in all form fields.",
+    "errorTitle": "Error",
+    "errorDescription": "An error occurred while sending the message. Please try again.",
+    "retry": "Retry"
+  }
+  

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
@@ -6,14 +6,7 @@ import LoadingSkeleton from '@/components/common/LoadingSkeleton';
 import IconMapper from '@/components/common/IconMapper.tsx'
 import { getIconComponent } from '@/utils/iconUtils';
 import { useIndexSettingsAPI } from '@/hooks/useIndexSettingsAPI';
-import { 
-  IndexSettings, 
-  DEFAULT_INDEX_SETTINGS, 
-  DEFAULT_NEWS_ITEMS,
-  createMissionPillarsFromSettings,
-  createResearchDomainsFromSettings,
-  getMultilingualContent,
-} from '@/types/indexSettings';
+import {DEFAULT_NEWS_ITEMS, createMissionPillarsFromSettings, createResearchDomainsFromSettings, getMultilingualContent} from '@/types/indexSettings';
 import DirectorMessage from '@/components/home/DirectorMessage';
 import KeyFigures from '@/components/home/KeyFigures';
 import AxesRecherche from '@/components/home/Axes_recherche';

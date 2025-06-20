@@ -1,0 +1,12 @@
+{
+  "buttons": {
+    "view_projects": "Voir nos Projets",
+    "view_publications": "Nos Publications"
+  },
+  "cards": {
+    "problematique": "Problématique",
+    "objectif": "Objectif",
+    "approche": "Approche",
+    "resultats_attendus": "Résultats Attendus"
+  }
+} 

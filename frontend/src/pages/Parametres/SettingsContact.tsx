@@ -1,84 +1,148 @@
-// src/components/SettingsRecherche.jsx
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import axiosClient from "../services/axiosClient"
-import { MembreSettings, ApiResponse, Field, Section, DEFAULT_MEMBRES_SETTINGS } from '../types/MembresSettings'
-import SettingsForm from '../components/common/SettingsForm'
-import LoadingSkeleton from '../components/common/LoadingSkeleton'
-
+// src/pages/SettingsContact.tsx
+import React, { useState, useEffect, useCallback } from 'react'
+import axiosClient from "@/services/axiosClient"
+import { ContactSettings, ApiResponse, Section, DEFAULT_CONTACT_SETTINGS } from '@/types/contactSettings'
+import SettingsForm from '@/components/common/SettingsForm'
+import { useMemo } from 'react'
 /**
- * Composant de paramètres pour la page Membres
- * Permet de configurer les titres, sous-titres et images de la page Membres en 3 langues
+ * Composant de paramètres pour la page Contact
+ * Permet de configurer les titres, sous-titres et images de la page contact
  */
+export default function SettingsContact() {
+// Configuration des sections du formulaire
+const sections: Section[] = useMemo(() =>  [
+  {
+    title: "Section Hero - Français",
+    fields: [
+      { 
+        key: "contact_titre_fr", 
+        label: "Titre Principal", 
+        type: "text", 
+        placeholder: "Contactez-nous" 
+      },
+      { 
+        key: "contact_sous_titre_fr", 
+        label: "Sous-titre", 
+        type: "text", 
+        placeholder: "Nous sommes à votre disposition pour répondre à vos questions, discuter de collaborations ou explorer de nouvelles opportunités de recherche." 
+      },
+      { 
+        key: "contact_titre2_fr", 
+        label: "Titre 2", 
+        type: "text", 
+        placeholder: "Informations de Contact" 
+      },
+    ],
+  },
+  {
+    title: "Section Contact - Anglais",
+    fields: [
+      { 
+        key: "contact_titre_en", 
+        label: "Titre Principal", 
+        type: "text", 
+        placeholder: "Contact Us" 
+      },
+      { 
+        key: "contact_sous_titre_en", 
+        label: "Sous-titre", 
+        type: "text", 
+        placeholder: "We are at your disposal to answer your questions, discuss collaborations or explore new research opportunities." 
+      },
+      { 
+        key: "contact_titre2_en", 
+        label: "Titre 2", 
+        type: "text", 
+        placeholder: "Contact Information" 
+      },
+    ],
+  },
+  {
+    title: "Section Contact - Arabe",
+    fields: [
+      { 
+        key: "contact_titre_ar", 
+        label: "Titre Principal", 
+        type: "text", 
+        placeholder: "اتصل بنا" 
+      },
+      { 
+        key: "contact_sous_titre_ar", 
+        label: "Sous-titre", 
+        type: "text", 
+        placeholder: "نحن على استعداد للإجابة على أسئلتكم ونناقش التعاون واستكشاف الفرص البحثية الجديدة." 
+      },
+      {
+        key: "contact_titre2_ar", 
+        label: "Titre 2", 
+        type: "text", 
+        placeholder: "معلومات الاتصال" 
+      },
+    ],
+  },
+  {
+    title: "Section Contact",
+    fields: [
+      
+      { 
+        key: "contact_adresse_fr", 
+        label: "Adresse", 
+        type: "text", 
+        placeholder: "Av Abdelkrim Khattabi, B.P. 511 - 40000 –Marrakech "
+      },
+      {
+        key: "contact_adresse_en", 
+        label: "Adresse", 
+        type: "text", 
+        placeholder: "Av Abdelkrim Khattabi, B.P. 511 - 40000 –Marrakech "
+      },
+      {
+        key: "contact_adresse_ar", 
+        label: "Adresse", 
+        type: "text", 
+        placeholder: "شارع عبد الكريم الخطابي، ص. ب 511 - 40000 – مراكش"
+      },
+      { 
+        key: "contact_email", 
+        label: "Email", 
+        type: "text", 
+        placeholder: "contact@example.com" 
+      },
+      { 
+        key: "contact_telephone", 
+        label: "Téléphone", 
+        type: "text", 
+        placeholder: "+33 1 23 45 67 89" 
+      },
+      { 
+        key: "contact_location", 
+        label: "Localisation (pour Google Maps)", 
+        type: "location", 
+        placeholder: "Marrakech, Maroc"
+      },
+    ],
+  },
+  {
+    title: "Image de couverture",
+    fields: [
+      { 
+        key: "contact_image", 
+        label: "Image de couverture", 
+        type: "file" 
+      },
+    ],
+  },
+], [])
 
-export default function SettingsMembres() {
-  // Configuration des sections du formulaire avec champs pour chaque langue
-  const sections: Section[] = useMemo(() => [
-    {
-      title: "Section Hero - Français",
-      fields: [
-        { 
-          key: "membres_titre_fr", 
-          label: "Titre Principal (Français)", 
-          type: "text"
-        },
-        { 
-          key: "membres_sous_titre_fr", 
-          label: "Sous-titre (Français)", 
-          type: "text"
-        },
-      ],
-    },
-    {
-      title: "Section Hero - English",
-      fields: [
-        { 
-          key: "membres_titre_en", 
-          label: "Main Title (English)", 
-          type: "text"
-        },
-        { 
-          key: "membres_sous_titre_en", 
-          label: "Subtitle (English)", 
-          type: "text"
-        },
-      ],
-    },
-    {
-      title: "Section Hero - العربية",
-      fields: [
-        { 
-          key: "membres_titre_ar", 
-          label: "العنوان الرئيسي (العربية)", 
-          type: "text"
-        },
-        { 
-          key: "membres_sous_titre_ar", 
-          label: "العنوان الفرعي (العربية)", 
-          type: "text" 
-        },
-      ],
-    },
-    {
-      title: "Image de couverture",
-      fields: [
-        { 
-          key: "membres_image", 
-          label: "Image de couverture", 
-          type: "file" 
-        },
-      ],
-    },
-  ], [])
 
   // Initialiser avec les valeurs par défaut dès le départ
-  const [values, setValues] = useState<MembreSettings>(() => {
-    console.log('Initialisation avec les valeurs par défaut:', DEFAULT_MEMBRES_SETTINGS)
-    return { ...DEFAULT_MEMBRES_SETTINGS }
+  const [values, setValues] = useState<ContactSettings>(() => {
+    console.log('Initialisation avec les valeurs par défaut:', DEFAULT_CONTACT_SETTINGS)
+    return { ...DEFAULT_CONTACT_SETTINGS }
   })
   const [files, setFiles] = useState<Record<string, File>>({})
   const [preview, setPreview] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
-  const [initialized, setInitialized] = useState(false)
   const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null)
 
   // Optimisation avec useCallback pour le chargement des paramètres
@@ -89,7 +153,7 @@ export default function SettingsMembres() {
       
       await axiosClient.get('/sanctum/csrf-cookie')
       
-      const response = await axiosClient.get<ApiResponse>('/api/pages/membres/settings', {
+      const response = await axiosClient.get<ApiResponse>('/api/pages/contact/settings', {
         headers: { 'Accept': 'application/json' }
       })
 
@@ -101,8 +165,8 @@ export default function SettingsMembres() {
         console.log('Données à utiliser:', settingsData)
         
         // Utiliser les valeurs par défaut partagées
-        const defaultValues: MembreSettings = {
-          ...DEFAULT_MEMBRES_SETTINGS,
+        const defaultValues: ContactSettings = {
+          ...DEFAULT_CONTACT_SETTINGS,
           ...settingsData
         }
         
@@ -119,11 +183,12 @@ export default function SettingsMembres() {
         throw new Error('Format de données invalide reçu du serveur')
       }
     } catch (err: unknown) {
-      console.error('Erreur lors du chargement:', err)
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des données';
+      console.error('Erreur lors du chargement:', err)
       setMessage({ 
         type: 'error', 
         text: `Erreur lors du chargement : ${errorMessage}`
+        
       })
     } finally {
       setLoading(false)
@@ -168,7 +233,7 @@ export default function SettingsMembres() {
         formData.append('id', values.id.toString())
       }
       
-      formData.append('page', 'membres')
+      formData.append('page', 'contact')
       
       // Ajouter tous les champs de configuration
       Object.entries(values).forEach(([key, value]) => {
@@ -183,7 +248,7 @@ export default function SettingsMembres() {
       })
       
       const response = await axiosClient.post<ApiResponse>(
-        '/api/pages/membres/settings',
+        '/api/pages/contact/settings',
         formData,
         { 
           headers: { 
@@ -209,11 +274,11 @@ export default function SettingsMembres() {
         throw new Error(response.data?.message || 'Erreur lors de la sauvegarde')
       }
     } catch (err: unknown) {
-      console.error('Erreur détaillée:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des données';
+      console.error('Erreur détaillée:', err)
+      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la sauvegarde.'
       setMessage({ 
         type: 'error', 
-        text: `Erreur lors du chargement : ${errorMessage}`
+        text: `Erreur lors de la sauvegarde : ${errorMessage}`
       })
     } finally {
       setLoading(false)
@@ -222,7 +287,7 @@ export default function SettingsMembres() {
 
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Paramètres — Page Membres</h1>
+      <h1 className="text-2xl font-bold">Paramètres — Page Contact</h1>
       
       <SettingsForm
         sections={sections}

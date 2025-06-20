@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Dialog,
   DialogContent,
@@ -21,23 +22,75 @@ interface AxeDetailsModalProps {
 export const AxeDetailsModal = ({ isOpen, onClose, axe, onEdit }: AxeDetailsModalProps) => {
   if (!axe) return null
 
+  const renderLanguageContent = (lang: 'fr' | 'en' | 'ar', label: string) => (
+    <TabsContent value={lang} className="space-y-6">
+      {/* Titre */}
+      <div className="space-y-2">
+        <Label className="text-lg font-semibold text-gray-700">Titre ({label})</Label>
+        <div className="p-4 bg-gray-50 rounded-lg">
+          <p className="text-lg font-medium" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+            {axe[`title_${lang}`] || 'Non renseigné'}
+          </p>
+        </div>
+      </div>
+
+      {/* Problématique */}
+      <div className="space-y-2">
+        <Label className="text-lg font-semibold text-blue-700">Problématique ({label})</Label>
+        <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+          <p className="text-gray-800 leading-relaxed whitespace-pre-wrap" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+            {axe[`problematique_${lang}`] || 'Non renseigné'}
+          </p>
+        </div>
+      </div>
+
+      {/* Objectif */}
+      <div className="space-y-2">
+        <Label className="text-lg font-semibold text-green-700">Objectif ({label})</Label>
+        <div className="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
+          <p className="text-gray-800 leading-relaxed whitespace-pre-wrap" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+            {axe[`objectif_${lang}`] || 'Non renseigné'}
+          </p>
+        </div>
+      </div>
+
+      {/* Approche */}
+      <div className="space-y-2">
+        <Label className="text-lg font-semibold text-purple-700">Approche ({label})</Label>
+        <div className="p-4 bg-purple-50 rounded-lg border-l-4 border-purple-500">
+          <p className="text-gray-800 leading-relaxed whitespace-pre-wrap" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+            {axe[`approche_${lang}`] || 'Non renseigné'}
+          </p>
+        </div>
+      </div>
+
+      {/* Résultats attendus */}
+      <div className="space-y-2">
+        <Label className="text-lg font-semibold text-orange-700">Résultats attendus ({label})</Label>
+        <div className="p-4 bg-orange-50 rounded-lg border-l-4 border-orange-500">
+          <p className="text-gray-800 leading-relaxed whitespace-pre-wrap" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+            {axe[`resultats_attendus_${lang}`] || 'Non renseigné'}
+          </p>
+        </div>
+      </div>
+    </TabsContent>
+  )
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            Détails de l'axe : {axe.title}
+            Détails de l'axe : {axe.title_fr || axe.title_en || axe.title_ar || 'Sans titre'}
           </DialogTitle>
-          <DialogDescription>Informations complètes sur l'axe "{axe.title}"</DialogDescription>
+          <DialogDescription>
+            Informations complètes sur l'axe dans les trois langues
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Informations générales */}
           <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
-            <div>
-              <Label className="text-sm font-semibold text-gray-600">Titre</Label>
-              <p className="text-lg font-medium">{axe.title}</p>
-            </div>
             <div>
               <Label className="text-sm font-semibold text-gray-600">Slug</Label>
               <Badge variant="secondary" className="mt-1">
@@ -46,45 +99,24 @@ export const AxeDetailsModal = ({ isOpen, onClose, axe, onEdit }: AxeDetailsModa
             </div>
             <div>
               <Label className="text-sm font-semibold text-gray-600">Date de création</Label>
-              
-                                                  <p className="text-sm text-gray-600">
-                                                    {new Date(axe.created_at).toLocaleDateString("fr-FR")}
-                                                  </p>
-              
+              <p className="text-sm text-gray-600">
+                {new Date(axe.created_at).toLocaleDateString("fr-FR")}
+              </p>
             </div>
           </div>
 
-          {/* Problématique */}
-          <div className="space-y-2">
-            <Label className="text-lg font-semibold text-blue-700"> Problématique</Label>
-            <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-              <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">{axe.problematique}</p>
-            </div>
-          </div>
-
-          {/* Objectif */}
-          <div className="space-y-2">
-            <Label className="text-lg font-semibold text-green-700"> Objectif</Label>
-            <div className="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
-              <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">{axe.objectif}</p>
-            </div>
-          </div>
-
-          {/* Approche */}
-          <div className="space-y-2">
-            <Label className="text-lg font-semibold text-purple-700"> Approche</Label>
-            <div className="p-4 bg-purple-50 rounded-lg border-l-4 border-purple-500">
-              <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">{axe.approche}</p>
-            </div>
-          </div>
-
-          {/* Résultats attendus */}
-          <div className="space-y-2">
-            <Label className="text-lg font-semibold text-orange-700"> Résultats attendus</Label>
-            <div className="p-4 bg-orange-50 rounded-lg border-l-4 border-orange-500">
-              <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">{axe.resultats_attendus}</p>
-            </div>
-          </div>
+          {/* Contenu multilingue */}
+          <Tabs defaultValue="fr" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="fr">Français</TabsTrigger>
+              <TabsTrigger value="en">English</TabsTrigger>
+              <TabsTrigger value="ar">العربية</TabsTrigger>
+            </TabsList>
+            
+            {renderLanguageContent('fr', 'Français')}
+            {renderLanguageContent('en', 'English')}
+            {renderLanguageContent('ar', 'العربية')}
+          </Tabs>
 
           {/* Métadonnées */}
           <div className="pt-4 border-t border-gray-200">

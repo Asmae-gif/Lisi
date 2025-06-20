@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useCallback, useMemo, Suspense, lazy } from "react"
-import type { Membre, MemberCategory } from '../types/membre';
-import { useMembresSettings } from '../hooks/useMembresSettings';
+import React, { useState, useEffect, useCallback, useMemo } from "react"
+import type { Membre, MemberCategory } from '@/types/membre';
+import { useMembresSettings } from '@/hooks/useMembresSettings';
 import { useNavigate } from "react-router-dom"
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { ChevronDown, Mail, ExternalLink } from "lucide-react"
 import LoadingSkeleton from '@/components/common/LoadingSkeleton';
 import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
-import { membresApi } from '../services/api';
+import { membresApi } from '@/services/api';
 import { buildImageUrl } from '@/utils/imageUtils';
 import { useTranslation } from 'react-i18next';
 
@@ -59,6 +59,8 @@ const Membres: React.FC = () => {
       setSortDirection('asc');
     }
   };
+
+  
 
   const filteredMembersData = useMemo(() => {
     if (!searchQuery.trim()) {
@@ -151,16 +153,7 @@ const Membres: React.FC = () => {
         title: t('other_members'),
         members: sortedMembers.filter(m => {
           const statut = m.statut?.toLowerCase() || '';
-          return !statut.includes('permanent') && 
-                 !statut.includes('enseignant') &&
-                 !statut.includes('chercheur') &&
-                 !statut.includes('associé') && 
-                 !statut.includes('associe') &&
-                 !statut.includes('collaborateur') &&
-                 !statut.includes('doctorant') &&
-                 !statut.includes('thèse') &&
-                 !statut.includes('these') &&
-                 statut === '';
+          return statut === '';
         })
       },
     ];

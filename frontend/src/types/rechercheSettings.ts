@@ -1,23 +1,63 @@
 export interface RechercheSettings {
   id?: number;
-  nos_domaines_titre?: string;
-  nos_domaines_texte_intro?: string;
-  nos_domaines_image?: string;
-  axes_strategiques_titre?: string;
-  axes_strategiques_description?: string;
-  analyse_detaillee_titre?: string;
-  processus_recherche_titre?: string;
-  processus_recherche_texte?: string;
-  processus_recherche_etapes_1_titre?: string;
-  processus_recherche_etapes_1_description?: string;
-  processus_recherche_etapes_2_titre?: string;
-  processus_recherche_etapes_2_description?: string;
-  processus_recherche_etapes_3_titre?: string;
-  processus_recherche_etapes_3_description?: string;
-  processus_recherche_etapes_4_titre?: string;
-  processus_recherche_etapes_4_description?: string;
-  processus_recherche_etapes_5_titre?: string;
-  processus_recherche_etapes_5_description?: string;
+  page: string;
+  // Champs pour le français
+  titre_fr?: string;
+  texte_intro_fr?: string;
+  title_strategic_fr?: string;
+  subtitle_strategic_fr?: string;
+  title_analysis_fr?: string;
+  title_process_fr?: string;
+  subtitle_process_fr?: string;
+  step_1_title_fr?: string;
+  step_1_desc_fr?: string;
+  step_2_title_fr?: string;
+  step_2_desc_fr?: string;
+  step_3_title_fr?: string;
+  step_3_desc_fr?: string;
+  step_4_title_fr?: string;
+  step_4_desc_fr?: string;
+  step_5_title_fr?: string;
+  step_5_desc_fr?: string;
+  // Champs pour l'anglais
+  titre_en?: string;
+  texte_intro_en?: string;  
+  title_strategic_en?: string;
+  subtitle_strategic_en?: string;
+  title_analysis_en?: string;
+  title_process_en?: string;
+  subtitle_process_en?: string;
+  step_1_title_en?: string;
+  step_1_desc_en?: string;
+  step_2_title_en?: string;
+  step_2_desc_en?: string;
+  step_3_title_en?: string;
+  step_3_desc_en?: string;
+  step_4_title_en?: string;
+  step_4_desc_en?: string;
+  step_5_title_en?: string;
+  step_5_desc_en?: string;
+  // Champs pour l'arabe
+  titre_ar?: string;
+  texte_intro_ar?: string;  
+  title_strategic_ar?: string;
+  subtitle_strategic_ar?: string;
+  title_analysis_ar?: string;
+  title_process_ar?: string;
+  subtitle_process_ar?: string;
+  step_1_title_ar?: string;
+  step_1_desc_ar?: string;
+  step_2_title_ar?: string;
+  step_2_desc_ar?: string;
+  step_3_title_ar?: string;
+  step_3_desc_ar?: string;
+  step_4_title_ar?: string;
+  step_4_desc_ar?: string;
+  step_5_title_ar?: string;
+  step_5_desc_ar?: string;
+
+  // Image de couverture
+  recherche_image?: string;
   [key: string]: string | number | boolean | null | undefined;
 }
 
@@ -25,6 +65,12 @@ export interface ApiResponse {
   success?: boolean;
   message?: string;
   data?: RechercheSettings;
+}
+// Interface pour le contenu multilingue
+export interface MultilingualContent {
+  fr: string;
+  ar: string;
+  en: string;
 }
 
 export interface Field {
@@ -45,30 +91,117 @@ export interface Section {
 
 // Valeurs par défaut pour les paramètres
 export const DEFAULT_RECHERCHE_SETTINGS: RechercheSettings = {
-  nos_domaines_titre: "Nos Domaines d'Excellence",
-  nos_domaines_texte_intro: "Découvrez nos domaines d'expertise et nos axes de recherche stratégiques.",
-  axes_strategiques_titre: "Nos Axes Stratégiques",
-  axes_strategiques_description: "Nos axes de recherche sont organisés autour de thématiques clés qui répondent aux défis technologiques contemporains.",
-  analyse_detaillee_titre: "Analyse Détaillée par Axe",
-  processus_recherche_titre: "Processus de Recherche",
-  processus_recherche_texte: "Notre approche méthodologique suit un processus rigoureux en plusieurs étapes.",
-  processus_recherche_etapes_1_titre: "Problématique",
-  processus_recherche_etapes_1_description: "Identification des défis scientifiques",
-  processus_recherche_etapes_2_titre: "Objectifs",
-  processus_recherche_etapes_2_description: "Définition claire des buts à atteindre",
-  processus_recherche_etapes_3_titre: "Approche",
-  processus_recherche_etapes_3_description: "Développement de méthodologies adaptées",
-  processus_recherche_etapes_4_titre: "Expérimentation",
-  processus_recherche_etapes_4_description: "Tests et validation des hypothèses",
-  processus_recherche_etapes_5_titre: "Résultats",
-  processus_recherche_etapes_5_description: "Publication et valorisation des découvertes",
+  page: "recherche",
+
+  // 🇫🇷 Français
+  titre_fr: "Nos Domaines d'Excellence",
+  texte_intro_fr: "Découvrez nos domaines d'expertise et nos axes de recherche stratégiques.",
+  title_strategic_fr: "Nos Axes Stratégiques",
+  subtitle_strategic_fr: "Nos axes de recherche sont organisés autour de thématiques clés qui répondent aux défis technologiques contemporains.",
+  title_analysis_fr: "Analyse Détaillée par Axe",
+  title_process_fr: "Processus de Recherche",
+  subtitle_process_fr: "Notre approche méthodologique suit un processus rigoureux en plusieurs étapes.",
+  step_1_title_fr: "Problématique",
+  step_1_desc_fr: "Identification des défis scientifiques",
+  step_2_title_fr: "Objectifs",
+  step_2_desc_fr: "Définition claire des buts à atteindre",
+  step_3_title_fr: "Approche",
+  step_3_desc_fr: "Développement de méthodologies adaptées",
+  step_4_title_fr: "Expérimentation",
+  step_4_desc_fr: "Tests et validation des hypothèses",
+  step_5_title_fr: "Résultats",
+  step_5_desc_fr: "Publication et valorisation des découvertes",
+
+  // 🇬🇧 English
+  titre_en: "Our Research Domains",
+  texte_intro_en: "Discover our areas of expertise and our strategic research axes.",
+  title_strategic_en: "Our Strategic Axes",
+  subtitle_strategic_en: "Our research axes are organized around key themes that respond to current technological challenges.",
+  title_analysis_en: "Detailed Analysis by Axis",
+  title_process_en: "Research Process",
+  subtitle_process_en: "Our methodological approach follows a rigorous process in several steps.",
+  step_1_title_en: "Problem Statement",
+  step_1_desc_en: "Identifying scientific challenges",
+  step_2_title_en: "Objectives",
+  step_2_desc_en: "Clearly defining the goals to be achieved",
+  step_3_title_en: "Approach",
+  step_3_desc_en: "Developing appropriate methodologies",
+  step_4_title_en: "Experimentation",
+  step_4_desc_en: "Testing and validating hypotheses",
+  step_5_title_en: "Results",
+  step_5_desc_en: "Publishing and valorizing discoveries",
+
+  // 🇸🇦 Arabe
+  titre_ar: "مجالات بحثنا",
+  texte_intro_ar: "اكتشف مجالات خبرتنا ومحاور البحث الاستراتيجية لدينا.",
+  title_strategic_ar: "محاورنا الاستراتيجية",
+  subtitle_strategic_ar: "يتم تنظيم محاور البحث لدينا حول مواضيع رئيسية تستجيب للتحديات التكنولوجية المعاصرة.",
+  title_analysis_ar: "تحليل مفصل حسب المحور",
+  title_process_ar: "عملية البحث",
+  subtitle_process_ar: "نهجنا المنهجي يتبع عملية دقيقة مكونة من عدة مراحل.",
+  step_1_title_ar: "الإشكالية",
+  step_1_desc_ar: "تحديد التحديات العلمية",
+  step_2_title_ar: "الأهداف",
+  step_2_desc_ar: "تحديد واضح للأهداف المراد تحقيقها",
+  step_3_title_ar: "المنهجية",
+  step_3_desc_ar: "تطوير مناهج مناسبة",
+  step_4_title_ar: "التجريب",
+  step_4_desc_ar: "اختبار الفرضيات والتحقق من صحتها",
+  step_5_title_ar: "النتائج",
+  step_5_desc_ar: "نشر النتائج وتثمين الاكتشافات",
+}; 
+
+// Fonction utilitaire pour récupérer le contenu dans la langue actuelle
+export const getMultilingualContent = (
+  settings: RechercheSettings, 
+  baseKey: string, 
+  currentLanguage: string,
+  fallbackKey?: string
+): string => {
+  const languageKey = currentLanguage as 'fr' | 'ar' | 'en';
+  const multilingualKey = `${baseKey}_${languageKey}`;
+  
+  // Essayer d'abord le contenu multilingue
+  const multilingualContent = settings[multilingualKey] as string;
+  if (multilingualContent) {
+    return multilingualContent;
+  }
+  
+  // Fallback vers l'ancien système (champ unique)
+  const legacyContent = settings[baseKey] as string;
+  if (legacyContent) {
+    return legacyContent;
+  }
+  
+  // Fallback vers la clé de traduction
+  if (fallbackKey) {
+    return fallbackKey;
+  }
+  
+  return '';
 };
 
-// Configuration des étapes du processus
-export const PROCESSUS_ETAPES = [
-  { number: 1, title: 'Problématique', description: 'Identification des défis scientifiques' },
-  { number: 2, title: 'Objectifs', description: 'Définition claire des buts à atteindre' },
-  { number: 3, title: 'Approche', description: 'Développement de méthodologies adaptées' },
-  { number: 4, title: 'Expérimentation', description: 'Tests et validation des hypothèses' },
-  { number: 5, title: 'Résultats', description: 'Publication et valorisation des découvertes' },
-]; 
+// Fonction utilitaire pour fusionner les données API avec les valeurs par défaut
+export const mergeSettingsWithDefaults = (
+  apiData: Partial<RechercheSettings> | null | undefined
+): RechercheSettings => {
+  if (!apiData || typeof apiData !== 'object') {
+    return DEFAULT_RECHERCHE_SETTINGS;
+  }
+  
+  return {
+    ...DEFAULT_RECHERCHE_SETTINGS,
+    ...apiData
+  };
+};
+
+// Fonction pour créer un objet de contenu multilingue
+export const createMultilingualField = (
+  fr: string = '',
+  ar: string = '',
+  en: string = ''
+): MultilingualContent => ({
+  fr,
+  ar,
+  en
+}); 

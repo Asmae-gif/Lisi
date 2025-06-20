@@ -10,6 +10,25 @@
   "contact": "اتصل بنا",
   "gallery": "معرض الصور",
   "login": "تسجيل الدخول",
-  "resources": "الموارد"
-  }
+  "resources": "الموارد",
+  "home": "الرئيسية",
+  "about": "حول",
+  "team": "الفريق",
+  "logout": "تسجيل الخروج",
+  "dashboard": "لوحة التحكم",
+  "settings": "الإعدادات",
+  "profile": "الملف الشخصي",
+  "search": "البحث",
+  "language": "اللغة",
+  "followUs": "تابعنا",
+  "newsletter": "النشرة الإخبارية",
+  "newsletterDescription": "اشترك لتلقي آخر أخبارنا",
+  "newsletterPlaceholder": "بريدك الإلكتروني",
+  "newsletterSubscribe": "اشتراك",
+  "legalNotice": "الإشعار القانوني",
+  "privacyPolicy": "سياسة الخصوصية",
+  "sitemap": "خريطة الموقع",
+  "accessibility": "إمكانية الوصول",
+  "contactInfoNotAvailable": "معلومات الاتصال غير متوفرة"
+}
   

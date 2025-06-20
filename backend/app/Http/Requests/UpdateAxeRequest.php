@@ -22,13 +22,36 @@ class UpdateAxeRequest extends FormRequest
                 'alpha_dash',
                 Rule::unique('axes', 'slug')->ignore($axeId),
             ],
-            'title'             => 'required|string|max:255',
-            'icon'              => 'nullable|string|max:255',
-            // On supprime “description” qui n’existe pas
-            'problematique'     => 'nullable|string',
-            'objectif'          => 'nullable|string',
-            'approche'          => 'nullable|string',
-            'resultats_attendus'=> 'nullable|string',
+            'icon' => 'nullable|string|max:255',
+            
+            // Champs multilingues - au moins le français est requis
+            'title_fr' => 'required|string|max:255',
+            'title_en' => 'nullable|string|max:255',
+            'title_ar' => 'nullable|string|max:255',
+            
+            'problematique_fr' => 'nullable|string',
+            'problematique_en' => 'nullable|string',
+            'problematique_ar' => 'nullable|string',
+            
+            'objectif_fr' => 'nullable|string',
+            'objectif_en' => 'nullable|string',
+            'objectif_ar' => 'nullable|string',
+            
+            'approche_fr' => 'nullable|string',
+            'approche_en' => 'nullable|string',
+            'approche_ar' => 'nullable|string',
+            
+            'resultats_attendus_fr' => 'nullable|string',
+            'resultats_attendus_en' => 'nullable|string',
+            'resultats_attendus_ar' => 'nullable|string',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'title_fr.required' => 'Le titre en français est obligatoire.',
+            'slug.unique' => 'Ce slug existe déjà.',
         ];
     }
 }

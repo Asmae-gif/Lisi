@@ -14,7 +14,6 @@ import TabNavigation from '@/components/common/TabNavigation';
 import AxeCard from '@/components/common/AxeCard';
 import { useTranslation } from 'react-i18next';
 import { getMultilingualContent } from '@/types/rechercheSettings';
-import { getAxeContent } from '@/types/axe';
 
 
 /**
@@ -105,11 +104,11 @@ const Recherche= () => {
 
       return {
         value: a.slug,
-        label: getAxeContent(a, 'title', i18n.language).split(' ')[0],
+        label: a.title.split(' ')[0],
         content: (
           <div className="space-y-8 animate-in fade-in-50 duration-300">
             <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">{getAxeContent(a, 'title', i18n.language)}</h3>              
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">{a.title}</h3>              
             </div>
 
             <Card>
@@ -118,7 +117,7 @@ const Recherche= () => {
                 <CardTitle className="text-lg">{t('cards.problematique')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">{getAxeContent(a, 'problematique', i18n.language)}</p>
+                <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">{a.problematique}</p>
               </CardContent>
             </Card>
 
@@ -128,7 +127,7 @@ const Recherche= () => {
                 <CardTitle className="text-lg">{t('cards.objectif')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">{getAxeContent(a, 'objectif', i18n.language)}</p>
+                <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">{a.objectif}</p>
               </CardContent>
             </Card>
 
@@ -138,7 +137,7 @@ const Recherche= () => {
                 <CardTitle className="text-lg">{t('cards.approche')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">{getAxeContent(a, 'approche', i18n.language)}</p>
+                <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">{a.approche}</p>
               </CardContent>
             </Card>
 
@@ -148,14 +147,14 @@ const Recherche= () => {
                 <CardTitle className="text-lg">{t('cards.resultats_attendus')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">{getAxeContent(a, 'resultats_attendus', i18n.language)}</p>
+                <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">{a.resultats_attendus}</p>
               </CardContent>
             </Card>
           </div>
         )
       };
     });
-  }, [axes, t, i18n.language]);
+  }, [axes, t]);
 
   // Optimisation avec useMemo pour les étapes du processus
   const processSteps = useMemo(() => {

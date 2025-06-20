@@ -12,23 +12,16 @@ import Footer from "../components/Footer";
 import axiosClient from "@/services/axiosClient";
 import LoadingSkeleton from "@/components/common/LoadingSkeleton";
 import { buildImageUrl } from '@/utils/imageUtils';
-
-// Interface pour les paramètres de contact
-interface ContactSettings {
-  contact_titre?: string;
-  contact_sous_titre?: string;
-  contact_titre2?: string;
-  contact_adresse?: string;
-  contact_telephone?: string;
-  contact_email?: string;
-  [key: string]: string | undefined;
-}
+import { useTranslation } from 'react-i18next';
+import { ContactSettings, getMultilingualContent, DEFAULT_CONTACT_SETTINGS } from '@/types/contactSettings';
+import GoogleMap from "@/components/common/GoogleMap";
 
 /**
  * Composant de page Contact
  * Affiche un formulaire de contact avec les informations de l'organisation
  */
 const Contact = () => {
+  const { i18n,t } = useTranslation('contact');
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
@@ -37,7 +30,7 @@ const Contact = () => {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
-  const [settings, setSettings] = useState<ContactSettings>({});
+  const [settings, setSettings] = useState<ContactSettings>(DEFAULT_CONTACT_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -84,15 +77,15 @@ const Contact = () => {
       setIsSubmitted(true);
       setFormData({ name: "", email: "", subject: "", message: "" });
       toast({
-        title: "Message envoyé !",
-        description: "Votre message a été envoyé avec succès. Nous vous répondrons bientôt.",
+        title: t('successTitle'),
+        description: t('successDescription'),
       });
     },
     onError: (error) => {
       console.error("Erreur lors de l'envoi:", error);
       toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de l'envoi du message. Veuillez réessayer.",
+        title: t('errorTitle'),
+        description: t('errorDescription'),
         variant: "destructive",
       });
     }
@@ -108,13 +101,18 @@ const Contact = () => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.subject || !formData.message) {
       toast({
-        title: "Champs requis",
-        description: "Veuillez remplir tous les champs du formulaire.",
+        title: t('requiredFields'),
+        description: t('requiredFieldsDescription'),
         variant: "destructive",
       });
       return;
     }
     sendMessageMutation.mutate(formData);
+  };
+
+  // Fonction pour récupérer le contenu dans la langue actuelle
+  const getContent = (baseKey: string, fallback?: string) => {
+    return getMultilingualContent(settings, baseKey, i18n.language, fallback);
   };
 
   // Affichage de l'état de chargement
@@ -133,14 +131,14 @@ const Contact = () => {
   // Affichage de l'erreur
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-indigo-100">
         <Header />
         <div className="flex items-center justify-center min-h-[60vh]">
           <Card className="w-full max-w-md">
             <CardContent className="text-center py-8">
               <p className="text-red-600">{error}</p>
               <Button onClick={loadData} className="mt-4">
-                Réessayer
+                {t('retry')}
               </Button>
             </CardContent>
           </Card>
@@ -158,9 +156,9 @@ const Contact = () => {
             <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mx-auto mb-4">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-green-800">Message envoyé !</CardTitle>
+            <CardTitle className="text-green-800">{t('successTitle')}</CardTitle>
             <CardDescription>
-              Merci pour votre message. Nous vous répondrons dans les plus brefs délais.
+              {t('successDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -169,12 +167,12 @@ const Contact = () => {
               variant="outline" 
               className="w-full"
             >
-              Envoyer un autre message
+              {t('sendAnotherMessage')}
             </Button>
             <Link to="/">
               <Button className="w-full">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Retour à l'accueil
+                {t('backToHome')}
               </Button>
             </Link>
           </CardContent>
@@ -184,7 +182,7 @@ const Contact = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-indigo-100">
       <Header />
       <section 
         className="bg-gradient-to-br from-green-50 to-indigo-100 py-16"
@@ -199,11 +197,11 @@ const Contact = () => {
     
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                {settings['contact_titre'] || "Contactez-nous"}
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+                {getContent('contact_titre', "Contactez-nous")}
               </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                {settings['contact_sous_titre'] || "Nous sommes à votre disposition pour répondre à vos questions, discuter de collaborations ou explorer de nouvelles opportunités de recherche."}
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+                {getContent('contact_sous_titre', "Nous sommes à votre disposition pour répondre à vos questions, discuter de collaborations ou explorer de nouvelles opportunités de recherche.")}
               </p>
             </div>
           </div>
@@ -215,59 +213,43 @@ const Contact = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
               {/* Informations de contact */}
               <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-8">
-                  {settings['contact_titre2'] || "Informations de Contact"}
+                <h2 className="text-3xl font-bold text-gray-900 mb-8" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+                  {getContent('contact_titre2', "Informations de Contact")}
                 </h2>
                 
                 <div className="space-y-8">
                   <div className="flex items-start space-x-4">
-                    <div className="bg-blue-100 p-3 rounded-lg">
-                      <MapPin className="h-6 w-6 text-blue-600" />
+                    <div className="bg-green-100 p-3 rounded-lg">
+                      <MapPin className="h-6 w-6 text-green-600" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Adresse</h3>
-                      <p className="text-gray-600">
-                        {settings['contact_adresse'] || (
-                          <>
-                            <span className="block">123 Avenue de la Recherche</span>
-                            <span className="block">Bâtiment Sciences et Technologies</span>
-                            <span className="block">75000 Paris, France</span>
-                          </>
-                        )}
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('Adresse')}</h3>
+                      <p className="text-gray-600" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+                        {getContent('contact_adresse', "Av Abdelkrim Khattabi, B.P. 511 - 40000 –Marrakech")}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-start space-x-4">
-                    <div className="bg-blue-100 p-3 rounded-lg">
-                      <Phone className="h-6 w-6 text-blue-600" />
+                    <div className="bg-green-100 p-3 rounded-lg">
+                      <Phone className="h-6 w-6 text-green-600" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Téléphone</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('Téléphone')}</h3>
                       <p className="text-gray-600">
-                        {settings['contact_telephone'] || (
-                          <>
-                            <span className="block">+33 1 23 45 67 89</span>
-                            <span className="block">+33 1 23 45 67 90 (Fax)</span>
-                          </>
-                        )}
+                        {settings['contact_telephone'] || "06 70 09 85 53 / 06 70 09 89 50"}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-start space-x-4">
-                    <div className="bg-blue-100 p-3 rounded-lg">
-                      <Mail className="h-6 w-6 text-blue-600" />
+                    <div className="bg-green-100 p-3 rounded-lg">
+                      <Mail className="h-6 w-6 text-green-600" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Email</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('Email')}</h3>
                       <p className="text-gray-600">
-                        {settings['contact_email'] || (
-                          <>
-                            <span className="block">contact@laboratoire.fr</span>
-                            <span className="block">direction@laboratoire.fr</span>
-                          </>
-                        )}
+                        {settings['contact_email'] || "contact@example.com"}
                       </p>
                     </div>
                   </div>
@@ -275,24 +257,25 @@ const Contact = () => {
 
                 {/* Carte */}
                 <div className="mt-8">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Localisation</h3>
-                  <div className="bg-gray-200 h-64 rounded-lg flex items-center justify-center">
-                    <p className="text-gray-500">Carte interactive (à intégrer)</p>
-                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('Localisation')}</h3>
+                  <GoogleMap 
+                    location={settings['contact_location'] || 'Marrakech, Maroc'} 
+                    className="w-full h-64 rounded-lg overflow-hidden"
+                  />
                 </div>
               </div>
 
               {/* Formulaire de contact */}
               <div>
                 <div className="bg-gray-50 rounded-xl p-8">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-8">
-                    Envoyez-nous un message
+                  <h2 className="text-3xl font-bold text-gray-900 mb-8" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+                    {t('sendMessageTitle')}
                   </h2>
                   
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                        Nom complet 
+                        {t('name')}
                       </label>
                       <input
                         type="text"
@@ -301,14 +284,14 @@ const Contact = () => {
                         required
                         value={formData.name}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Votre nom complet"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        placeholder={t('namePlaceholder')}
                       />
                     </div>
 
                     <div>
                       <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                        Email 
+                        {t('email')}
                       </label>
                       <input
                         type="email"
@@ -317,28 +300,28 @@ const Contact = () => {
                         required
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="votre.email@exemple.com"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        placeholder={t('form.emailPlaceholder')}
                       />
                     </div>
 
                     <div>
                       <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-                        Sujet 
+                        {t('form.subject')}
                       </label>
                       <Input
                         id="subject"
                         name="subject"
                         type="text"
-                        placeholder="Sujet de votre message"
+                        placeholder={t('form.subjectPlaceholder')}
                         value={formData.subject}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gren-500 focus:border-transparent"
                       />
                     </div>          
                     <div>
                       <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                        Message 
+                        {t('form.message')}
                       </label>
                       <textarea
                         id="message"
@@ -347,17 +330,17 @@ const Contact = () => {
                         rows={6}
                         value={formData.message}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Votre message..."
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        placeholder={t('form.messagePlaceholder')}
                       />
                     </div>
 
                     <button
                       type="submit"
-                      className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                      className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
                     >
                       <Send className="h-4 w-4" />
-                      Envoyer le message
+                      {t('form.send')}
                     </button>
                   </form>
                 </div>
@@ -371,4 +354,4 @@ const Contact = () => {
   );
 };
 
-export default Contact;
+export default Contact; 

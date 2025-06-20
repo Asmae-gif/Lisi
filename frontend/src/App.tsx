@@ -18,11 +18,11 @@ import MembersTable from './pages/dashboard/Membres/MembersTable'
 import EquipesTable from './pages/dashboard/EquipesTable'
 import AxesDashboard from './pages/dashboard/Axes/AxesDashboard'
 import ProtectedRoute from './components/dashboard/ProtectedRoute';
-import SettingsRecherche from "./pages/SettingsRecherche";
-import SettingsMembres from "./pages/SettingsMembres";
+import SettingsRecherche from "@/pages/Parametres/SettingsRecherche";
+import SettingsMembres from "@/pages/Parametres/SettingsMembres";
 import SettingsIndex from "./pages/dashboard/Parametres/SettingsIndex";
 import Contact from "./pages/Contact";
-import SettingsContact from "./pages/SettingsContact";
+import SettingsContact from "./pages/Parametres/SettingsContact";
 import ContactDashboard from "./pages/dashboard/ContactDashboard";
 import Gallery from "./pages/dashboard/Gallery";
 import Gallerie from "./pages/Gallerie";

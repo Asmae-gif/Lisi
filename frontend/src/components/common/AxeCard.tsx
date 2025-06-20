@@ -1,9 +1,10 @@
 import React from 'react';
-import { Axe } from '@/types/axe';
+import { Axe, getAxeContent } from '@/types/axe';
 import {
   Brain, Shield, Network, Database, Smartphone,
   TrendingUp
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // mapping slug → composant icône
 const iconMap: Record<string, React.ComponentType> = {
@@ -27,7 +28,12 @@ const AxeCard: React.FC<AxeCardProps> = ({
   onClick,
   className = ''
 }) => {
-    const Icon = iconMap[axe.icon as string] || iconMap[axe.slug as string] || TrendingUp;
+    const { i18n } = useTranslation();
+    const Icon = iconMap[axe.icon as string] || TrendingUp;
+    
+    // Récupérer le contenu dans la langue actuelle
+    const title = getAxeContent(axe, 'title', i18n.language);
+    const problematique = getAxeContent(axe, 'problematique', i18n.language);
 
   if (variant === 'compact') {
     return (
@@ -43,12 +49,12 @@ const AxeCard: React.FC<AxeCardProps> = ({
           </div>
           <div className="flex-1">
             <h3 className="font-bold text-foreground mb-2 leading-tight">
-              {axe.title}
+              {title}
             </h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              {axe.problematique.length > 100 
-                ? `${axe.problematique.substring(0, 100)}...` 
-                : axe.problematique
+              {problematique.length > 100 
+                ? `${problematique.substring(0, 100)}...` 
+                : problematique
               }
             </p>
           </div>
@@ -68,11 +74,11 @@ const AxeCard: React.FC<AxeCardProps> = ({
             <Icon className="w-6 h-6 text-primary group-hover:text-primary-foreground" />
           </div>
           <h3 className="text-xl font-bold text-foreground">
-            {axe.title}
+            {title}
           </h3>
         </div>
         <p className="text-muted-foreground leading-relaxed">
-          {axe.problematique}
+          {problematique}
         </p>
       </div>
     );
@@ -92,12 +98,12 @@ const AxeCard: React.FC<AxeCardProps> = ({
         </div>
         <div className="flex-1">
           <h3 className="font-bold text-foreground mb-2 leading-tight">
-            {axe.title}
+            {title}
           </h3>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            {axe.problematique.length > 100 
-              ? `${axe.problematique.substring(0, 100)}...` 
-              : axe.problematique
+            {problematique.length > 100 
+              ? `${problematique.substring(0, 100)}...` 
+              : problematique
             }
           </p>
         </div>

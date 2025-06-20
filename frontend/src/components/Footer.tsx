@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { getLogoConfig } from '@/config/logos';
 import { navigationItems, languages } from '@/config/navigation';
 import Logo from '@/components/ui/Logo';
+import { useContactSettings } from '@/hooks/useContactSettings';
 // Types
 interface Language {
   code: string;
@@ -20,8 +21,10 @@ interface NavigationItem {
 
 const Footer = () => {
   const { t, i18n } = useTranslation('header');
+  const { t: tContact } = useTranslation('contact');
   const location = useLocation();
   const logoConfig = getLogoConfig(i18n.language);
+  const { settings: contactSettings, loading: contactLoading } = useContactSettings();
 
   const handleLogoError = (e) => {
     if (i18n.language === 'ar') {
@@ -81,15 +84,33 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-8 border-t border-b border-white/10">
           <div>
             <h4 className="text-lg font-medium mb-4">Contact</h4>
-            <p className="text-white/80 mb-2">
-              <strong>Adresse:</strong> Faculté des Sciences Semlalia, Boulevard Prince My Abdellah, 40000 Marrakech, Maroc
-            </p>
-            <p className="text-white/80 mb-2">
-              <strong>Téléphone:</strong> +33 (0)1 23 45 67 89
-            </p>
-            <p className="text-white/80">
-              <strong>Email:</strong> contact@lisi-uca.ma
-            </p>
+            {contactLoading ? (
+              <div className="space-y-2">
+                <div className="h-4 bg-white/20 rounded animate-pulse"></div>
+                <div className="h-4 bg-white/20 rounded animate-pulse w-3/4"></div>
+                <div className="h-4 bg-white/20 rounded animate-pulse w-1/2"></div>
+              </div>
+            ) : contactSettings ? (
+              <>
+                {contactSettings[`contact_adresse_${i18n.language}` as keyof typeof contactSettings] && (
+                  <p className="text-white/80 mb-2">
+                    <strong>{tContact('Adresse')}:</strong> {contactSettings[`contact_adresse_${i18n.language}` as keyof typeof contactSettings]}
+                  </p>
+                )}
+                {contactSettings.contact_telephone && (
+                  <p className="text-white/80 mb-2">
+                    <strong>{tContact('Téléphone')}:</strong> {contactSettings.contact_telephone}
+                  </p>
+                )}
+                {contactSettings.contact_email && (
+                  <p className="text-white/80">
+                    <strong>{tContact('Email')}:</strong> {contactSettings.contact_email}
+                  </p>
+                )}
+              </>
+            ) : (
+              <p className="text-white/60">Informations de contact non disponibles</p>
+            )}
           </div>
           
           <div>

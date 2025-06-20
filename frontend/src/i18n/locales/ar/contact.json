@@ -1,0 +1,31 @@
+{
+    "form": {
+      "name": "الاسم الكامل",
+      "namePlaceholder": "اسمك الكامل",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "your.email@example.com",
+      "subject": "الموضوع",
+      "subjectPlaceholder": "موضوع رسالتك",
+      "message": "الرسالة",
+      "messagePlaceholder": "اكتب رسالتك...",
+      "send": "إرسال الرسالة"
+    },
+    "Adresse": "العنوان",
+    "Téléphone": "الهاتف",
+    "Email": "البريد الإلكتروني",
+    "Localisation": "الموقع",
+    "mapPlaceholder": "خريطة تفاعلية (سيتم دمجها)",
+    "mapLoading": "جاري تحميل الخريطة...",
+    "mapError": "تعذر تحميل الخريطة",
+    "sendMessageTitle": "أرسل لنا رسالة",
+    "successTitle": "تم إرسال الرسالة!",
+    "successDescription": "شكراً لك على رسالتك. سنرد عليك في أقرب وقت ممكن.",
+    "sendAnotherMessage": "إرسال رسالة أخرى",
+    "backToHome": "العودة إلى الصفحة الرئيسية",
+    "requiredFields": "الحقول المطلوبة",
+    "requiredFieldsDescription": "يرجى ملء جميع حقول النموذج.",
+    "errorTitle": "خطأ",
+    "errorDescription": "حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.",
+    "retry": "إعادة المحاولة"
+  }
+  

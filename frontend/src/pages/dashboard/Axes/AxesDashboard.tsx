@@ -56,15 +56,18 @@ export default function AxesDashboard() {
         await updateAxe(editingAxe.id, formData)
         showNotification(
           "success", 
-          `L'axe "${formData.title}" a été modifié avec succès. Les changements ont été enregistrés.`
+          `L'axe "${formData.title_fr}" a été modifié avec succès. Les changements ont été enregistrés.`
         )
       } else {
         await createAxe(formData)
         showNotification(
           "success", 
-          `Le nouvel axe "${formData.title}" a été créé avec succès.`
+          `Le nouvel axe "${formData.title_fr}" a été créé avec succès.`
         )
       }
+      
+      // Fermer le modal après une opération réussie
+      closeModal()
     } catch (error: unknown) {
       console.error("Erreur lors de la soumission:", error)
       
@@ -83,8 +86,13 @@ export default function AxesDashboard() {
       await deleteAxe(axe.id)
       showNotification(
         "success", 
-        `L'axe "${axe.title}" a été supprimé avec succès.`
+        `L'axe "${axe.title_fr}" a été supprimé avec succès.`
       )
+      
+      // Fermer le modal de détails si il est ouvert et qu'on supprime l'axe en cours de visualisation
+      if (viewingAxe && viewingAxe.id === axe.id) {
+        closeDetailsModal()
+      }
     } catch (error: unknown) {
       console.error("Erreur lors de la suppression:", error)
       

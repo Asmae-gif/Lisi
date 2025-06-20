@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle2, AlertCircle, Loader2, X } from "lucide-react";
+import { CheckCircle2, AlertCircle, Loader2, X, MapPin, ExternalLink } from "lucide-react";
 import { buildImageUrl, handleImageError, DEFAULT_IMAGE_FALLBACK } from '@/utils/imageUtils';
 
 /**
@@ -15,7 +15,7 @@ import { buildImageUrl, handleImageError, DEFAULT_IMAGE_FALLBACK } from '@/utils
 interface Field {
   key: string;
   label: string;
-  type: 'text' | 'textarea' | 'file' | 'number' | 'email' | 'url';
+  type: 'text' | 'textarea' | 'file' | 'number' | 'email' | 'url' | 'location';
   placeholder?: string;
   required?: boolean;
   rows?: number;
@@ -130,6 +130,45 @@ const SettingsForm = React.memo(({
                 )}
               </div>
             )}
+          </div>
+        );
+      }
+      
+      case 'location': {
+        const handleOpenGoogleMaps = () => {
+          const address = value as string;
+          if (address) {
+            const encodedAddress = encodeURIComponent(address);
+            const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+            window.open(googleMapsUrl, '_blank');
+          } else {
+            // Si aucune adresse n'est saisie, ouvrir Google Maps avec une recherche vide
+            window.open('https://www.google.com/maps', '_blank');
+          }
+        };
+
+        return (
+          <div className="flex items-center space-x-2">
+            <Input
+              id={field.key}
+              type="text"
+              value={value as string}
+              onChange={(e) => handleChange(field.key, e)}
+              className="border rounded px-3 py-2 flex-1"
+              placeholder={field.placeholder || `Entrez la localisation`}
+              required={field.required}
+            />
+            <Button
+              type="button"
+              onClick={handleOpenGoogleMaps}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-1"
+              title="Ouvrir Google Maps"
+            >
+              <MapPin className="h-4 w-4" />
+              <ExternalLink className="h-3 w-3" />
+            </Button>
           </div>
         );
       }

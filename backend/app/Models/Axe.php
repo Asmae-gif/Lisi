@@ -12,12 +12,22 @@ class Axe extends Model
 
     protected $fillable = [
         'slug',
-        'title',
+        'title_fr',
+        'title_en',
+        'title_ar',
         'icon',
-        'problematique',
-        'objectif',
-        'approche',
-        'resultats_attendus',
+        'problematique_fr',
+        'problematique_en',
+        'problematique_ar',
+        'objectif_fr',
+        'objectif_en',
+        'objectif_ar',
+        'approche_fr',
+        'approche_en',
+        'approche_ar',
+        'resultats_attendus_fr',
+        'resultats_attendus_en',
+        'resultats_attendus_ar',
     ];
 
     /**
@@ -76,8 +86,62 @@ class Axe extends Model
     {
         return $this->membres()->wherePivot('position', $position)->get();
     }
+
     public function galleries()
     {
         return $this->morphMany(Galleries::class, 'galleriesable');
+    }
+
+    /**
+     * Récupère le contenu dans la langue spécifiée
+     *
+     * @param  string $field
+     * @param  string $language
+     * @return string
+     */
+    public function getContent(string $field, string $language = 'fr'): string
+    {
+        $key = "{$field}_{$language}";
+        return $this->$key ?? $this->{"{$field}_fr"} ?? '';
+    }
+
+    /**
+     * Accesseur pour le titre dans la langue actuelle
+     */
+    public function getTitleAttribute(): string
+    {
+        return $this->title_fr ?? '';
+    }
+
+    /**
+     * Accesseur pour la problématique dans la langue actuelle
+     */
+    public function getProblematiqueAttribute(): string
+    {
+        return $this->problematique_fr ?? '';
+    }
+
+    /**
+     * Accesseur pour l'objectif dans la langue actuelle
+     */
+    public function getObjectifAttribute(): string
+    {
+        return $this->objectif_fr ?? '';
+    }
+
+    /**
+     * Accesseur pour l'approche dans la langue actuelle
+     */
+    public function getApprocheAttribute(): string
+    {
+        return $this->approche_fr ?? '';
+    }
+
+    /**
+     * Accesseur pour les résultats attendus dans la langue actuelle
+     */
+    public function getResultatsAttendusAttribute(): string
+    {
+        return $this->resultats_attendus_fr ?? '';
     }
 }

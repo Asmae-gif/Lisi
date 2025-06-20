@@ -30,10 +30,24 @@ export const AxesTable = React.memo(({ axes, loading, onView, onEdit, onDelete }
   // Optimisation avec useMemo pour les colonnes
   const columns = useMemo(() => [
     {
-      key: 'title',
-      label: 'Titre',
+      key: 'title_fr',
+      label: 'Titre (FR)',
       render: (value: unknown, item: Record<string, unknown>) => (
-        <span className="font-medium">{String(item?.title || value || 'N/A')}</span>
+        <span className="font-medium">{String(item?.title_fr || value || 'N/A')}</span>
+      )
+    },
+    {
+      key: 'title_en',
+      label: 'Titre (EN)',
+      render: (value: unknown, item: Record<string, unknown>) => (
+        <span className="font-medium text-muted-foreground">{String(item?.title_en || value || 'N/A')}</span>
+      )
+    },
+    {
+      key: 'title_ar',
+      label: 'Titre (AR)',
+      render: (value: unknown, item: Record<string, unknown>) => (
+        <span className="font-medium text-muted-foreground" dir="rtl">{String(item?.title_ar || value || 'N/A')}</span>
       )
     },
     {
@@ -90,7 +104,7 @@ export const AxesTable = React.memo(({ axes, loading, onView, onEdit, onDelete }
     {
       label: 'Supprimer',
       icon: Trash2,
-      variant: 'destructive' as const,
+      variant: 'outline' as const,
       onClick: (item: Record<string, unknown>) => onDelete(item as unknown as Axe),
       confirmDialog: {
         title: 'Confirmer la suppression',

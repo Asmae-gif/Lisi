@@ -1,0 +1,30 @@
+{
+    "form": {
+      "name": "Nom complet",
+      "namePlaceholder": "Votre nom complet",
+      "email": "Email",
+      "emailPlaceholder": "votre.email@exemple.com",
+      "subject": "Sujet",
+      "subjectPlaceholder": "Sujet de votre message",
+      "message": "Message",
+      "messagePlaceholder": "Votre message...",
+      "send": "Envoyer le message"
+    },
+    "Adresse": "Adresse",
+    "Téléphone": "Téléphone",
+    "Email": "Email",
+    "Localisation": "Localisation",
+    "mapPlaceholder": "Carte interactive (à intégrer)",
+    "mapLoading": "Chargement de la carte...",
+    "mapError": "Impossible de charger la carte",
+    "sendMessageTitle": "Envoyez-nous un message",
+    "successTitle": "Message envoyé !",
+    "successDescription": "Merci pour votre message. Nous vous répondrons dans les plus brefs délais.",
+    "sendAnotherMessage": "Envoyer un autre message",
+    "backToHome": "Retour à l'accueil",
+    "requiredFields": "Champs requis",
+    "requiredFieldsDescription": "Veuillez remplir tous les champs du formulaire.",
+    "errorTitle": "Erreur",
+    "errorDescription": "Une erreur est survenue lors de l'envoi du message. Veuillez réessayer.",
+    "retry": "Réessayer"
+  }

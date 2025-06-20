@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import {
   Dialog,
@@ -12,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Axe, AxeFormData } from "@/types/axe"
+import { Axe, AxeFormData, createEmptyAxeFormData } from "@/types/axe"
 import { AxiosError } from "axios"
 import { Brain, Shield, Network, Database, Smartphone } from "lucide-react"
 
@@ -32,39 +33,34 @@ interface AxeFormProps {
 }
 
 export const AxeForm = ({ isOpen, onClose, editingAxe, onSubmit }: AxeFormProps) => {
-  const [formData, setFormData] = useState<AxeFormData>({
-    title: "",
-    slug: "",
-    icon: "Brain",
-    problematique: "",
-    objectif: "",
-    approche: "",
-    resultats_attendus: "",
-  })
+  const [formData, setFormData] = useState<AxeFormData>(createEmptyAxeFormData())
   const [errors, setErrors] = useState<Record<string, string[]>>({})
   const [submitting, setSubmitting] = useState(false)
+  const [activeTab, setActiveTab] = useState("fr")
 
   useEffect(() => {
     if (editingAxe) {
       setFormData({
-        title: editingAxe.title,
+        title_fr: editingAxe.title_fr || '',
+        title_en: editingAxe.title_en || '',
+        title_ar: editingAxe.title_ar || '',
         slug: editingAxe.slug,
         icon: editingAxe.icon || "",
-        problematique: editingAxe.problematique,
-        objectif: editingAxe.objectif,
-        approche: editingAxe.approche,
-        resultats_attendus: editingAxe.resultats_attendus,
+        problematique_fr: editingAxe.problematique_fr || '',
+        problematique_en: editingAxe.problematique_en || '',
+        problematique_ar: editingAxe.problematique_ar || '',
+        objectif_fr: editingAxe.objectif_fr || '',
+        objectif_en: editingAxe.objectif_en || '',
+        objectif_ar: editingAxe.objectif_ar || '',
+        approche_fr: editingAxe.approche_fr || '',
+        approche_en: editingAxe.approche_en || '',
+        approche_ar: editingAxe.approche_ar || '',
+        resultats_attendus_fr: editingAxe.resultats_attendus_fr || '',
+        resultats_attendus_en: editingAxe.resultats_attendus_en || '',
+        resultats_attendus_ar: editingAxe.resultats_attendus_ar || '',
       })
     } else {
-      setFormData({
-        title: "",
-        slug: "",
-        icon: "",
-        problematique: "",
-        objectif: "",
-        approche: "",
-        resultats_attendus: "",
-      })
+      setFormData(createEmptyAxeFormData())
     }
     setErrors({})
   }, [editingAxe, isOpen])
@@ -72,7 +68,8 @@ export const AxeForm = ({ isOpen, onClose, editingAxe, onSubmit }: AxeFormProps)
   const handleInputChange = (field: keyof AxeFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
 
-    if (field === "title") {
+    // Générer le slug à partir du titre français
+    if (field === "title_fr") {
       const slug = value
         .toLowerCase()
         .replace(/[^a-z0-9\s-]/g, "")
@@ -104,32 +101,89 @@ export const AxeForm = ({ isOpen, onClose, editingAxe, onSubmit }: AxeFormProps)
     }
   }
 
+  const renderLanguageTab = (lang: 'fr' | 'en' | 'ar', label: string) => (
+    <TabsContent value={lang} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor={`title_${lang}`}>Titre ({label}) *</Label>
+        <Input
+          id={`title_${lang}`}
+          value={formData[`title_${lang}`]}
+          onChange={(e) => handleInputChange(`title_${lang}` as keyof AxeFormData, e.target.value)}
+          placeholder={`Titre de l'axe en ${label}`}
+          className={errors[`title_${lang}`] ? "border-red-500" : ""}
+        />
+        {errors[`title_${lang}`] && <p className="text-sm text-red-500">{errors[`title_${lang}`][0]}</p>}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor={`problematique_${lang}`}>Problématique ({label}) *</Label>
+        <Textarea
+          id={`problematique_${lang}`}
+          value={formData[`problematique_${lang}`]}
+          onChange={(e) => handleInputChange(`problematique_${lang}` as keyof AxeFormData, e.target.value)}
+          placeholder={`Décrivez la problématique en ${label}...`}
+          rows={3}
+          className={errors[`problematique_${lang}`] ? "border-red-500" : ""}
+        />
+        {errors[`problematique_${lang}`] && <p className="text-sm text-red-500">{errors[`problematique_${lang}`][0]}</p>}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor={`objectif_${lang}`}>Objectif ({label}) *</Label>
+        <Textarea
+          id={`objectif_${lang}`}
+          value={formData[`objectif_${lang}`]}
+          onChange={(e) => handleInputChange(`objectif_${lang}` as keyof AxeFormData, e.target.value)}
+          placeholder={`Décrivez l'objectif en ${label}...`}
+          rows={3}
+          className={errors[`objectif_${lang}`] ? "border-red-500" : ""}
+        />
+        {errors[`objectif_${lang}`] && <p className="text-sm text-red-500">{errors[`objectif_${lang}`][0]}</p>}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor={`approche_${lang}`}>Approche ({label}) *</Label>
+        <Textarea
+          id={`approche_${lang}`}
+          value={formData[`approche_${lang}`]}
+          onChange={(e) => handleInputChange(`approche_${lang}` as keyof AxeFormData, e.target.value)}
+          placeholder={`Décrivez l'approche en ${label}...`}
+          rows={3}
+          className={errors[`approche_${lang}`] ? "border-red-500" : ""}
+        />
+        {errors[`approche_${lang}`] && <p className="text-sm text-red-500">{errors[`approche_${lang}`][0]}</p>}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor={`resultats_attendus_${lang}`}>Résultats Attendus ({label}) *</Label>
+        <Textarea
+          id={`resultats_attendus_${lang}`}
+          value={formData[`resultats_attendus_${lang}`]}
+          onChange={(e) => handleInputChange(`resultats_attendus_${lang}` as keyof AxeFormData, e.target.value)}
+          placeholder={`Décrivez les résultats attendus en ${label}...`}
+          rows={3}
+          className={errors[`resultats_attendus_${lang}`] ? "border-red-500" : ""}
+        />
+        {errors[`resultats_attendus_${lang}`] && <p className="text-sm text-red-500">{errors[`resultats_attendus_${lang}`][0]}</p>}
+      </div>
+    </TabsContent>
+  )
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{editingAxe ? "Modifier l'axe" : "Ajouter un nouvel axe"}</DialogTitle>
           <DialogDescription>
             {editingAxe
-              ? "Modifiez les informations de l'axe ci-dessous."
-              : "Remplissez les informations pour créer un nouvel axe."}
+              ? "Modifiez les informations de l'axe dans les trois langues ci-dessous."
+              : "Remplissez les informations pour créer un nouvel axe dans les trois langues."}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Champs communs */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">Titre *</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => handleInputChange("title", e.target.value)}
-                placeholder="Titre de l'axe"
-                className={errors.title ? "border-red-500" : ""}
-              />
-              {errors.title && <p className="text-sm text-red-500">{errors.title[0]}</p>}
-            </div>
-
             <div className="space-y-2">
               <Label htmlFor="slug">Slug *</Label>
               <Input
@@ -141,93 +195,45 @@ export const AxeForm = ({ isOpen, onClose, editingAxe, onSubmit }: AxeFormProps)
               />
               {errors.slug && <p className="text-sm text-red-500">{errors.slug[0]}</p>}
             </div>
+
+            <div className="space-y-2">
+              <Label>Icône *</Label>
+              <div className="flex gap-3 flex-wrap">
+                {ICON_OPTIONS.map(opt => (
+                  <button
+                    type="button"
+                    key={opt.value}
+                    className={`p-2 border rounded ${formData.icon === opt.value ? "border-primary bg-primary/10" : "border-gray-200"}`}
+                    onClick={() => handleInputChange("icon", opt.value)}
+                  >
+                    <opt.icon className="w-6 h-6" />
+                    <div className="text-xs">{opt.label}</div>
+                  </button>
+                ))}
+              </div>
+              {errors.icon && <p className="text-sm text-red-500">{errors.icon[0]}</p>}
+            </div>
           </div>
 
-          <div className="space-y-2">
-  <Label>Icône *</Label>
-  <div className="flex gap-3 flex-wrap">
-    {ICON_OPTIONS.map(opt => (
-      <button
-        type="button"
-        key={opt.value}
-        className={`p-2 border rounded ${formData.icon === opt.value ? "border-primary bg-primary/10" : "border-gray-200"}`}
-        onClick={() => handleInputChange("icon", opt.value)}
-      >
-        <opt.icon className="w-6 h-6" />
-        <div className="text-xs">{opt.label}</div>
-      </button>
-    ))}
-  </div>
-  {errors.icon && <p className="text-sm text-red-500">{errors.icon[0]}</p>}
-</div>
-
-          <div className="space-y-2">
-            <Label htmlFor="problematique">Problématique *</Label>
-            <Textarea
-              id="problematique"
-              value={formData.problematique}
-              onChange={(e) => handleInputChange("problematique", e.target.value)}
-              placeholder="Décrivez la problématique de cet axe..."
-              rows={3}
-              className={errors.problematique ? "border-red-500" : ""}
-            />
-            {errors.problematique && <p className="text-sm text-red-500">{errors.problematique[0]}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="objectif">Objectif *</Label>
-            <Textarea
-              id="objectif"
-              value={formData.objectif}
-              onChange={(e) => handleInputChange("objectif", e.target.value)}
-              placeholder="Décrivez l'objectif de cet axe..."
-              rows={3}
-              className={errors.objectif ? "border-red-500" : ""}
-            />
-            {errors.objectif && <p className="text-sm text-red-500">{errors.objectif[0]}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="approche">Approche *</Label>
-            <Textarea
-              id="approche"
-              value={formData.approche}
-              onChange={(e) => handleInputChange("approche", e.target.value)}
-              placeholder="Décrivez l'approche pour cet axe..."
-              rows={3}
-              className={errors.approche ? "border-red-500" : ""}
-            />
-            {errors.approche && <p className="text-sm text-red-500">{errors.approche[0]}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="resultats_attendus">Résultats attendus *</Label>
-            <Textarea
-              id="resultats_attendus"
-              value={formData.resultats_attendus}
-              onChange={(e) => handleInputChange("resultats_attendus", e.target.value)}
-              placeholder="Décrivez les résultats attendus..."
-              rows={3}
-              className={errors.resultats_attendus ? "border-red-500" : ""}
-            />
-            {errors.resultats_attendus && <p className="text-sm text-red-500">{errors.resultats_attendus[0]}</p>}
-          </div>
+          {/* Onglets multilingues */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="fr">Français</TabsTrigger>
+              <TabsTrigger value="en">English</TabsTrigger>
+              <TabsTrigger value="ar">العربية</TabsTrigger>
+            </TabsList>
+            
+            {renderLanguageTab('fr', 'Français')}
+            {renderLanguageTab('en', 'English')}
+            {renderLanguageTab('ar', 'العربية')}
+          </Tabs>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose} disabled={submitting}>
+            <Button type="button" variant="outline" onClick={onClose}>
               Annuler
             </Button>
             <Button type="submit" disabled={submitting}>
-              {submitting ? (
-                <div className="flex items-center gap-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  {editingAxe ? "Modification..." : "Ajout..."}
-                </div>
-              ) : editingAxe ? (
-                "Modifier"
-              ) : (
-                "Ajouter"
-              )}
+              {submitting ? "Enregistrement..." : editingAxe ? "Modifier" : "Créer"}
             </Button>
           </DialogFooter>
         </form>

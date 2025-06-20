@@ -49,7 +49,9 @@ export const useAxes = () => {
       const response = await axiosClient.post<AxeApiResponse>("/api/admin/axes", formData)
       
       const newAxe = response.data.data as Axe
-      setAxes(prev => [...prev.filter(axe => axe !== undefined && axe !== null), newAxe])
+      
+      // Ajouter le nouvel axe à la liste
+      setAxes(prev => [...prev, newAxe])
       
       return newAxe
     } catch (error: unknown) {
@@ -67,11 +69,9 @@ export const useAxes = () => {
       const response = await axiosClient.put<AxeApiResponse>(`/api/admin/axes/${id}`, formData)
       
       const updatedAxe = response.data.data as Axe
-      setAxes(prev => prev
-        .filter(axe => axe !== undefined && axe !== null)
-        .map(axe => axe?.id === id ? updatedAxe : axe)
-        .filter(axe => axe !== undefined && axe !== null)
-      )
+      
+      // Mettre à jour l'axe dans la liste
+      setAxes(prev => prev.map(axe => axe.id === id ? updatedAxe : axe))
       
       return updatedAxe
     } catch (error: unknown) {
@@ -88,10 +88,8 @@ export const useAxes = () => {
       setError(null)
       await axiosClient.delete(`/api/admin/axes/${id}`)
       
-      setAxes(prev => prev
-        .filter(axe => axe !== undefined && axe !== null)
-        .filter(axe => axe?.id !== id)
-      )
+      // Supprimer l'axe de la liste
+      setAxes(prev => prev.filter(axe => axe.id !== id))
     } catch (error: unknown) {
       console.error("Erreur lors de la suppression:", error)
       const errorMessage = error instanceof Error ? error.message : "Erreur lors de la suppression de l'axe"
