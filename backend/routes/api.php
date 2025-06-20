@@ -41,7 +41,7 @@ use App\Http\Controllers\Api\ProjetIncubeController;
 use App\Http\Controllers\Api\PrixDistinctionController;
 
 // Autres Controllers
-use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\Api\ProjectController;
 
 
 // Routes d'authentification sociale
@@ -105,7 +105,10 @@ Route::prefix('projects')->group(function () {
 // Routes publiques pour les prix et distinctions
 Route::prefix('prix-distinctions')->group(function () {
     Route::get('/', [PrixDistinctionController::class, 'index']);
+    Route::post('/', [PrixDistinctionController::class, 'store']);
     Route::get('/{prix_distinction}', [PrixDistinctionController::class, 'show']);
+    Route::put('/{prix_distinction}', [PrixDistinctionController::class, 'update']);
+    Route::delete('/{prix_distinction}', [PrixDistinctionController::class, 'destroy']);
 });
 
 // Routes publiques pour les partenaires
@@ -173,7 +176,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/partenaires/{id}', [PartenaireController::class, 'destroy']);
 
     // Routes pour les publications (CRUD complet)
-    Route::get('/publications', [PublicationController::class, 'index']);
+    //Route::get('/publications', [PublicationController::class, 'index']);
     Route::post('/publications', [PublicationController::class, 'store']);
     Route::get('/publications/{publication}', [PublicationController::class, 'show']);
     Route::put('/publications/{publication}', [PublicationController::class, 'update']);
@@ -201,10 +204,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Incubations de projets
     Route::apiResource('projet-incubes', ProjetIncubeController::class);
     Route::get('/projects/{projectId}/incubes', [ProjetIncubeController::class, 'byProject']);
-
-    // Prix et distinctions (CRUD complet)
-    Route::apiResource('prix-distinctions', PrixDistinctionController::class);
-    Route::get('/membres/{membreId}/prix-distinctions', [PrixDistinctionController::class, 'byMembre']);
 
     // Routes pour les utilisateurs bloqués
     Route::middleware(['blocked'])->group(function () {
@@ -269,6 +268,16 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', [GallerieController::class, 'store']); // Créer une galerie
             Route::put('/{id}', [GallerieController::class, 'update']); // Mettre à jour une galerie
             Route::delete('/{id}', [GallerieController::class, 'destroy']); // Supprimer une galerie
+        });
+
+        // Gestion des prix et distinctions (admin)
+        Route::prefix('prix-distinctions')->group(function () {
+            Route::get('/', [PrixDistinctionController::class, 'index']);
+            Route::post('/', [PrixDistinctionController::class, 'store']);
+            Route::get('/{prix_distinction}', [PrixDistinctionController::class, 'show']);
+            Route::put('/{prix_distinction}', [PrixDistinctionController::class, 'update']);
+            Route::delete('/{prix_distinction}', [PrixDistinctionController::class, 'destroy']);
+            Route::get('/membres/{membreId}/prix-distinctions', [PrixDistinctionController::class, 'byMembre']);
         });
 
         // Gestion des paramètres (admin)

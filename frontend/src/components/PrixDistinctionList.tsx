@@ -1,19 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../lib/axios';
-
-interface PrixDistinction {
-    id: number;
-    nom: string;
-    description: string;
-    date_obtention: string;
-    membre_id: number;
-    membre?: {
-        nom: string;
-        prenom: string;
-    };
-    created_at: string;
-    updated_at: string;
-}
+import { PrixDistinction, PrixDistinctionApiResponse } from '../types/prixDistinction';
 
 interface PrixDistinctionListProps {
     onEdit: (prix: PrixDistinction) => void;
@@ -71,7 +58,7 @@ const PrixDistinctionList: React.FC<PrixDistinctionListProps> = ({ onEdit, onDel
         .filter(prix => 
             prix.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
             prix.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (prix.membre && `${prix.membre.nom} ${prix.membre.prenom}`.toLowerCase().includes(searchTerm.toLowerCase()))
+            (prix.membres && prix.membres.length > 0 && prix.membres.some(m => `${m.nom} ${m.prenom}`.toLowerCase().includes(searchTerm.toLowerCase())))
         )
         .sort((a, b) => {
             let aValue = sortBy === 'nom' ? a.nom : a.date_obtention;
@@ -175,7 +162,9 @@ const PrixDistinctionList: React.FC<PrixDistinctionListProps> = ({ onEdit, onDel
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="text-sm text-gray-900">
-                                            {prix.membre ? `${prix.membre.nom} ${prix.membre.prenom}` : 'N/A'}
+                                            {prix.membres && prix.membres.length > 0
+                                                ? prix.membres.map(m => `${m.nom} ${m.prenom}${m.role ? ' (' + m.role + ')' : ''}`).join(', ')
+                                                : 'N/A'}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">

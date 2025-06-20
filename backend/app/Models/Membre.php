@@ -43,7 +43,12 @@ class Membre extends Model
     {
         return $this->belongsToMany(Publication::class, 'auteur_publication');
     }
-
+    public function prixDistinctions()
+    {
+        return $this->belongsToMany(PrixDistinction::class, 'prix_distinction_membre')
+                    ->withPivot('role', 'ordre')
+                    ->withTimestamps();
+    }
     public function axes()
     {
         return $this->belongsToMany(Axe::class, 'axe_membre')

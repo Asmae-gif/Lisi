@@ -1,19 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { prixDistinctionApi } from '../services/prixDistinctionApi';
-
-interface PrixDistinction {
-    id: number;
-    title: string;
-    description: string;
-    date: string;
-    membre: {
-        id: number;
-        nom: string;
-        prenom: string;
-    };
-    type: string;
-    created_at: string;
-}
+import { PrixDistinction } from '../types/prixDistinction';
+import api from '../lib/axios';
 
 export default function PrixDistinctions() {
     const [prixDistinctions, setPrixDistinctions] = useState<PrixDistinction[]>([]);
@@ -24,9 +11,13 @@ export default function PrixDistinctions() {
         const fetchPrixDistinctions = async () => {
             try {
                 console.log('Fetching prix et distinctions...');
-                const response = await prixDistinctionApi.getAll();
+                const response = await api.get('/api/prix-distinctions');
                 console.log('Prix et distinctions response:', response);
-                setPrixDistinctions(response.data);
+                if (response.data.success) {
+                    setPrixDistinctions(response.data.data);
+                } else {
+                    setError('Erreur lors du chargement des prix et distinctions');
+                }
                 setError(null);
             } catch (error) {
                 console.error('Error fetching prix et distinctions:', error);
@@ -92,12 +83,15 @@ export default function PrixDistinctions() {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
                                 <div style={{ flex: 1 }}>
                                     <h3 style={{ color: '#333', fontSize: '1.3rem', marginBottom: '8px' }}>
-                                        {prix.title}
+                                        {prix.nom}
                                     </h3>
                                     <p style={{ color: '#666', fontSize: '1rem' }}>
                                         Attribué à{' '}
                                         <span style={{ fontWeight: 'bold' }}>
-                                            {prix.membre.prenom} {prix.membre.nom}
+                                            {prix.membres && prix.membres.length > 0
+                                                ? prix.membres.map(m => `${m.prenom} ${m.nom}${m.role ? ` (${m.role})` : ''}`).join(', ')
+                                                : 'Aucun membre'
+                                            }
                                         </span>
                                     </p>
                                 </div>
@@ -109,7 +103,7 @@ export default function PrixDistinctions() {
                                     fontSize: '0.9rem',
                                     marginLeft: '15px'
                                 }}>
-                                    {prix.type}
+                                    {prix.membres && prix.membres.length > 1 ? 'Prix collectif' : 'Prix individuel'}
                                 </span>
                             </div>
                             
@@ -119,7 +113,7 @@ export default function PrixDistinctions() {
                             
                             <div style={{ color: '#999', fontSize: '0.9rem' }}>
                                 <strong>Date d'obtention:</strong>{' '}
-                                {new Date(prix.date).toLocaleDateString('fr-FR', {
+                                {new Date(prix.date_obtention).toLocaleDateString('fr-FR', {
                                     year: 'numeric',
                                     month: 'long',
                                     day: 'numeric'

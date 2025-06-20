@@ -16,11 +16,38 @@ class PrixDistinction extends Model
         'organisme',
         'image_url',
         'lien_externe',
-        'membre_id',
     ];
 
-    public function membre()
+    // Relation many-to-many avec les membres
+    public function membres()
     {
-        return $this->belongsTo(Membre::class);
+        return $this->belongsToMany(Membre::class, 'prix_distinction_membre')
+                    ->withPivot('role', 'ordre')
+                    ->withTimestamps();
+    }
+    
+    // Méthode pour ajouter un membre à un prix
+    public function addMembre(Membre $membre, string $role = null, int $ordre = 0)
+    {
+        return $this->membres()->attach($membre->id, [
+            'role' => $role,
+            'ordre' => $ordre
+        ]);
+    }
+
+    // Méthode pour retirer un membre d'un prix
+    public function removeMembre(Membre $membre)
+    {
+        return $this->membres()->detach($membre->id);
+    }
+
+    // Méthode pour mettre à jour le rôle d'un membre
+    public function updateMembreRole(Membre $membre, string $role, int $ordre = null)
+    {
+        $data = ['role' => $role];
+        if ($ordre !== null) {
+            $data['ordre'] = $ordre;
+        }
+        return $this->membres()->updateExistingPivot($membre->id, $data);
     }
 }

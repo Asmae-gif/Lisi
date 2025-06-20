@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\PrixDistinction;
+use App\Models\Membre;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -15,7 +16,10 @@ class PrixDistinctionController extends Controller
     public function index()
     {
         try {
-            $prix = PrixDistinction::with('membre')->get();
+            \Log::info('PrixDistinctionController::index - Début de la méthode');
+            
+            $prix = PrixDistinction::with('membres')->get();
+            \Log::info('PrixDistinctionController::index - Données récupérées: ' . $prix->count());
             
             // Transformer les données pour correspondre au format attendu par le frontend
             $transformedPrix = $prix->map(function ($item) {
@@ -24,15 +28,21 @@ class PrixDistinctionController extends Controller
                     'nom' => $item->titre, // Mapper titre vers nom
                     'description' => $item->description,
                     'date_obtention' => $item->date_obtention,
-                    'membre_id' => $item->membre_id,
-                    'membre' => $item->membre ? [
-                        'nom' => $item->membre->nom,
-                        'prenom' => $item->membre->prenom
-                    ] : null,
+                    'membres' => $item->membres->map(function ($membre) {
+                        return [
+                            'id' => $membre->id,
+                            'nom' => $membre->nom,
+                            'prenom' => $membre->prenom,
+                            'role' => $membre->pivot->role,
+                            'ordre' => $membre->pivot->ordre
+                        ];
+                    }),
                     'created_at' => $item->created_at,
                     'updated_at' => $item->updated_at
                 ];
             });
+            
+            \Log::info('PrixDistinctionController::index - Données transformées');
             
             return response()->json([
                 'success' => true,
@@ -40,6 +50,9 @@ class PrixDistinctionController extends Controller
                 'message' => 'Prix et distinctions récupérés avec succès'
             ]);
         } catch (\Exception $e) {
+            \Log::error('PrixDistinctionController::index - Erreur: ' . $e->getMessage());
+            \Log::error('PrixDistinctionController::index - Stack trace: ' . $e->getTraceAsString());
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la récupération des prix et distinctions',
@@ -61,14 +74,35 @@ class PrixDistinctionController extends Controller
                 'organisme' => 'nullable|string|max:255',
                 'image_url' => 'nullable|string|max:255',
                 'lien_externe' => 'nullable|string|max:255',
-                'membre_id' => 'required|exists:membres,id',
+                'membres' => 'required|array|min:1', // Array de membres avec leurs rôles
+                'membres.*.membre_id' => 'required|exists:membres,id',
+                'membres.*.role' => 'nullable|string|max:255',
+                'membres.*.ordre' => 'nullable|integer|min:0',
             ]);
             
             // Mapper 'nom' vers 'titre' pour la base de données
-            $validated['titre'] = $validated['nom'];
-            unset($validated['nom']);
+            $prixData = [
+                'titre' => $validated['nom'],
+                'description' => $validated['description'] ?? null,
+                'date_obtention' => $validated['date_obtention'],
+                'organisme' => $validated['organisme'] ?? null,
+                'image_url' => $validated['image_url'] ?? null,
+                'lien_externe' => $validated['lien_externe'] ?? null,
+            ];
             
-            $prix = PrixDistinction::create($validated);
+            $prix = PrixDistinction::create($prixData);
+            
+            // Ajouter les membres avec leurs rôles
+            foreach ($validated['membres'] as $membreData) {
+                $prix->addMembre(
+                    Membre::find($membreData['membre_id']),
+                    $membreData['role'] ?? null,
+                    $membreData['ordre'] ?? 0
+                );
+            }
+            
+            // Recharger avec les membres pour la réponse
+            $prix->load('membres');
             
             // Retourner dans le format attendu par le frontend
             return response()->json([
@@ -78,11 +112,15 @@ class PrixDistinctionController extends Controller
                     'nom' => $prix->titre,
                     'description' => $prix->description,
                     'date_obtention' => $prix->date_obtention,
-                    'membre_id' => $prix->membre_id,
-                    'membre' => $prix->membre ? [
-                        'nom' => $prix->membre->nom,
-                        'prenom' => $prix->membre->prenom
-                    ] : null,
+                    'membres' => $prix->membres->map(function ($membre) {
+                        return [
+                            'id' => $membre->id,
+                            'nom' => $membre->nom,
+                            'prenom' => $membre->prenom,
+                            'role' => $membre->pivot->role,
+                            'ordre' => $membre->pivot->ordre
+                        ];
+                    }),
                     'created_at' => $prix->created_at,
                     'updated_at' => $prix->updated_at
                 ],

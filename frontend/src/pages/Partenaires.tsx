@@ -4,9 +4,10 @@ import { partenaireApi } from '../services/partenaireApi';
 interface Partenaire {
     id: number;
     nom: string;
-    description?: string;
     logo?: string;
-    site_web?: string;
+    lien?: string;
+    created_at: string;
+  updated_at: string;
 }
 
 export default function Partenaires() {
@@ -20,7 +21,7 @@ export default function Partenaires() {
                 console.log('Fetching partenaires...');
                 const response = await partenaireApi.getAll();
                 console.log('Partenaires response:', response);
-                setPartenaires(response.data);
+                setPartenaires(response.data.data);
                 setError(null);
             } catch (error) {
                 console.error('Error fetching partenaires:', error);
@@ -68,7 +69,7 @@ export default function Partenaires() {
             </div>
         );
     }
-
+    console.log('partenaires state:', partenaires);
     return (
         <div style={{ padding: '20px', backgroundColor: '#f0f0f0', minHeight: '100vh' }}>
             <h1 style={{ color: '#333', fontSize: '2rem', marginBottom: '20px' }}>Nos Partenaires</h1>
@@ -115,15 +116,10 @@ export default function Partenaires() {
                                 </div>
                             )}
                             
-                            {partenaire.description && (
-                                <p style={{ color: '#666', marginBottom: '15px', lineHeight: '1.5' }}>
-                                    {partenaire.description}
-                                </p>
-                            )}
                             
-                            {partenaire.site_web && (
+                            {partenaire.lien && (
                                 <a
-                                    href={partenaire.site_web}
+                                    href={partenaire.lien}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     style={{ 

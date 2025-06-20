@@ -3,13 +3,15 @@ import { publicationApi } from '../services/publicationApi';
 
 interface Publication {
     id: number;
-    title: string;
-    authors: string;
-    journal: string;
-    year: string;
-    type: string;
-    doi?: string;
+    titre_publication: string;
+    resume: string;
+    type_publication: string;
+    date_publication: string;
+    reference_complete: string;
+    fichier_pdf_url?: string;
+    lien_externe_doi?: string;
     created_at: string;
+    updated_at: string;
 }
 
 export default function Publications() {
@@ -90,10 +92,10 @@ export default function Publications() {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
                                 <div style={{ flex: 1 }}>
                                     <h3 style={{ color: '#333', fontSize: '1.3rem', marginBottom: '8px' }}>
-                                        {publication.title}
+                                        {publication.titre_publication}
                                     </h3>
                                     <p style={{ color: '#666', fontSize: '1rem', fontStyle: 'italic' }}>
-                                        {publication.authors}
+                                        {publication.resume}
                                     </p>
                                 </div>
                                 <span style={{ 
@@ -104,27 +106,40 @@ export default function Publications() {
                                     fontSize: '0.9rem',
                                     marginLeft: '15px'
                                 }}>
-                                    {publication.type}
+                                    {publication.type_publication}
                                 </span>
                             </div>
                             
                             <div style={{ color: '#666', fontSize: '0.95rem' }}>
                                 <p style={{ marginBottom: '5px' }}>
-                                    <strong>Journal/Conférence:</strong> {publication.journal}
+                                    <strong>Date de publication:</strong> {new Date(publication.date_publication).toLocaleDateString('fr-FR')}
                                 </p>
                                 <p style={{ marginBottom: '5px' }}>
-                                    <strong>Année:</strong> {publication.year}
+                                    <strong>Référence complète:</strong> {publication.reference_complete}
                                 </p>
-                                {publication.doi && (
+                                {publication.lien_externe_doi && (
                                     <p>
                                         <strong>DOI:</strong>{' '}
                                         <a 
-                                            href={`https://doi.org/${publication.doi}`}
+                                            href={publication.lien_externe_doi}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             style={{ color: '#3498db', textDecoration: 'underline' }}
                                         >
-                                            {publication.doi}
+                                            {publication.lien_externe_doi}
+                                        </a>
+                                    </p>
+                                )}
+                                {publication.fichier_pdf_url && (
+                                    <p>
+                                        <strong>PDF:</strong>{' '}
+                                        <a 
+                                            href={publication.fichier_pdf_url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{ color: '#3498db', textDecoration: 'underline' }}
+                                        >
+                                            Télécharger le PDF
                                         </a>
                                     </p>
                                 )}
