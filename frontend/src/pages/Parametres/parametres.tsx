@@ -128,34 +128,6 @@ export default function SettingsPage() {
             );
           })}
         </div>
-
-        {/* Section d'aide */}
-        <div className="mt-12 bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Besoin d'aide ?</h3>
-            <p className="text-gray-600 mb-4">
-              Chaque section de paramètres vous permet de personnaliser l'apparence et le contenu de votre application.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-500">
-              <span className="flex items-center">
-                <Home className="h-4 w-4 mr-1" />
-                Accueil
-              </span>
-              <span className="flex items-center">
-                <Search className="h-4 w-4 mr-1" />
-                Recherche
-              </span>
-              <span className="flex items-center">
-                <Users className="h-4 w-4 mr-1" />
-                Équipe
-              </span>
-              <span className="flex items-center">
-                <Contact className="h-4 w-4 mr-1" />
-                Contact
-              </span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

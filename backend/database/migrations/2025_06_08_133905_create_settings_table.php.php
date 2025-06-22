@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('page');       // ex. 'recherche', 'accueil', etc.
             $table->string('key');        // ex. 'nos_domaines.titre'
-            $table->text('value')->nullable();
+            $table->longText('value')->nullable();
             $table->timestamps();
             $table->unique(['page', 'key']);
         });

@@ -20,7 +20,7 @@ import AxesDashboard from './pages/dashboard/Axes/AxesDashboard'
 import ProtectedRoute from './components/dashboard/ProtectedRoute';
 import SettingsRecherche from "@/pages/Parametres/SettingsRecherche";
 import SettingsMembres from "@/pages/Parametres/SettingsMembres";
-import SettingsIndex from "./pages/dashboard/Parametres/SettingsIndex";
+import SettingsIndex from "./pages/Parametres/SettingsIndex.tsx";
 import Contact from "./pages/Contact";
 import SettingsContact from "./pages/Parametres/SettingsContact";
 import ContactDashboard from "./pages/dashboard/ContactDashboard";

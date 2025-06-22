@@ -1,6 +1,4 @@
-
 import { useTranslation } from 'react-i18next';
-import { getMultilingualContent } from '@/types/indexSettings';
 import { useIndexSettingsAPI } from '@/hooks/useIndexSettingsAPI';
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -38,7 +36,17 @@ const DirectorMessage = () => {
 
   // Fonction utilitaire pour récupérer le contenu dans la langue actuelle
   const getContent = (baseKey: string, fallbackKey: string): string => {
-    return getMultilingualContent(settings, baseKey, i18n.language, fallbackKey) || t(fallbackKey);
+    const languageKey = i18n.language as 'fr' | 'ar' | 'en';
+    const langSettings = settings[languageKey];
+    
+    if (langSettings && typeof langSettings === 'object') {
+      const content = langSettings[baseKey as keyof typeof langSettings];
+      if (content) {
+        return content;
+      }
+    }
+    
+    return t(fallbackKey);
   };
 
   return (

@@ -1,19 +1,19 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
 import LoadingSkeleton from '@/components/common/LoadingSkeleton';
 import IconMapper from '@/components/common/IconMapper.tsx'
-import { getIconComponent } from '@/utils/iconUtils';
+import { getIconComponent, ICONS } from '@/utils/iconUtils';
 import { useIndexSettingsAPI } from '@/hooks/useIndexSettingsAPI';
-import {DEFAULT_NEWS_ITEMS, createMissionPillarsFromSettings, createResearchDomainsFromSettings, getMultilingualContent} from '@/types/indexSettings';
 import DirectorMessage from '@/components/home/DirectorMessage';
 import KeyFigures from '@/components/home/KeyFigures';
 import AxesRecherche from '@/components/home/Axes_recherche';
 import { useTranslation } from 'react-i18next';
 import { buildImageUrl } from '@/utils/imageUtils';
 import { useLocation } from 'react-router-dom';
-
+import publicationApi from '@/services/publicationApi';
+import { Publication } from '@/components/dashboard/publications-table';
 
 const ICON_BG_COLORS = [
   "bg-blue-100 group-hover:bg-blue-400 group-hover:text-white",
@@ -43,8 +43,8 @@ const Index = () => {
   const { t, i18n } = useTranslation('index');
   useScrollToHash();
   
-  // Utiliser le hook au lieu de la logique directe
   const { settings, loading, error, refreshSettings } = useIndexSettingsAPI();
+  const [latestPublications, setLatestPublications] = useState<Publication[]>([]);
 
   useEffect(() => {
     if (i18n.language === 'ar') {
@@ -56,9 +56,34 @@ const Index = () => {
     }
   }, [i18n.language]);
 
+  useEffect(() => {
+    const fetchPublications = async () => {
+      try {
+        const response = await publicationApi.getAll();
+        // Trier par date et prendre les 3 plus récentes
+        const sorted = response.data.sort((a: Publication, b: Publication) => new Date(b.date_publication).getTime() - new Date(a.date_publication).getTime());
+        setLatestPublications(sorted.slice(0, 3));
+      } catch (error) {
+        console.error("Erreur lors de la récupération des publications:", error);
+      }
+    };
+
+    fetchPublications();
+  }, []);
+
   // Fonction utilitaire pour récupérer le contenu dans la langue actuelle
   const getContent = (baseKey: string, fallbackKey: string): string => {
-    return getMultilingualContent(settings, baseKey, i18n.language, fallbackKey) || t(fallbackKey);
+    const languageKey = i18n.language as 'fr' | 'ar' | 'en';
+    const langSettings = settings[languageKey];
+    
+    if (langSettings && typeof langSettings === 'object') {
+      const content = langSettings[baseKey as keyof typeof langSettings];
+      if (content) {
+        return content;
+      }
+    }
+    
+    return t(fallbackKey);
   };
 
   // Statistiques dynamiques
@@ -70,10 +95,32 @@ const Index = () => {
   ];
 
   // Piliers de mission dynamiques avec icônes React
-  const dynamicMissionPillars = createMissionPillarsFromSettings(settings);
-
-  // Domaines de recherche dynamiques avec icônes React
-  const dynamicResearchDomains = createResearchDomainsFromSettings(settings);
+  const dynamicMissionPillars = [
+    {
+      titleKey: 'pilier_valeur1_titre',
+      descriptionKey: 'pilier_valeur1_description',
+      icon: ICONS.LIGHTBULB,
+      color: 'from-blue-500 to-blue-600'
+    },
+    {
+      titleKey: 'pilier_valeur2_titre',
+      descriptionKey: 'pilier_valeur2_description',
+      icon: ICONS.USERS,
+      color: 'from-purple-500 to-purple-600'
+    },
+    {
+      titleKey: 'pilier_valeur3_titre',
+      descriptionKey: 'pilier_valeur3_description',
+      icon: ICONS.GLOBE,
+      color: 'from-green-500 to-green-600'
+    },
+    {
+      titleKey: 'pilier_valeur4_titre',
+      descriptionKey: 'pilier_valeur4_description',
+      icon: ICONS.HANDSHAKE,
+      color: 'from-orange-500 to-orange-600'
+    }
+  ];
 
   // Affichage de l'état de chargement
   if (loading) {
@@ -205,10 +252,10 @@ const Index = () => {
               <div className="relative ">
                 
               <img 
-  src={buildImageUrl(settings.mission_image)}
-  alt={t('alt_mission_image')}
-  className="relative rounded-2xl shadow-2xl w-full h-85 object-contain border"
-/>
+                src={buildImageUrl(settings.mission_image)}
+                  alt={t('alt_mission_image')}
+                className="relative rounded-2xl shadow-2xl w-full h-85 object-contain border"
+                  />
               </div>
             </div>
 
@@ -242,8 +289,8 @@ const Index = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center mb-12">
               <div>
-                <p className="text-primary font-semibold mb-2">{settings.actualites_sous_titre}</p>
-                <h2 className="text-4xl font-bold text-foreground">{settings.actualites_titre}</h2>
+                <p className="text-primary font-semibold mb-2">{getContent('actualites_sous_titre', 'actualites_sous_titre')}</p>
+                <h2 className="text-4xl font-bold text-foreground">{getContent('actualites_titre', 'actualites_titre')}</h2>
               </div>
               <Link to="/publications" className="text-primary hover:text-primary/80 flex items-center font-medium group">
                 Toutes les actualités
@@ -251,16 +298,16 @@ const Index = () => {
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {DEFAULT_NEWS_ITEMS.map((item, index) => (
-                <article key={index} className="bg-card rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border">
+              {latestPublications.map((item) => (
+                <article key={item.id} className="bg-card rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm text-muted-foreground">{item.date}</span>
+                    <span className="text-sm text-muted-foreground">{new Date(item.date_publication).toLocaleDateString()}</span>
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                      {item.category}
+                      {item.type_publication}
                     </span>
                   </div>
-                  <h3 className="font-bold text-foreground leading-tight text-lg mb-4">{item.title}</h3>
-                  <Link to="#" className="text-primary hover:text-primary/80 font-medium flex items-center group">
+                  <h3 className="font-bold text-foreground leading-tight text-lg mb-4">{item.titre_publication}</h3>
+                  <Link to={`/publications/${item.id}`} className="text-primary hover:text-primary/80 font-medium flex items-center group">
                     Lire la suite
                     <IconMapper iconKey="ArrowRight" className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
@@ -293,7 +340,7 @@ const Index = () => {
             />}
             <div className="text-center">
               <p className="text-muted-foreground text-lg mb-8 max-w-3xl mx-auto">
-                {settings.domaines_texte_final}
+                {getContent('domaines_texte_final', 'domaines_texte_final')}
               </p>
               <Link 
                 to="/recherche" 

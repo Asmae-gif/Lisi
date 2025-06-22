@@ -1,5 +1,20 @@
 import { ArrowRight, Users,UserCheck,UserX, BookOpen, Target, Globe, Award, ChevronRight, Microscope, Zap, Shield, Handshake, Lightbulb } from 'lucide-react';
-import { ICONS } from '@/types/indexSettings';
+
+// Constantes pour les icônes
+export const ICONS = {
+  HANDSHAKE: 'Handshake',
+  LIGHTBULB: 'Lightbulb',
+  TARGET: 'Target',
+  USERS: 'Users',
+  GLOBE: 'Globe',
+  AWARD: 'Award',
+  MICROSCOPE: 'Microscope',
+  ZAP: 'Zap',
+  SHIELD: 'Shield',
+  BOOK_OPEN: 'BookOpen',
+  ARROW_RIGHT: 'ArrowRight',
+  CHEVRON_RIGHT: 'ChevronRight'
+} as const;
 
 // Mapping des icônes pour les composants React
 export const iconMap = {

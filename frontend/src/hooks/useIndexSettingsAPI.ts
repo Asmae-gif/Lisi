@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { indexSettingsApi } from '@/services/settingsApi';
-import { IndexSettings, DEFAULT_INDEX_SETTINGS, mergeSettingsWithDefaults } from '@/types/indexSettings';
+import { indexSettingsApi } from '../services/settingsApi';
+import { IndexSettings, DEFAULT_INDEX_SETTINGS } from '../types/indexSettings';
 
 /**
  * Hook pour gérer les paramètres de la page d'accueil
@@ -25,8 +25,11 @@ export const useIndexSettingsAPI = (): UseIndexSettingsAPIReturn => {
       setError(null);
       const settingsData = await indexSettingsApi.getSettings();
       
-      // Utiliser la fonction utilitaire pour fusionner les données
-      const mergedSettings = mergeSettingsWithDefaults(settingsData);
+      // Fusionner avec les valeurs par défaut
+      const mergedSettings = settingsData && typeof settingsData === 'object' 
+        ? { ...DEFAULT_INDEX_SETTINGS, ...settingsData }
+        : DEFAULT_INDEX_SETTINGS;
+      
       setSettings(mergedSettings);
     } catch (err: unknown) {
       console.error('Erreur lors du chargement des paramètres:', err);
