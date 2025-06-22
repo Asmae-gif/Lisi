@@ -1,17 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { X, ChevronLeft, ChevronRight, Camera, Calendar, MapPin } from 'lucide-react';
 import { galleryApiService, Gallery as GalleryType } from '../services/galleryApi';
 import { toast } from '@/hooks/use-toast';
+import { useGalerieSettings } from '@/hooks/useGalerieSettings';
+import { useTranslation } from 'react-i18next';
+import { buildImageUrl } from '@/utils/imageUtils';
+import LoadingSkeleton from '@/components/common/LoadingSkeleton';
 
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [galleryImages, setGalleryImages] = useState<GalleryType[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState('Tous');
+  const { settings, loading: settingsLoading, error: settingsError } = useGalerieSettings();
+  const { i18n } = useTranslation();
 
   const galleriesableTypes = ["Tous", "projet" ,"Formations", "Partenariats","Axes"];
+
+  // Fonction pour obtenir le titre et sous-titre selon la langue actuelle
+  const getLocalizedContent = useCallback(() => {
+    const currentLang = i18n.language;
+    let title = '';
+    let subtitle = '';
+
+    switch (currentLang) {
+      case 'en':
+        title = settings.galerie_titre_en || settings.galerie_titre_fr || 'Gallery';
+        subtitle = settings.galerie_sous_titre_en || settings.galerie_sous_titre_fr || 'Discover our facilities, projects and memorable moments through this collection of images';
+        break;
+      case 'ar':
+        title = settings.galerie_titre_ar || settings.galerie_titre_fr || 'معرض الصور';
+        subtitle = settings.galerie_sous_titre_ar || settings.galerie_sous_titre_fr || 'اكتشف مرافقنا ومشاريعنا واللحظات المهمة من خلال هذه المجموعة من الصور';
+        break;
+      default: // fr
+        title = settings.galerie_titre_fr || 'Galerie';
+        subtitle = settings.galerie_sous_titre_fr || 'Découvrez nos installations, projets et moments marquants à travers cette collection d\'images';
+        break;
+    }
+
+    return { title, subtitle };
+  }, [settings, i18n.language]);
+
+  const { title, subtitle } = getLocalizedContent();
 
   useEffect(() => {
     loadGalleryImages();
@@ -60,15 +92,24 @@ const Gallery = () => {
     }
   };
 
-  if (loading) {
+  if (loading || settingsLoading) {
     return (
       <div className="min-h-screen bg-white">
         <Header />
         <div className="flex items-center justify-center min-h-[50vh]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-lisiGreen mx-auto mb-4"></div>
-            <p className="text-gray-600">Chargement de la galerie...</p>
-          </div>
+          <LoadingSkeleton type="grid" rows={1} />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (settingsError) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <p className="text-red-600">{settingsError}</p>
         </div>
         <Footer />
       </div>
@@ -80,15 +121,21 @@ const Gallery = () => {
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="bg-gradient-to-br from-lisiGreen to-indigo-100 py-16">
+        <section 
+          className="bg-gradient-to-br from-lisiGreen to-indigo-100 py-16"
+          style={settings.galerie_image ? {
+            backgroundImage: `url(${buildImageUrl(settings.galerie_image)})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          } : undefined}
+        >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Galerie
+                <span className="block">{title}</span>
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Découvrez nos installations, projets et moments marquants 
-                à travers cette collection d'images
+                {subtitle}
               </p>
             </div>
           </div>

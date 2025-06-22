@@ -20,6 +20,7 @@ import AxesDashboard from './pages/dashboard/Axes/AxesDashboard'
 import ProtectedRoute from './components/dashboard/ProtectedRoute';
 import SettingsRecherche from "@/pages/Parametres/SettingsRecherche";
 import SettingsMembres from "@/pages/Parametres/SettingsMembres";
+import SettingsGalerie from "@/pages/Parametres/SettingsGalerie";
 import SettingsIndex from "./pages/Parametres/SettingsIndex.tsx";
 import Contact from "./pages/Contact";
 import SettingsContact from "./pages/Parametres/SettingsContact";
@@ -99,6 +100,7 @@ const AppContent = () => {
           <Route path="parametres" element={<ProtectedRoute><Parametres /></ProtectedRoute>} />
           <Route path="settings-recherche" element={<ProtectedRoute><SettingsRecherche /></ProtectedRoute>} />
           <Route path="settings-equipe" element={<ProtectedRoute><SettingsMembres /></ProtectedRoute>} />
+          <Route path="settings-galerie" element={<ProtectedRoute><SettingsGalerie /></ProtectedRoute>} />
           <Route path="settings-index" element={<ProtectedRoute><SettingsIndex /></ProtectedRoute>} />
           <Route path="settings-contact" element={<ProtectedRoute><SettingsContact /></ProtectedRoute>} />
           <Route path="contact" element={<ProtectedRoute><ContactDashboard /></ProtectedRoute>} />

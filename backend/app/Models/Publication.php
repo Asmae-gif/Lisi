@@ -23,5 +23,9 @@ class Publication extends Model
     {
         return $this->belongsToMany(Membre::class, 'auteur_publication');
     }
+    public function galleries()
+    {
+        return $this->morphMany(Galleries::class, 'galleriesable');
+    }
 }
 

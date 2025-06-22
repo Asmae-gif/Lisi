@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Gallery, CreateGalleryData } from '../services/galleryApi';
+import { Entity } from '../pages/dashboard/Gallery';
 
 interface GalleryFormProps {
   isOpen: boolean;
@@ -8,6 +9,7 @@ interface GalleryFormProps {
   onSubmit: (data: CreateGalleryData) => void;
   gallery?: Gallery | null;
   loading?: boolean;
+  entities?: Record<string, Entity[]>;
 }
 
 interface FormData {
@@ -20,10 +22,10 @@ interface FormData {
 
 const galleriesableTypes = [
   { value: "projet", label: "Projet" },
-  { value: "publication", label: "Publication" },
-  { value: "axe", label: "Axe de recherche" },
-  { value: "formation", label: "Formation" },
-  { value: "partnership", label: "Partenariat" }
+  { value: "Partenariats", label: "Partenariat" },
+  { value: "Axes de recherche", label: "Axe de recherche" },
+  { value: "Publications", label: "Publication" },
+  { value: "Prix de distinction", label: "Prix de distinction" }
 ];
 
 const GalleryForm: React.FC<GalleryFormProps> = ({
@@ -32,6 +34,7 @@ const GalleryForm: React.FC<GalleryFormProps> = ({
   onSubmit,
   gallery,
   loading = false,
+  entities = {},
 }) => {
   const [formData, setFormData] = useState<FormData>({
     title: '',
@@ -45,21 +48,11 @@ const GalleryForm: React.FC<GalleryFormProps> = ({
 
   useEffect(() => {
     if (gallery) {
-      // Mapper le type de galerie vers le type attendu par le backend
-      const mapGalleryType = (type: string): string => {
-        switch (type.toLowerCase()) {
-          case 'axes': return 'axe';
-          case 'formations': return 'formation';
-          case 'partenariats': return 'partnership';
-          default: return type.toLowerCase();
-        }
-      };
-
       setFormData({
         title: gallery.title,
         description: gallery.description,
         image_path: gallery.image_path,
-        galleriesable_type: mapGalleryType(gallery.galleriesable_type),
+        galleriesable_type: gallery.galleriesable_type,
         galleriesable_id: gallery.galleriesable_id,
       });
     } else {
@@ -73,6 +66,30 @@ const GalleryForm: React.FC<GalleryFormProps> = ({
     }
     setErrors({});
   }, [gallery, isOpen]);
+
+  // Fonction pour obtenir le nom de l'entité
+  const getEntityName = (type: string, id: number): string => {
+    const entityList = entities[type] || [];
+    const entity = entityList.find(e => e.id === id);
+    if (entity) {
+      // Gérer les différents formats selon le type d'entité
+      switch (type) {
+        case 'Publications':
+          return entity.titre_publication || entity.title_fr || entity.title || entity.name || `ID: ${id}`;
+        case 'projet':
+          return entity.titre_projet || entity.title_fr || entity.title || entity.name || `ID: ${id}`;
+        case 'Partenariats':
+          return entity.nom_partenaire || entity.title_fr || entity.title || entity.name || `ID: ${id}`;
+        case 'Axes de recherche':
+          return entity.title_fr || entity.title || entity.name || `ID: ${id}`;
+        case 'Prix de distinction':
+          return entity.nom_prix || entity.title_fr || entity.title || entity.name || `ID: ${id}`;
+        default:
+          return entity.title_fr || entity.title || entity.name || `ID: ${id}`;
+      }
+    }
+    return `ID: ${id}`;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -154,6 +171,24 @@ const GalleryForm: React.FC<GalleryFormProps> = ({
           </div>
 
           <div>
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+              Description *
+            </label>
+            <textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => handleChange('description', e.target.value)}
+              rows={3}
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-lisiGreen ${
+                errors.description ? 'border-red-500' : 'border-gray-300'
+              }`}
+              placeholder="Description de la galerie"
+              disabled={loading}
+            />
+            {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
+          </div>
+
+          <div>
             <label htmlFor="image_path" className="block text-sm font-medium text-gray-700 mb-2">
               URL de l'image *
             </label>
@@ -189,7 +224,11 @@ const GalleryForm: React.FC<GalleryFormProps> = ({
             <select
               id="galleriesable_type"
               value={formData.galleriesable_type}
-              onChange={(e) => handleChange('galleriesable_type', e.target.value)}
+              onChange={(e) => {
+                handleChange('galleriesable_type', e.target.value);
+                // Réinitialiser l'ID quand on change de type
+                handleChange('galleriesable_id', 1);
+              }}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lisiGreen"
               disabled={loading}
             >
@@ -203,38 +242,28 @@ const GalleryForm: React.FC<GalleryFormProps> = ({
 
           <div>
             <label htmlFor="galleriesable_id" className="block text-sm font-medium text-gray-700 mb-2">
-              ID de l'entité *
+              Entité associée *
             </label>
-            <input
-              type="number"
+            <select
               id="galleriesable_id"
               value={formData.galleriesable_id}
               onChange={(e) => handleChange('galleriesable_id', parseInt(e.target.value))}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lisiGreen"
-              placeholder="1"
               disabled={loading}
-            />
-            <p className="mt-1 text-sm text-gray-500">
-              L'ID de l'entité (projet, publication, axe, etc.) à laquelle cette galerie sera associée
-            </p>
-          </div>
-
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-              Description *
-            </label>
-            <textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => handleChange('description', e.target.value)}
-              rows={4}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-lisiGreen ${
-                errors.description ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="Description de l'image"
-              disabled={loading}
-            />
-            {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
+            >
+              {entities[formData.galleriesable_type]?.map((entity) => (
+                <option key={entity.id} value={entity.id}>
+                  {entity.title_fr || entity.title || entity.name || `ID: ${entity.id}`}
+                </option>
+              )) || (
+                <option value="">Aucune entité disponible</option>
+              )}
+            </select>
+            {formData.galleriesable_type && entities[formData.galleriesable_type]?.length === 0 && (
+              <p className="mt-1 text-sm text-yellow-600">
+                Aucune entité trouvée pour ce type. Veuillez d'abord créer des entités de ce type.
+              </p>
+            )}
           </div>
 
           <div className="flex justify-end gap-3 pt-4">

@@ -50,4 +50,8 @@ class PrixDistinction extends Model
         }
         return $this->membres()->updateExistingPivot($membre->id, $data);
     }
+    public function galleries()
+    {
+        return $this->morphMany(Galleries::class, 'galleriesable');
+    }
 }

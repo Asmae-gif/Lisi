@@ -1,28 +1,27 @@
-// src/components/SettingsRecherche.jsx
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import axiosClient from "@/services/axiosClient"
-import { MembreSettings, ApiResponse,Section, DEFAULT_MEMBRES_SETTINGS } from '@/types/MembresSettings'
+import { GallerySettings, ApiResponse, Section, DEFAULT_GALLERY_SETTINGS } from '@/types/GallerySettings'
 import SettingsForm from '@/components/common/SettingsForm'
 import { buildImageUrl } from '@/utils/imageUtils'
 
 /**
- * Composant de paramètres pour la page Membres
- * Permet de configurer les titres, sous-titres et images de la page Membres en 3 langues
+ * Composant de paramètres pour la page Galerie
+ * Permet de configurer les titres, sous-titres et images de la page Galerie en 3 langues
  */
 
-export default function SettingsMembres() {
+export default function SettingsGalerie() {
   // Configuration des sections du formulaire avec champs pour chaque langue
   const sections: Section[] = useMemo(() => [
     {
       title: "Section Hero - Français",
       fields: [
         { 
-          key: "membres_titre_fr", 
+          key: "galerie_titre_fr", 
           label: "Titre Principal (Français)", 
           type: "text"
         },
         { 
-          key: "membres_sous_titre_fr", 
+          key: "galerie_sous_titre_fr", 
           label: "Sous-titre (Français)", 
           type: "text"
         },
@@ -32,12 +31,12 @@ export default function SettingsMembres() {
       title: "Section Hero - English",
       fields: [
         { 
-          key: "membres_titre_en", 
+          key: "galerie_titre_en", 
           label: "Main Title (English)", 
           type: "text"
         },
         { 
-          key: "membres_sous_titre_en", 
+          key: "galerie_sous_titre_en", 
           label: "Subtitle (English)", 
           type: "text"
         },
@@ -47,12 +46,12 @@ export default function SettingsMembres() {
       title: "Section Hero - العربية",
       fields: [
         { 
-          key: "membres_titre_ar", 
+          key: "galerie_titre_ar", 
           label: "العنوان الرئيسي (العربية)", 
           type: "text"
         },
         { 
-          key: "membres_sous_titre_ar", 
+          key: "galerie_sous_titre_ar", 
           label: "العنوان الفرعي (العربية)", 
           type: "text" 
         },
@@ -62,7 +61,7 @@ export default function SettingsMembres() {
       title: "Image de couverture",
       fields: [
         { 
-          key: "membres_image", 
+          key: "galerie_image", 
           label: "Image de couverture", 
           type: "file" 
         },
@@ -71,9 +70,9 @@ export default function SettingsMembres() {
   ], [])
 
   // Initialiser avec les valeurs par défaut dès le départ
-  const [values, setValues] = useState<MembreSettings>(() => {
-    console.log('Initialisation avec les valeurs par défaut:', DEFAULT_MEMBRES_SETTINGS)
-    return { ...DEFAULT_MEMBRES_SETTINGS }
+  const [values, setValues] = useState<GallerySettings>(() => {
+    console.log('Initialisation avec les valeurs par défaut:', DEFAULT_GALLERY_SETTINGS)
+    return { ...DEFAULT_GALLERY_SETTINGS }
   })
   const [files, setFiles] = useState<Record<string, File>>({})
   const [preview, setPreview] = useState<Record<string, string>>({})
@@ -89,7 +88,7 @@ export default function SettingsMembres() {
       
       await axiosClient.get('/sanctum/csrf-cookie')
       
-      const response = await axiosClient.get<ApiResponse>('/api/pages/membres/settings', {
+      const response = await axiosClient.get<ApiResponse>('/api/pages/galerie/settings', {
         headers: { 'Accept': 'application/json' }
       })
 
@@ -101,8 +100,8 @@ export default function SettingsMembres() {
         console.log('Données à utiliser:', settingsData)
         
         // Utiliser les valeurs par défaut partagées
-        const defaultValues: MembreSettings = {
-          ...DEFAULT_MEMBRES_SETTINGS,
+        const defaultValues: GallerySettings = {
+          ...DEFAULT_GALLERY_SETTINGS,
           ...settingsData
         }
         
@@ -151,8 +150,8 @@ export default function SettingsMembres() {
           return newFiles
         })
         // Garder l'image existante si on supprime le fichier
-        if (values[key as keyof MembreSettings]) {
-          const imageUrl = buildImageUrl(String(values[key as keyof MembreSettings]))
+        if (values[key as keyof GallerySettings]) {
+          const imageUrl = buildImageUrl(String(values[key as keyof GallerySettings]))
           if (imageUrl) {
             setPreview(p => ({ ...p, [key]: imageUrl }))
           }
@@ -178,7 +177,7 @@ export default function SettingsMembres() {
         formData.append('id', values.id.toString())
       }
       
-      formData.append('page', 'membres')
+      formData.append('page', 'galerie')
       
       // Ajouter tous les champs de configuration
       Object.entries(values).forEach(([key, value]) => {
@@ -193,7 +192,7 @@ export default function SettingsMembres() {
       })
       
       const response = await axiosClient.post<ApiResponse>(
-        '/api/pages/membres/settings',
+        '/api/pages/galerie/settings',
         formData,
         { 
           headers: { 
@@ -236,7 +235,7 @@ export default function SettingsMembres() {
 
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Paramètres — Page Membres</h1>
+      <h1 className="text-2xl font-bold">Paramètres — Page Galerie</h1>
       
       <SettingsForm
         sections={sections}
@@ -252,4 +251,4 @@ export default function SettingsMembres() {
       />
     </div>
   )
-}
+} 

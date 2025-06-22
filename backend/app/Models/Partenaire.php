@@ -10,4 +10,10 @@ class Partenaire extends Model
     use HasFactory;
 
     protected $fillable = ['nom', 'logo', 'lien'];
+
+    public function galleries()
+    {
+        return $this->morphMany(Galleries::class, 'galleriesable');
+    }
 } 
+
