@@ -29,7 +29,7 @@ interface AxeFormProps {
   isOpen: boolean
   onClose: () => void
   editingAxe: Axe | null
-  onSubmit: (formData: AxeFormData) => Promise<void>
+  onSubmit: (formData: Record<string, unknown>) => Promise<void>
 }
 
 export const AxeForm = ({ isOpen, onClose, editingAxe, onSubmit }: AxeFormProps) => {
@@ -90,7 +90,7 @@ export const AxeForm = ({ isOpen, onClose, editingAxe, onSubmit }: AxeFormProps)
     setErrors({})
 
     try {
-      await onSubmit(formData)
+      await onSubmit(formData as unknown as Record<string, unknown>)
       onClose()
     } catch (error: unknown) {
       if (error instanceof AxiosError && error.response?.data?.errors) {

@@ -14,12 +14,12 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Edit, Trash2 } from "lucide-react"
+import { Edit, Trash2, Eye } from "lucide-react"
 
 interface Column<T> {
   key: keyof T
   label: string
-  render?: (value: any) => React.ReactNode
+  render?: (value: unknown) => React.ReactNode
 }
 
 interface DataTableProps<T> {
@@ -28,6 +28,7 @@ interface DataTableProps<T> {
   isLoading?: boolean
   onEdit?: (item: T) => void
   onDelete?: (id: number) => void
+  onView?: (item: T) => void
 }
 
 export function DataTable<T extends { id: number }>({
@@ -36,6 +37,7 @@ export function DataTable<T extends { id: number }>({
   isLoading = false,
   onEdit,
   onDelete,
+  onView,
 }: DataTableProps<T>) {
   const tableColumns: ColumnDef<T>[] = [
     ...columns.map((col) => ({
@@ -53,6 +55,15 @@ export function DataTable<T extends { id: number }>({
         const item = row.original
         return (
           <div className="flex gap-2">
+            {onView && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onView(item)}
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+            )}
             {onEdit && (
               <Button
                 variant="ghost"
