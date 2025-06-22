@@ -5,7 +5,13 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
 export interface Gallery {
   id: number;
   title: string;
+  title_fr?: string;
+  title_en?: string;
+  title_ar?: string;
   description: string;
+  description_fr?: string;
+  description_en?: string;
+  description_ar?: string;
   image_path: string;
   galleriesable_id: number;
   galleriesable_type: string;
@@ -15,7 +21,13 @@ export interface Gallery {
 
 export interface CreateGalleryData {
   title: string;
+  title_fr?: string;
+  title_en?: string;
+  title_ar?: string;
   description: string;
+  description_fr?: string;
+  description_en?: string;
+  description_ar?: string;
   image_path: string;
   galleriesable_type: string;
   galleriesable_id: number;
@@ -25,17 +37,28 @@ export interface UpdateGalleryData extends CreateGalleryData {
   id: number;
 }
 
+export interface PaginatedGalleriesResponse {
+  data: Gallery[];
+  pagination: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    has_more_pages: boolean;
+  };
+}
+
 class GalleryApiService {
   // Endpoints publics
-  async getGalleries(galleriesableType?: string, galleriesableId?: number): Promise<Gallery[]> {
+  async getGalleries(category: string, page: number = 1): Promise<PaginatedGalleriesResponse> {
     try {
-      let url = '/api/galleries';
-      if (galleriesableType && galleriesableId) {
-        url += `?galleriesable_type=${galleriesableType}&galleriesable_id=${galleriesableId}`;
-      }
-      // Si pas de paramètres, récupérer toutes les galeries
-      const response = await axiosClient.get(url);
-      return response.data.data || response.data;
+      const response = await axiosClient.get('/api/galleries', {
+        params: {
+          category,
+          page,
+        },
+      });
+      return response.data;
     } catch (error) {
       console.error('Erreur lors de la récupération des galeries:', error);
       throw error;
@@ -44,7 +67,7 @@ class GalleryApiService {
 
   async getGalleryById(id: number): Promise<Gallery> {
     try {
-      const response = await axiosClient.get(`/api/galleries/${id}`);
+      const response = await axiosClient.get(`/api/admin/galleries/${id}`);
       return response.data.data || response.data;
     } catch (error) {
       console.error(`Erreur lors de la récupération de la galerie ${id}:`, error);

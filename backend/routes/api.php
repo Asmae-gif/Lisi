@@ -265,6 +265,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Gestion des galeries (admin)
         Route::prefix('galleries')->group(function () {
             Route::get('/', [GallerieController::class, 'allGalleries']); // Toutes les galeries
+            Route::get('/{id}', [GallerieController::class, 'show']); // Voir une galerie spécifique
             Route::post('/', [GallerieController::class, 'store']); // Créer une galerie
             Route::put('/{id}', [GallerieController::class, 'update']); // Mettre à jour une galerie
             Route::delete('/{id}', [GallerieController::class, 'destroy']); // Supprimer une galerie

@@ -5,14 +5,15 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Galleries;
-use App\Models\Projet;
+use App\Models\Project;
 use App\Models\Publication;
 use App\Models\Axe;
-use App\Models\Formation;
-use App\Models\Partnership;
+use App\Models\Partenaire;
+use App\Models\PrixDistinction;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\Rule;
 
 class GallerieController extends Controller
 {
@@ -21,69 +22,31 @@ class GallerieController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'galleriesable_id' => 'required|string|in:projet,publication,axe de recherche,partenariat,pris et distinctions',
-            'galleriesable_id' => 'required|integer',
+        $request->validate([
+            'category' => ['sometimes', 'string', Rule::in([
+                'all',
+                'App\\Models\\Partenariat',
+                'App\\Models\\Projet',
+                'App\\Models\\PrixDistinction',
+                'App\\Models\\Publication',
+                'App\\Models\\Axe',
+            ])],
+            'page' => 'integer|min:1',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
+        $category = $request->input('category', 'all');
+
+        $query = Galleries::with('galleriesable')
+                          ->where('isVisible', true)
+                          ->latest();
+
+        if ($category !== 'all') {
+            $query->where('galleriesable_type', $category);
         }
 
-        $entityType = $request->galleriesable_type;
-        $entityId = $request->galleriesable_id;
+        $galleries = $query->paginate(9);
 
-        // Déterminer le modèle en fonction du type d'entité
-        $modelClass = match($entityType) {
-            'projet' => Projet::class,
-            'publication' => Publication::class,
-            'axe' => Axe::class,
-            'formation' => Formation::class,
-            'partnership' => Partnership::class,
-            default => null
-        };
-
-        if (!$modelClass) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Type d\'entité non valide'
-            ], 400);
-        }
-
-        // Vérifier que l'entité existe
-        $entity = $modelClass::find($entityId);
-        if (!$entity) {
-            return response()->json([
-                'status' => 'error',
-                'message' => ucfirst($entityType) . ' non trouvé'
-            ], 404);
-        }
-
-        // Récupérer les galeries liées à cette entité
-        $galleries = $entity->galleries()->orderBy('created_at', 'desc')->get();
-
-        return response()->json([
-            'status' => 'success',
-            'data' => [
-                'entity' => $entity,
-                'galleries' => $galleries->map(function ($gallery) {
-                    return [
-                        'id' => $gallery->id,
-                        'title' => $gallery->title,
-                        'description' => $gallery->description,
-                        'image_path' => $gallery->image_path,
-                        'image_url' => $gallery->image_url,
-                        'galleriesable_type' => $this->getFrontendType($gallery->galleriesable_type),
-                        'created_at' => $gallery->created_at,
-                        'updated_at' => $gallery->updated_at,
-                    ];
-                })
-            ]
-        ]);
+        return response()->json($galleries);
     }
 
     /**
@@ -101,9 +64,15 @@ class GallerieController extends Controller
 
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
+            'title_fr' => 'nullable|string|max:255',
+            'title_en' => 'nullable|string|max:255',
+            'title_ar' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'description_fr' => 'nullable|string',
+            'description_en' => 'nullable|string',
+            'description_ar' => 'nullable|string',
             'image_path' => 'required|string|url',
-            'galleriesable_type' => 'required|string|in:projet,publication,axe,formation,partnership',
+            'galleriesable_type' => 'required|string|in:projet,Publications,Axes de recherche,Partenariats,Prix de distinction',
             'galleriesable_id' => 'required|integer',
         ]);
 
@@ -138,11 +107,11 @@ class GallerieController extends Controller
 
         // Déterminer le modèle en fonction du type d'entité
         $modelClass = match($entityType) {
-            'projet' => Projet::class,
-            'publication' => Publication::class,
-            'axe' => Axe::class,
-            'formation' => Formation::class,
-            'partnership' => Partnership::class,
+            'projet' => Project::class,
+            'Publications' => Publication::class,
+            'Axes de recherche' => Axe::class,
+            'Partenariats' => Partenaire::class,
+            'Prix de distinction' => PrixDistinction::class,
             default => null
         };
 
@@ -166,7 +135,13 @@ class GallerieController extends Controller
             // Créer la galerie avec le chemin d'image fourni
             $gallery = new Galleries([
                 'title' => $request->title,
+                'title_fr' => $request->title_fr,
+                'title_en' => $request->title_en,
+                'title_ar' => $request->title_ar,
                 'description' => $request->description,
+                'description_fr' => $request->description_fr,
+                'description_en' => $request->description_en,
+                'description_ar' => $request->description_ar,
                 'image_path' => $request->image_path,
             ]);
 
@@ -179,7 +154,13 @@ class GallerieController extends Controller
                 'data' => [
                     'id' => $gallery->id,
                     'title' => $gallery->title,
+                    'title_fr' => $gallery->title_fr,
+                    'title_en' => $gallery->title_en,
+                    'title_ar' => $gallery->title_ar,
                     'description' => $gallery->description,
+                    'description_fr' => $gallery->description_fr,
+                    'description_en' => $gallery->description_en,
+                    'description_ar' => $gallery->description_ar,
                     'image_path' => $gallery->image_path,
                     'image_url' => $gallery->image_url,
                     'galleriesable_type' => $this->getFrontendType($entityType),
@@ -216,7 +197,13 @@ class GallerieController extends Controller
             'data' => [
                 'id' => $gallery->id,
                 'title' => $gallery->title,
+                'title_fr' => $gallery->title_fr,
+                'title_en' => $gallery->title_en,
+                'title_ar' => $gallery->title_ar,
                 'description' => $gallery->description,
+                'description_fr' => $gallery->description_fr,
+                'description_en' => $gallery->description_en,
+                'description_ar' => $gallery->description_ar,
                 'image_path' => $gallery->image_path,
                 'image_url' => $gallery->image_url,
                 'galleriesable_type' => $this->getFrontendType($gallery->galleriesable_type),
@@ -252,7 +239,13 @@ class GallerieController extends Controller
 
         $validator = Validator::make($request->all(), [
             'title' => 'sometimes|required|string|max:255',
+            'title_fr' => 'nullable|string|max:255',
+            'title_en' => 'nullable|string|max:255',
+            'title_ar' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'description_fr' => 'nullable|string',
+            'description_en' => 'nullable|string',
+            'description_ar' => 'nullable|string',
             'image_path' => 'sometimes|required|string',
         ]);
 
@@ -269,8 +262,26 @@ class GallerieController extends Controller
             if ($request->has('title')) {
                 $gallery->title = $request->title;
             }
+            if ($request->has('title_fr')) {
+                $gallery->title_fr = $request->title_fr;
+            }
+            if ($request->has('title_en')) {
+                $gallery->title_en = $request->title_en;
+            }
+            if ($request->has('title_ar')) {
+                $gallery->title_ar = $request->title_ar;
+            }
             if ($request->has('description')) {
                 $gallery->description = $request->description;
+            }
+            if ($request->has('description_fr')) {
+                $gallery->description_fr = $request->description_fr;
+            }
+            if ($request->has('description_en')) {
+                $gallery->description_en = $request->description_en;
+            }
+            if ($request->has('description_ar')) {
+                $gallery->description_ar = $request->description_ar;
             }
             if ($request->has('image_path')) {
                 $gallery->image_path = $request->image_path;
@@ -284,7 +295,13 @@ class GallerieController extends Controller
                 'data' => [
                     'id' => $gallery->id,
                     'title' => $gallery->title,
+                    'title_fr' => $gallery->title_fr,
+                    'title_en' => $gallery->title_en,
+                    'title_ar' => $gallery->title_ar,
                     'description' => $gallery->description,
+                    'description_fr' => $gallery->description_fr,
+                    'description_en' => $gallery->description_en,
+                    'description_ar' => $gallery->description_ar,
                     'image_path' => $gallery->image_path,
                     'image_url' => $gallery->image_url,
                     'galleriesable_type' => $this->getFrontendType($gallery->galleriesable_type),
@@ -362,7 +379,13 @@ class GallerieController extends Controller
                 return [
                     'id' => $gallery->id,
                     'title' => $gallery->title,
+                    'title_fr' => $gallery->title_fr,
+                    'title_en' => $gallery->title_en,
+                    'title_ar' => $gallery->title_ar,
                     'description' => $gallery->description,
+                    'description_fr' => $gallery->description_fr,
+                    'description_en' => $gallery->description_en,
+                    'description_ar' => $gallery->description_ar,
                     'image_path' => $gallery->image_path,
                     'image_url' => $gallery->image_url,
                     'galleriesable_type' => $this->getFrontendType($gallery->galleriesable_type),
@@ -380,28 +403,60 @@ class GallerieController extends Controller
     }
 
     /**
-     * Liste toutes les galeries publiques (pour le frontend).
+     * Get all public galleries with pagination and filtering.
      */
-    public function getGalleries(): JsonResponse
+    public function getGalleries(Request $request): JsonResponse
     {
-        $galleries = Galleries::with('galleriesable')
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($gallery) {
-                return [
-                    'id' => $gallery->id,
-                    'title' => $gallery->title,
-                    'description' => $gallery->description,
-                    'image_path' => $gallery->image_url, // Utiliser l'URL complète
-                    'galleriesable_type' => $this->getFrontendType($gallery->galleriesable_type),
-                    'created_at' => $gallery->created_at,
-                    'updated_at' => $gallery->updated_at,
-                ];
-            });
+        $validator = Validator::make($request->all(), [
+            'type' => 'nullable|string|in:projet,Publications,Axes de recherche,Partenariats,Prix de distinction',
+            'page' => 'nullable|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $type = $request->input('type');
+
+        $query = Galleries::query()->orderBy('created_at', 'desc');
+
+        if ($type && $type !== 'Tous') {
+            // 👇 On mappe le nom simplifié vers le nom de classe
+            $modelClass = match($type) {
+                'projet' => 'App\Models\Project',
+                'Publications' => 'App\Models\Publication',
+                'Axes de recherche' => 'App\Models\Axe',
+                'Partenariats' => 'App\Models\Partenaire',
+                'Prix de distinction' => 'App\Models\PrixDistinction',
+                default => null
+            };
+
+            if (!$modelClass) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Type d\'entité non reconnu'
+                ], 400);
+            }
+
+            $query->where('galleriesable_type', $modelClass);
+        }
+
+        $galleries = $query->paginate(9);
 
         return response()->json([
             'status' => 'success',
-            'data' => $galleries
+            'data' => $galleries->items(),
+            'pagination' => [
+                'current_page' => $galleries->currentPage(),
+                'last_page' => $galleries->lastPage(),
+                'per_page' => $galleries->perPage(),
+                'total' => $galleries->total(),
+                'has_more_pages' => $galleries->hasMorePages(),
+            ]
         ]);
     }
 
@@ -411,11 +466,11 @@ class GallerieController extends Controller
     private function getFrontendType(string $modelType): string
     {
         return match($modelType) {
-            'App\\Models\\Projet' => 'projet',
-            'App\\Models\\Publication' => 'publication',
-            'App\\Models\\Axe' => 'Axes',
-            'App\\Models\\Formation' => 'Formations',
-            'App\\Models\\Partnership' => 'Partenariats',
+            'App\\Models\\Project' => 'projet',
+            'App\\Models\\Publication' => 'Publications',
+            'App\\Models\\Axe' => 'Axes de recherche',
+            'App\\Models\\Partenaire' => 'Partenariats',
+            'App\\Models\\PrixDistinction' => 'Prix de distinction',
             default => $modelType
         };
     }

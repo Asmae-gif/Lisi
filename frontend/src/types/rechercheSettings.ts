@@ -111,6 +111,7 @@ export const DEFAULT_RECHERCHE_SETTINGS: RechercheSettings = {
   step_4_desc_fr: "Tests et validation des hypothèses",
   step_5_title_fr: "Résultats",
   step_5_desc_fr: "Publication et valorisation des découvertes",
+  recherche_image: '/images/A_professional_web_header_background_image_with_di-1750593752409.png',
 
   // 🇬🇧 English
   titre_en: "Our Research Domains",
@@ -162,19 +163,18 @@ export const getMultilingualContent = (
   const languageKey = currentLanguage as 'fr' | 'ar' | 'en';
   const multilingualKey = `${baseKey}_${languageKey}`;
   
-  // Essayer d'abord le contenu multilingue
-  const multilingualContent = settings[multilingualKey] as string;
-  if (multilingualContent) {
-    return multilingualContent;
+  // Priorité 1: Champ multilingue spécifique (ex: titre_fr)
+  // On vérifie si la clé existe, même si sa valeur est une chaîne vide
+  if (multilingualKey in settings && settings[multilingualKey] !== null && settings[multilingualKey] !== undefined) {
+    return settings[multilingualKey] as string;
   }
   
-  // Fallback vers l'ancien système (champ unique)
-  const legacyContent = settings[baseKey] as string;
-  if (legacyContent) {
-    return legacyContent;
+  // Priorité 2: Champ générique (ex: titre)
+  if (baseKey in settings && settings[baseKey] !== null && settings[baseKey] !== undefined) {
+    return settings[baseKey] as string;
   }
   
-  // Fallback vers la clé de traduction
+  // Fallback vers la clé de traduction si rien n'est trouvé
   if (fallbackKey) {
     return fallbackKey;
   }

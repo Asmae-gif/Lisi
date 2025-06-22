@@ -14,7 +14,13 @@ class Galleries extends Model
         'galleriesable_id',
         'galleriesable_type',
         'title',
+        'title_fr',
+        'title_en',
+        'title_ar',
         'description',
+        'description_fr',
+        'description_en',
+        'description_ar',
         'image_path'
     ];
 
@@ -42,7 +48,7 @@ class Galleries extends Model
             return $this->image_path;
         }
     
-        // Sinon, c’est une image locale
+        // Sinon, c'est une image locale
         return asset('storage/' . $this->image_path);
     }
     

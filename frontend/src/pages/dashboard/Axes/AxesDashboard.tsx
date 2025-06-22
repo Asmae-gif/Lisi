@@ -289,8 +289,8 @@ export default function AxesDashboard() {
             isLoading={isLoading}
             onView={handleView}
             onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
+        onDelete={handleDelete}
+      />
         </CardContent>
       </Card>
 
@@ -304,12 +304,12 @@ export default function AxesDashboard() {
               </h2>
             </div>
             <div className="p-6">
-              <AxeForm
+      <AxeForm
                 isOpen={isFormOpen}
                 onClose={() => setIsFormOpen(false)}
                 editingAxe={selectedAxe}
-                onSubmit={handleSubmit}
-              />
+        onSubmit={handleSubmit}
+      />
             </div>
           </div>
         </div>
@@ -317,8 +317,8 @@ export default function AxesDashboard() {
 
       {/* Modal de détails */}
       {isDetailsModalOpen && selectedAxe && (
-        <AxeDetailsModal
-          isOpen={isDetailsModalOpen}
+      <AxeDetailsModal
+        isOpen={isDetailsModalOpen}
           onClose={() => setIsDetailsModalOpen(false)}
           axe={selectedAxe}
           onEdit={handleEdit}

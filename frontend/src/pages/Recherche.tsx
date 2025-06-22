@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, useMemo, Suspense } from 'reac
 import { axesApi } from '@/services/api';
 import axiosClient from "@/services/axiosClient";
 import { Axe } from '@/types/axe';
-import { RechercheSettings } from '@/types/rechercheSettings';
+import { RechercheSettings, DEFAULT_RECHERCHE_SETTINGS, mergeSettingsWithDefaults } from '@/types/rechercheSettings';
 import { Card, CardHeader, CardTitle, CardContent} from '@/components/ui/card';
 import { buildImageUrl } from '@/utils/imageUtils';
 import Header from '@/components/Header';
@@ -28,9 +28,7 @@ const Recherche= () => {
   const [active, setActive] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [settings, setSettings] = useState<RechercheSettings>({
-    page: 'recherche'
-  });
+  const [settings, setSettings] = useState<RechercheSettings>(DEFAULT_RECHERCHE_SETTINGS);
 
    // Fonction utilitaire pour récupérer le contenu dans la langue actuelle
    const getContent = (baseKey: string, fallbackKey: string): string => {
@@ -50,15 +48,11 @@ const Recherche= () => {
       ])
       
       // Vérifier et traiter les paramètres
-      if (settingsRes.data && typeof settingsRes.data === 'object') {
-        // Vérifier si les données sont dans un sous-objet data
-        const settingsData = settingsRes.data.data || settingsRes.data
-        if (import.meta.env.DEV) {
-          console.log('Données settings à utiliser:', settingsData)
-        }
-        setSettings(settingsData)
+      if (settingsRes.data) {
+        const settingsData = settingsRes.data.data || settingsRes.data;
+        setSettings(mergeSettingsWithDefaults(settingsData));
       } else {
-        console.error('Format de données invalide pour les paramètres:', settingsRes.data)
+        setSettings(DEFAULT_RECHERCHE_SETTINGS);
       }
 
       // Vérifier et traiter les axes
@@ -75,6 +69,7 @@ const Recherche= () => {
     } catch (err: unknown) {
       console.error('Erreur lors du chargement:', err)
       setError((err as Error).message || 'Erreur lors du chargement des données')
+      setSettings(DEFAULT_RECHERCHE_SETTINGS);
     } finally {
       setLoading(false)
     }

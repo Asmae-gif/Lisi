@@ -7,24 +7,20 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 /**
  * Construit une URL complète pour une image
- * @param imagePath - Chemin relatif de l'image
+ * @param path - Chemin relatif de l'image
  * @returns URL complète de l'image
  */
-export const buildImageUrl = (imagePath: string | null | undefined): string | null => {
-  if (!imagePath) return null;
-  
-  // Si c'est déjà une URL complète, la retourner
-  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-    return imagePath;
+export const buildImageUrl = (path: string | null | undefined): string => {
+  if (!path) {
+    return 'https://via.placeholder.com/400x300?text=Image+non+disponible';
   }
   
-  // Si c'est un chemin relatif, construire l'URL complète
-  if (imagePath.startsWith('/')) {
-    return `${API_BASE_URL}${imagePath}`;
+  if (path.startsWith('/') || path.startsWith('http')) {
+    return path;
   }
   
-  // Sinon, ajouter le chemin de base
-  return `${API_BASE_URL}/storage/${imagePath}`;
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+  return `${baseUrl}/storage/${path}`;
 };
 
 /**

@@ -22,6 +22,10 @@ import fr_contact from './locales/fr/contact.json';
 import en_contact from './locales/en/contact.json';
 import ar_contact from './locales/ar/contact.json';
 
+import fr_galerie from './locales/fr/galerie.json';
+import en_galerie from './locales/en/galerie.json';
+import ar_galerie from './locales/ar/galerie.json';
+
 i18n
   .use(LanguageDetector)     // détecte la langue automatiquement
   .use(initReactI18next)     // passe i18n à react-i18next
@@ -32,25 +36,28 @@ i18n
         index: fr_index,
         membres: fr_membres,
         recherche: fr_recherche,
-        contact: fr_contact
+        contact: fr_contact,
+        galerie: fr_galerie
       },
       en: { 
         header: en_header,
         index: en_index,
         membres: en_membres,
         recherche: en_recherche,
-        contact: en_contact
+        contact: en_contact,
+        galerie: en_galerie
       },
       ar: { 
         header: ar_header,
         index: ar_index,
         membres: ar_membres,
         recherche: ar_recherche,
-        contact: ar_contact
+        contact: ar_contact,
+        galerie: ar_galerie
       }
     },
     fallbackLng: 'fr',       // langue par défaut
-    ns: ['header', 'index', 'membres', 'recherche', 'contact'], // namespace(s) utilisés
+    ns: ['header', 'index', 'membres', 'recherche', 'contact', 'galerie'], // namespace(s) utilisés
     defaultNS: 'header',
     interpolation: {
       escapeValue: false     // pas d'échappement HTML nécessaire

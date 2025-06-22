@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Plus, Camera, Search, Filter, Edit, Trash2, Calendar } from "lucide-react";
+import { Plus, Camera, Search, Filter, Edit, Trash2, Calendar, Eye, X } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,6 +10,7 @@ import { galleryApiService, type Gallery, type CreateGalleryData } from '@/servi
 import GalleryForm from '@/components/GalleryForm';
 import ConfirmModal from '@/components/ConfirmModal';
 import api from '@/lib/api';
+import { Entity, getEntityName, galleriesableTypes } from '@/utils/entityUtils';
 
 interface Column {
   key: keyof Gallery;
@@ -22,42 +23,25 @@ interface ApiResponse<T> {
   message: string;
 }
 
-// Interface pour les entités
-export interface Entity {
-  id: number;
-  name?: string;
-  title?: string;
-  title_fr?: string;
-  // Champs spécifiques aux publications
-  titre_publication?: string;
-  // Champs spécifiques aux projets
-  titre_projet?: string;
-  // Champs spécifiques aux partenaires
-  nom_partenaire?: string;
-  // Champs spécifiques aux prix de distinction
-  nom_prix?: string;
-}
-
 const Gallery: React.FC = () => {
   const [galleries, setGalleries] = useState<Gallery[]>([]);
   const [entities, setEntities] = useState<Record<string, Entity[]>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedGallery, setSelectedGallery] = useState<Gallery | null>(null);
   const [galleryToDelete, setGalleryToDelete] = useState<Gallery | null>(null);
+  const [galleryToView, setGalleryToView] = useState<Gallery | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const { toast } = useToast();
 
-  const galleriesableTypes = ["projet", "Partenariats", "Axes de recherche", "Publications", "Prix de distinction"];
-
   const fetchGalleries = async () => {
     try {
       setIsLoading(true);
-      const data = await galleryApiService.getGalleries();
-      console.log('Données récupérées:', data);
+      const data = await galleryApiService.getAllGalleries();
       setGalleries(data);
     } catch (error: unknown) {
       console.error('Erreur:', error);
@@ -108,7 +92,6 @@ const Gallery: React.FC = () => {
       try {
         const publicationsResponse = await api.get('/publications');
         entitiesData['Publications'] = publicationsResponse.data.data || publicationsResponse.data || [];
-        console.log('Publications:', entitiesData['Publications']);
       } catch (error) {
         console.warn('Impossible de charger les publications:', error);
         entitiesData['Publications'] = [];
@@ -142,6 +125,11 @@ const Gallery: React.FC = () => {
   const handleEdit = (gallery: Gallery) => {
     setSelectedGallery(gallery);
     setIsFormOpen(true);
+  };
+
+  const handleViewDetails = (gallery: Gallery) => {
+    setGalleryToView(gallery);
+    setIsDetailsModalOpen(true);
   };
 
   const handleDelete = async (id: number) => {
@@ -242,34 +230,22 @@ const Gallery: React.FC = () => {
     }
   };
 
-  // Fonction pour obtenir le nom de l'entité
-  const getEntityName = (type: string, id: number): string => {
-    const entityList = entities[type] || [];
-    const entity = entityList.find(e => e.id === id);
-    if (entity) {
-      // Gérer les différents formats selon le type d'entité
-      switch (type) {
-        case 'Publications':
-          return entity.titre_publication || entity.title_fr || entity.title || entity.name || `ID: ${id}`;
-        case 'projet':
-          return entity.titre_projet || entity.title_fr || entity.title || entity.name || `ID: ${id}`;  
-        case 'Partenariats':
-          return entity.nom_partenaire || entity.title_fr || entity.title || entity.name || `ID: ${id}`;
-        case 'Axes de recherche':
-          return entity.title_fr || entity.title || entity.name || `ID: ${id}`;
-        case 'Prix de distinction':
-          return entity.nom_prix || entity.title_fr || entity.title || entity.name || `ID: ${id}`;
-        default:
-          return entity.title_fr || entity.title || entity.name || `ID: ${id}`;
-      }
-    }
-    return `ID: ${id}`;
+  // Fonction pour obtenir le titre multilingue
+  const getGalleryTitle = (gallery: Gallery): string => {
+    return gallery.title_fr || gallery.title_en || gallery.title_ar || gallery.title || 'Sans titre';
+  };
+
+  // Fonction pour obtenir la description multilingue
+  const getGalleryDescription = (gallery: Gallery): string => {
+    return gallery.description_fr || gallery.description_en || gallery.description_ar || gallery.description || 'Aucune description';
   };
 
   // Filtrer les galeries
   const filteredGalleries = galleries.filter(gallery => {
-    const matchesSearch = gallery.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         gallery.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const title = getGalleryTitle(gallery);
+    const description = getGalleryDescription(gallery);
+    const matchesSearch = title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === 'all' || !filterType || gallery.galleriesable_type === filterType;
     return matchesSearch && matchesType;
   });
@@ -277,23 +253,23 @@ const Gallery: React.FC = () => {
   return (
     <div className="p-6 space-y-6">
       {/* En-tête de la page */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <Camera className="w-8 h-8 text-blue-600" />
+            <Camera className="w-8 h-8 text-lisiGreen" />
             Galeries
-          </h1>
+              </h1>
           <p className="text-gray-600 mt-1">
             Gérez les galeries d'images du laboratoire
           </p>
         </div>
-        <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
+        <Button onClick={handleAdd} className="bg-lisiGreen hover:bg-lisiGreen/80">
           <Plus className="mr-2 h-4 w-4" />
           Nouvelle galerie
         </Button>
-      </div>
+        </div>
 
-      {/* Filtres et recherche */}
+        {/* Filtres et recherche */}
       <Card>
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row gap-4">
@@ -314,7 +290,7 @@ const Gallery: React.FC = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous les types</SelectItem>
-                {galleriesableTypes.map((type) => (
+              {galleriesableTypes.map((type) => (
                   <SelectItem key={type} value={type}>{type}</SelectItem>
                 ))}
               </SelectContent>
@@ -332,7 +308,7 @@ const Gallery: React.FC = () => {
                 <p className="text-sm text-gray-600">Total</p>
                 <p className="text-2xl font-bold">{galleries.length}</p>
               </div>
-              <Camera className="w-8 h-8 text-blue-600" />
+         
             </div>
           </CardContent>
         </Card>
@@ -345,15 +321,14 @@ const Gallery: React.FC = () => {
                   <p className="text-2xl font-bold">
                     {galleries.filter(g => g.galleriesable_type === type).length}
                   </p>
-                </div>
-                <Camera className="w-8 h-8 text-green-600" />
-              </div>
+            </div>
+          </div>
             </CardContent>
           </Card>
         ))}
-      </div>
+        </div>
 
-      {/* Liste des galeries */}
+        {/* Liste des galeries */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -382,7 +357,7 @@ const Gallery: React.FC = () => {
                   <div className="relative h-48">
                     <img
                       src={gallery.image_path}
-                      alt={gallery.title}
+                      alt={getGalleryTitle(gallery)}
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         console.error('Erreur de chargement image:', gallery.image_path);
@@ -404,15 +379,15 @@ const Gallery: React.FC = () => {
                   
                   <div className="p-4">
                     <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1">
-                      {gallery.title}
+                      {getGalleryTitle(gallery)}
                     </h3>
                     <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                      {gallery.description}
+                      {getGalleryDescription(gallery)}
                     </p>
                     
                     <div className="flex items-center justify-between mb-3">
                       <div className="text-sm text-gray-500">
-                        Entité: {getEntityName(gallery.galleriesable_type, gallery.galleriesable_id)}
+                        Entité: {getEntityName(gallery.galleriesable_type, gallery.galleriesable_id, entities)}
                       </div>
                     </div>
                     
@@ -424,8 +399,15 @@ const Gallery: React.FC = () => {
                       
                       <div className="flex gap-2">
                         <button
+                          onClick={() => handleViewDetails(gallery)}
+                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                          title="Voir détails"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                        <button
                           onClick={() => handleEdit(gallery)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="p-2 text-lisiGreen hover:bg-lisiGreen/80 rounded-lg transition-colors"
                           title="Modifier"
                         >
                           <Edit className="h-4 w-4" />
@@ -458,10 +440,10 @@ const Gallery: React.FC = () => {
               <h2 className="text-2xl font-bold">
                 {selectedGallery ? 'Modifier la galerie' : 'Nouvelle galerie'}
               </h2>
-            </div>
+        </div>
             <div className="p-6">
-              <GalleryForm
-                isOpen={isFormOpen}
+      <GalleryForm
+        isOpen={isFormOpen}
                 onClose={() => setIsFormOpen(false)}
                 onSubmit={handleSubmit}
                 gallery={selectedGallery}
@@ -479,11 +461,144 @@ const Gallery: React.FC = () => {
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleDeleteConfirm}
         title="Supprimer la galerie"
-        message={`Êtes-vous sûr de vouloir supprimer la galerie "${galleryToDelete?.title}" ? Cette action est irréversible.`}
+        message={`Êtes-vous sûr de vouloir supprimer la galerie "${galleryToDelete ? getGalleryTitle(galleryToDelete) : ''}" ? Cette action est irréversible.`}
         confirmText="Supprimer"
         isDangerous={true}
         loading={isSubmitting}
       />
+
+      {/* Modal de détails */}
+      {isDetailsModalOpen && galleryToView && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold">Détails de la galerie</h2>
+                <button
+                  onClick={() => setIsDetailsModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Image */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Image</h3>
+                  <div className="relative h-64 rounded-lg overflow-hidden">
+                    <img
+                      src={galleryToView.image_path}
+                      alt={getGalleryTitle(galleryToView)}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://via.placeholder.com/400x300?text=Image+non+disponible';
+                        e.currentTarget.className = 'w-full h-full object-cover bg-gray-100';
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Informations */}
+                <div className="space-y-6">
+                  {/* Titres multilingues */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3">Titres</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Français</label>
+                        <p className="text-gray-900">{galleryToView.title_fr }</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Anglais</label>
+                        <p className="text-gray-900">{galleryToView.title_en }</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Arabe</label>
+                        <p className="text-gray-900 text-right" dir="rtl">{galleryToView.title_ar}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Descriptions multilingues */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3">Descriptions</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Français</label>
+                        <p className="text-gray-900">{galleryToView.description_fr }</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Anglais</label>
+                        <p className="text-gray-900">{galleryToView.description_en }</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Arabe</label>
+                        <p className="text-gray-900 text-right" dir="rtl">{galleryToView.description_ar || 'غير محدد'}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Informations générales */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3">Informations générales</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Type d'entité</label>
+                        <Badge variant="secondary" className="bg-lisiGreen/10 text-lisiGreen">
+                          {galleryToView.galleriesable_type}
+                        </Badge>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Entité associée</label>
+                        <p className="text-gray-900">
+                          {getEntityName(galleryToView.galleriesable_type, galleryToView.galleriesable_id, entities)}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Date de création</label>
+                        <p className="text-gray-900">
+                          {new Date(galleryToView.created_at).toLocaleDateString("fr-FR", {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">URL de l'image</label>
+                        <p className="text-gray-900 text-sm break-all">{galleryToView.image_path}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-end gap-3 mt-6 pt-6 border-t">
+                <button
+                  onClick={() => {
+                    setIsDetailsModalOpen(false);
+                    handleEdit(galleryToView);
+                  }}
+                  className="px-4 py-2 bg-lisiGreen text-white rounded-lg hover:bg-lisiGreen/80 transition-colors"
+                >
+                  Modifier
+                </button>
+                <button
+                  onClick={() => setIsDetailsModalOpen(false)}
+                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Fermer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

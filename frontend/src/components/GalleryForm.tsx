@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import { Gallery, CreateGalleryData } from '../services/galleryApi';
-import { Entity } from '../pages/dashboard/Gallery';
+import { Gallery, CreateGalleryData } from '@/services/galleryApi';
+import { Entity, getEntityName, galleriesableTypesWithOptions } from '@/utils/entityUtils';
 
 interface GalleryFormProps {
   isOpen: boolean;
@@ -14,19 +14,17 @@ interface GalleryFormProps {
 
 interface FormData {
   title: string;
+  title_fr: string;
+  title_en: string;
+  title_ar: string;
   description: string;
+  description_fr: string;
+  description_en: string;
+  description_ar: string;
   image_path: string;
   galleriesable_type: string;
   galleriesable_id: number;
 }
-
-const galleriesableTypes = [
-  { value: "projet", label: "Projet" },
-  { value: "Partenariats", label: "Partenariat" },
-  { value: "Axes de recherche", label: "Axe de recherche" },
-  { value: "Publications", label: "Publication" },
-  { value: "Prix de distinction", label: "Prix de distinction" }
-];
 
 const GalleryForm: React.FC<GalleryFormProps> = ({
   isOpen,
@@ -38,7 +36,13 @@ const GalleryForm: React.FC<GalleryFormProps> = ({
 }) => {
   const [formData, setFormData] = useState<FormData>({
     title: '',
+    title_fr: '',
+    title_en: '',
+    title_ar: '',
     description: '',
+    description_fr: '',
+    description_en: '',
+    description_ar: '',
     image_path: '',
     galleriesable_type: 'projet',
     galleriesable_id: 1,
@@ -49,8 +53,14 @@ const GalleryForm: React.FC<GalleryFormProps> = ({
   useEffect(() => {
     if (gallery) {
       setFormData({
-        title: gallery.title,
-        description: gallery.description,
+        title: gallery.title || '',
+        title_fr: gallery.title_fr || '',
+        title_en: gallery.title_en || '',
+        title_ar: gallery.title_ar || '',
+        description: gallery.description || '',
+        description_fr: gallery.description_fr || '',
+        description_en: gallery.description_en || '',
+        description_ar: gallery.description_ar || '',
         image_path: gallery.image_path,
         galleriesable_type: gallery.galleriesable_type,
         galleriesable_id: gallery.galleriesable_id,
@@ -58,7 +68,13 @@ const GalleryForm: React.FC<GalleryFormProps> = ({
     } else {
       setFormData({
         title: '',
+        title_fr: '',
+        title_en: '',
+        title_ar: '',
         description: '',
+        description_fr: '',
+        description_en: '',
+        description_ar: '',
         image_path: '',
         galleriesable_type: 'projet',
         galleriesable_id: 1,
@@ -67,46 +83,22 @@ const GalleryForm: React.FC<GalleryFormProps> = ({
     setErrors({});
   }, [gallery, isOpen]);
 
-  // Fonction pour obtenir le nom de l'entité
-  const getEntityName = (type: string, id: number): string => {
-    const entityList = entities[type] || [];
-    const entity = entityList.find(e => e.id === id);
-    if (entity) {
-      // Gérer les différents formats selon le type d'entité
-      switch (type) {
-        case 'Publications':
-          return entity.titre_publication || entity.title_fr || entity.title || entity.name || `ID: ${id}`;
-        case 'projet':
-          return entity.titre_projet || entity.title_fr || entity.title || entity.name || `ID: ${id}`;
-        case 'Partenariats':
-          return entity.nom_partenaire || entity.title_fr || entity.title || entity.name || `ID: ${id}`;
-        case 'Axes de recherche':
-          return entity.title_fr || entity.title || entity.name || `ID: ${id}`;
-        case 'Prix de distinction':
-          return entity.nom_prix || entity.title_fr || entity.title || entity.name || `ID: ${id}`;
-        default:
-          return entity.title_fr || entity.title || entity.name || `ID: ${id}`;
-      }
-    }
-    return `ID: ${id}`;
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validation simple
     const newErrors: Partial<FormData> = {};
     
-    if (!formData.title.trim()) {
-      newErrors.title = 'Le titre est requis';
+    if (!formData.title_fr.trim()) {
+      newErrors.title_fr = 'Le titre en français est requis';
     }
     
     if (!formData.image_path.trim()) {
       newErrors.image_path = 'Le chemin de l\'image est requis';
     }
     
-    if (!formData.description.trim()) {
-      newErrors.description = 'La description est requise';
+    if (!formData.description_fr.trim()) {
+      newErrors.description_fr = 'La description en français est requise';
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -116,8 +108,14 @@ const GalleryForm: React.FC<GalleryFormProps> = ({
 
     // Convertir en CreateGalleryData
     const createData: CreateGalleryData = {
-      title: formData.title,
-      description: formData.description,
+      title: formData.title_fr || formData.title_en || formData.title_ar || '',
+      title_fr: formData.title_fr,
+      title_en: formData.title_en,
+      title_ar: formData.title_ar,
+      description: formData.description_fr || formData.description_en || formData.description_ar || '',
+      description_fr: formData.description_fr,
+      description_en: formData.description_en,
+      description_ar: formData.description_ar,
       image_path: formData.image_path,
       galleriesable_type: formData.galleriesable_type,
       galleriesable_id: formData.galleriesable_id,
@@ -152,40 +150,137 @@ const GalleryForm: React.FC<GalleryFormProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-              Titre *
-            </label>
-            <input
-              type="text"
-              id="title"
-              value={formData.title}
-              onChange={(e) => handleChange('title', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-lisiGreen ${
-                errors.title ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="Titre de la galerie"
-              disabled={loading}
-            />
-            {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
+          {/* Titre multilingue */}
+          <div className="space-y-4">
+            <h4 className="text-lg font-medium text-gray-900 border-b pb-2">Titre</h4>
+            
+            <div>
+              <label htmlFor="title_fr" className="block text-sm font-medium text-gray-700 mb-2">
+                Titre (Français) *
+              </label>
+              <input
+                type="text"
+                id="title_fr"
+                value={formData.title_fr}
+                onChange={(e) => handleChange('title_fr', e.target.value)}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-lisiGreen ${
+                  errors.title_fr ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Titre de la galerie en français"
+                disabled={loading}
+              />
+              {errors.title_fr && <p className="mt-1 text-sm text-red-600">{errors.title_fr}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="title_en" className="block text-sm font-medium text-gray-700 mb-2">
+                Titre (Anglais)
+              </label>
+              <input
+                type="text"
+                id="title_en"
+                value={formData.title_en}
+                onChange={(e) => handleChange('title_en', e.target.value)}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-lisiGreen ${
+                  errors.title_en ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Gallery title in English"
+                disabled={loading}
+              />
+              {errors.title_en && <p className="mt-1 text-sm text-red-600">{errors.title_en}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="title_ar" className="block text-sm font-medium text-gray-700 mb-2">
+                Titre (Arabe)
+              </label>
+              <input
+                type="text"
+                id="title_ar"
+                value={formData.title_ar}
+                onChange={(e) => handleChange('title_ar', e.target.value)}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-lisiGreen text-right ${
+                  errors.title_ar ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="عنوان المعرض بالعربية"
+                dir="rtl"
+                disabled={loading}
+              />
+              {errors.title_ar && <p className="mt-1 text-sm text-red-600">{errors.title_ar}</p>}
+            </div>
           </div>
 
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-              Description *
-            </label>
-            <textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => handleChange('description', e.target.value)}
-              rows={3}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-lisiGreen ${
-                errors.description ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="Description de la galerie"
-              disabled={loading}
+          {/* Description multilingue */}
+          <div className="space-y-4">
+            <h4 className="text-lg font-medium text-gray-900 border-b pb-2">Description</h4>
+            
+            <div>
+              <label htmlFor="description_fr" className="block text-sm font-medium text-gray-700 mb-2">
+                Description (Français) *
+              </label>
+              <textarea
+                id="description_fr"
+                value={formData.description_fr}
+                onChange={(e) => handleChange('description_fr', e.target.value)}
+                rows={3}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-lisiGreen ${
+                  errors.description_fr ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Description de la galerie en français"
+                disabled={loading}
+              />
+              {errors.description_fr && <p className="mt-1 text-sm text-red-600">{errors.description_fr}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="description_en" className="block text-sm font-medium text-gray-700 mb-2">
+                Description (Anglais)
+              </label>
+              <textarea
+                id="description_en"
+                value={formData.description_en}
+                onChange={(e) => handleChange('description_en', e.target.value)}
+                rows={3}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-lisiGreen ${
+                  errors.description_en ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Gallery description in English"
+                disabled={loading}
+              />
+              {errors.description_en && <p className="mt-1 text-sm text-red-600">{errors.description_en}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="description_ar" className="block text-sm font-medium text-gray-700 mb-2">
+                Description (Arabe)
+              </label>
+              <textarea
+                id="description_ar"
+                value={formData.description_ar}
+                onChange={(e) => handleChange('description_ar', e.target.value)}
+                rows={3}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-lisiGreen text-right ${
+                  errors.description_ar ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="وصف المعرض بالعربية"
+                dir="rtl"
+                disabled={loading}
+              />
+              {errors.description_ar && <p className="mt-1 text-sm text-red-600">{errors.description_ar}</p>}
+            </div>
+          </div>
+
+          {/* Champs hérités pour compatibilité */}
+          <div className="hidden">
+            <input
+              type="text"
+              value={formData.title_fr || formData.title_en || formData.title_ar || ''}
+              onChange={(e) => handleChange('title', e.target.value)}
             />
-            {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
+            <textarea
+              value={formData.description_fr || formData.description_en || formData.description_ar || ''}
+              onChange={(e) => handleChange('description', e.target.value)}
+            />
           </div>
 
           <div>
@@ -204,17 +299,7 @@ const GalleryForm: React.FC<GalleryFormProps> = ({
               disabled={loading}
             />
             {errors.image_path && <p className="mt-1 text-sm text-red-600">Le chemin de l'image est requis</p>}
-            <p className="mt-1 text-sm text-gray-500">
-              Entrez l'URL complète de l'image. Exemples valides :
-              <br />
-              • https://picsum.photos/400/300 (service de test)
-              <br />
-              • https://via.placeholder.com/400x300 (placeholder)
-              <br />
-              • https://votre-domaine.com/images/photo.jpg (votre serveur)
-              <br />
-              <span className="text-red-500">⚠️ Évitez les URLs Google Photos qui nécessitent une authentification</span>
-            </p>
+          
           </div>
 
           <div>
@@ -232,7 +317,7 @@ const GalleryForm: React.FC<GalleryFormProps> = ({
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lisiGreen"
               disabled={loading}
             >
-              {galleriesableTypes.map((type) => (
+              {galleriesableTypesWithOptions.map((type) => (
                 <option key={type.value} value={type.value}>
                   {type.label}
                 </option>
@@ -253,7 +338,7 @@ const GalleryForm: React.FC<GalleryFormProps> = ({
             >
               {entities[formData.galleriesable_type]?.map((entity) => (
                 <option key={entity.id} value={entity.id}>
-                  {entity.title_fr || entity.title || entity.name || `ID: ${entity.id}`}
+                  {getEntityName(formData.galleriesable_type, entity.id, entities)}
                 </option>
               )) || (
                 <option value="">Aucune entité disponible</option>
