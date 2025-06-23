@@ -102,13 +102,49 @@ export function useMembres() {
    */
   const handleUnblockUser = async (userId: number) => {
     try {
-      await userService.unblockUser(userId);
-      await fetchUsers();
+      const user = (users || []).find(u => u.id === userId)
+      if (!user) throw new Error("Utilisateur non trouvé")
+
+      const updatedUser = await userService.unblockUser(userId);
+      
+      if (!updatedUser) {
+        throw new Error("Erreur lors du déblocage")
+      }
+
+      // Mise à jour des états locaux avec les données retournées
+      setUsers(prevUsers => 
+        prevUsers.map(user => 
+          user.id === userId 
+            ? { 
+                ...user, 
+                ...updatedUser,
+                is_blocked: false
+              }
+            : user
+        )
+      )
+
+      setMembres(prevMembres =>
+        prevMembres.map(membre =>
+          membre.user?.id === userId
+            ? {
+                ...membre,
+                user: {
+                  ...membre.user,
+                  ...updatedUser,
+                  is_blocked: false
+                }
+              }
+            : membre
+        )
+      )
+
       toast({
         title: "Succès",
         description: "L'utilisateur a été débloqué avec succès",
       });
     } catch (error) {
+      console.error("Erreur lors du déblocage:", error);
       toast({
         title: "Erreur",
         description: "Impossible de débloquer l'utilisateur",

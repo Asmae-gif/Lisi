@@ -65,36 +65,52 @@ class AdminMembreController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $createUser = $request->input('create_user', 'true') === 'true';
+        
+        $validationRules = [
             'prenom' => 'required|string|max:255',
             'nom' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
             'statut' => 'required|string|max:255',
             'grade' => 'nullable|string|max:255',
             'biographie' => 'nullable|string',
-            'password' => 'nullable|string|min:8',
             'photo' => 'nullable|image|max:2048',
             'axes' => 'nullable|array',
             'axes.*.id' => 'required|exists:axes,id',
-            'axes.*.position' => 'nullable|string'
-        ]);
+            'axes.*.position' => 'nullable|string',
+            'create_user' => 'nullable|string'
+        ];
+
+        // Ajouter la validation email selon si on crée un utilisateur ou non
+        if ($createUser) {
+            $validationRules['email'] = 'required|email|unique:users,email';
+            $validationRules['password'] = 'nullable|string|min:8';
+        } else {
+            $validationRules['email'] = 'required|email';
+        }
+
+        $validated = $request->validate($validationRules);
 
         try {
             DB::beginTransaction();
 
-            // 1. Créer l'utilisateur
-            $user = new User();
-            $user->name = $validated['prenom'] . ' ' . $validated['nom'];
-            $user->email = $validated['email'];
-            // Générer un mot de passe aléatoire si non fourni
-            $password = $validated['password'] ?? Str::random(12);
-            $user->password = Hash::make($password);
-            $user->is_approved = false;
-            $user->is_blocked = false;
-            $user->save();
-            
-            // Assigner le rôle membre
-            $user->assignRole('membre');
+            $userId = null;
+
+            // 1. Créer l'utilisateur seulement si create_user est true
+            if ($createUser) {
+                $user = new User();
+                $user->name = $validated['prenom'] . ' ' . $validated['nom'];
+                $user->email = $validated['email'];
+                // Générer un mot de passe aléatoire si non fourni
+                $password = $validated['password'] ?? Str::random(12);
+                $user->password = Hash::make($password);
+                $user->is_approved = false;
+                $user->is_blocked = false;
+                $user->save();
+                
+                // Assigner le rôle membre
+                $user->assignRole('membre');
+                $userId = $user->id;
+            }
 
             // 2. Gérer la photo si fournie
             $photoPath = null;
@@ -104,7 +120,7 @@ class AdminMembreController extends Controller
 
             // 3. Créer le membre
             $membre = Membre::create([
-                'user_id' => $user->id,
+                'user_id' => $userId, // null si pas d'utilisateur créé
                 'prenom' => $validated['prenom'],
                 'nom' => $validated['nom'],
                 'email' => $validated['email'],
@@ -131,7 +147,7 @@ class AdminMembreController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Membre créé avec succès',
+                'message' => $createUser ? 'Membre créé avec succès' : 'Membre créé sans compte utilisateur',
                 'data' => $membre
             ], 201);
 

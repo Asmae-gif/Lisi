@@ -11,7 +11,9 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Edit, Save, X, Linkedin, Globe, GraduationCap, Mail } from "lucide-react"
 import type { Membre, User, Role, Axe } from '../types/membre'
-import { updateMemberProfile } from '../services/api'
+import type { Publication } from '@/components/publications-table'
+import type { PrixDistinction } from '../types/prixDistinction'
+import { updateMemberProfile, publicationsApi, prixDistinctionsApi } from '../services/api'
 import { useToast } from "@/components/ui/use-toast"
 import axios from 'axios'
 
@@ -161,14 +163,14 @@ const ProfileCard = ({ profile,  axes }: {
             </a>
           )}
         </div>
-        <div className="text-center">
+        {/*<div className="text-center">
           <Label className="text-sm font-medium block mb-2">Axes de recherche</Label>
           <p className="text-sm text-gray-600">
             {profile.axe_ids.length > 0
               ? axes.filter(a => profile.axe_ids.includes(a.id)).map(a => a.nom).join(', ')
               : '-'}
           </p>
-        </div>
+        </div>*/}
       </div>
     </CardContent>
   </Card>
@@ -349,6 +351,8 @@ export default function MonProfil() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [axes, setAxes] = useState<{ id: number; nom: string }[]>([]);
+  const [publications, setPublications] = useState<Publication[]>([]);
+  const [prixDistinctions, setPrixDistinctions] = useState<PrixDistinction[]>([]);
   const [profile, setProfile] = useState<MemberProfile>({
     id: 0,
     nom: '',
@@ -383,10 +387,18 @@ export default function MonProfil() {
 
     if (user) {
       fetchProfile();
-      fetchAxes();
+      //fetchAxes();
     }
   }, [user, authLoading, navigate]);
 
+  // Effet pour charger les publications et prix après avoir récupéré le profil
+  useEffect(() => {
+    if (profile.id > 0) {
+      fetchPublications(profile.id);
+      fetchPrixDistinctions(profile.id);
+    }
+  }, [profile.id]);
+{/*
   const fetchAxes = async () => {
     try {
       const { data } = await axiosClient.get('/api/axes');
@@ -417,6 +429,30 @@ export default function MonProfil() {
         console.error('Message d\'erreur:', err.message);
       }
       setAxes([]);
+    }
+  };*/}
+
+  const fetchPublications = async (membreId: number) => {
+    try {
+      const result = await publicationsApi.getByMembre(membreId);
+      if (result.success && result.data) {
+        setPublications(result.data);
+      }
+    } catch (err) {
+      console.error('Erreur lors du chargement des publications:', err);
+      setPublications([]);
+    }
+  };
+
+  const fetchPrixDistinctions = async (membreId: number) => {
+    try {
+      const result = await prixDistinctionsApi.getByMembre(membreId);
+      if (result.success && result.data) {
+        setPrixDistinctions(result.data);
+      }
+    } catch (err) {
+      console.error('Erreur lors du chargement des prix et distinctions:', err);
+      setPrixDistinctions([]);
     }
   };
 
@@ -650,6 +686,108 @@ export default function MonProfil() {
                 onInputChange={handleInputChange}
                 axes={axes}
               />
+            </CardContent>
+          </Card>
+
+          {/* Section Publications */}
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Mes Publications</CardTitle>
+              <CardDescription>
+                Liste de mes publications scientifiques
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {publications.length > 0 ? (
+                <div className="space-y-4">
+                  {publications.map((publication) => (
+                    <div key={publication.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-semibold text-lg">{publication.titre_publication}</h4>
+                        <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                          {publication.type_publication}
+                        </span>
+                      </div>
+                      <p className="text-gray-600 text-sm italic mb-2">{publication.resume}</p>
+                      <div className="text-sm text-gray-500 space-y-1">
+                        <p><strong>Date de publication:</strong> {new Date(publication.date_publication).toLocaleDateString('fr-FR')}</p>
+                        <p><strong>Référence:</strong> {publication.reference_complete}</p>
+                        {publication.lien_externe_doi && (
+                          <p>
+                            <strong>DOI:</strong>{' '}
+                            <a 
+                              href={publication.lien_externe_doi}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline"
+                            >
+                              {publication.lien_externe_doi}
+                            </a>
+                          </p>
+                        )}
+                        {publication.fichier_pdf_url && (
+                          <p>
+                            <strong>PDF:</strong>{' '}
+                            <a 
+                              href={publication.fichier_pdf_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline"
+                            >
+                              Télécharger
+                            </a>
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-center py-4">
+                  Aucune publication disponible pour le moment.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Section Prix et Distinctions */}
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Mes Prix et Distinctions</CardTitle>
+              <CardDescription>
+                Liste de mes prix et distinctions reçus
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {prixDistinctions.length > 0 ? (
+                <div className="space-y-4">
+                  {prixDistinctions.map((prix) => (
+                    <div key={prix.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-semibold text-lg">{prix.nom}</h4>
+                        <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">
+                          {prix.membres && prix.membres.length > 1 ? 'Prix collectif' : 'Prix individuel'}
+                        </span>
+                      </div>
+                      <p className="text-gray-600 mb-2">{prix.description}</p>
+                      <div className="text-sm text-gray-500">
+                        <p><strong>Date d'obtention:</strong> {new Date(prix.date_obtention).toLocaleDateString('fr-FR', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}</p>
+                        {prix.membres && prix.membres.length > 0 && (
+                          <p><strong>Attribué à:</strong> {prix.membres.map(m => `${m.prenom} ${m.nom}${m.role ? ` (${m.role})` : ''}`).join(', ')}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-center py-4">
+                  Aucun prix ou distinction disponible pour le moment.
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>

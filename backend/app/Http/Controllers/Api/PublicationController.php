@@ -155,4 +155,29 @@ class PublicationController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Récupérer les publications d'un membre spécifique
+     */
+    public function byMembre($membreId)
+    {
+        try {
+            $membre = Membre::findOrFail($membreId);
+            $publications = $membre->publications()
+                ->orderBy('date_publication', 'desc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $publications,
+                'message' => 'Publications du membre récupérées avec succès'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la récupération des publications du membre',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 } 

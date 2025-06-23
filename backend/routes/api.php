@@ -193,6 +193,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/membres/{membre}', [MembreController::class, 'update']);
     Route::delete('/membres/{membre}', [MembreController::class, 'destroy']);
 
+    // Routes pour récupérer les publications et prix d'un membre
+    Route::get('/membres/{membre}/publications', [PublicationController::class, 'byMembre']);
+    Route::get('/membres/{membre}/prix-distinctions', [PrixDistinctionController::class, 'byMembre']);
+
     // Projets (CRUD complet)
     Route::apiResource('projets', ProjetController::class);
     Route::apiResource('projects', ProjectController::class);
@@ -218,6 +222,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index']);
 
         // Gestion des membres
+        Route::get('/membres', [AdminMembreController::class, 'index']);
         Route::post('/membres', [AdminMembreController::class, 'store']);
         Route::put('/membres/{membre}', [AdminMembreController::class, 'update']);
         Route::delete('/membres/{membre}', [AdminMembreController::class, 'destroy']);

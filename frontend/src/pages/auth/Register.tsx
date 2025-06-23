@@ -19,7 +19,7 @@ const Register: React.FC = () => {
     email: '',
     password: '',
     password_confirmation: '',
-    statut: 'enseignant',
+    statut: 'permanent',
   });
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -48,6 +48,9 @@ const Register: React.FC = () => {
       return;
     }
 
+    // Log pour déboguer
+    console.log('Données du formulaire à envoyer:', formData);
+
     try {
       await register(formData);
       setSuccess("Inscription réussie ! Votre compte doit être validé par un administrateur avant de pouvoir vous connecter.");
@@ -58,11 +61,12 @@ const Register: React.FC = () => {
         email: '',
         password: '',
         password_confirmation: '',
-        statut: 'enseignant',
+        statut: 'permanent',
       });
       // Optionnel : ne pas rediriger immédiatement
       // navigate('/login');
     } catch (err) {
+      console.error('Erreur lors de l\'inscription:', err);
       setError(err instanceof Error ? err.message : 'Une erreur est survenue');
     } finally {
       setLoading(false);
@@ -202,7 +206,7 @@ const Register: React.FC = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="statut">Statut</Label>
+              <Label htmlFor="statut">Statut *</Label>
               <div className="relative">
               <select
                 id="statut"
@@ -210,10 +214,12 @@ const Register: React.FC = () => {
                 value={formData.statut}
                 onChange={handleChange}
                 className="w-full mt-1 px-3 py-2 border rounded"
+                required
               >
-                <option value="enseignant">Enseignant</option>
+                <option value="permanent">Permanent</option>
                 <option value="doctorant">Doctorant</option>
-                <option value="chercheur">Chercheur</option>
+                <option value="associé">Associé</option>
+                <option value="autre">Autre</option>
               </select>
             </div>
             </div>

@@ -5,6 +5,8 @@
 
 import axiosClient from './axiosClient';
 import type { Membre, Axe, User, ApiResponse } from '../types/membre';
+import type { Publication } from '@/components/publications-table'
+import type { PrixDistinction } from '../types/prixDistinction';
 import axios from 'axios';
 
 // Types pour les données de contact
@@ -159,10 +161,10 @@ export const membresApi = {
 
   update: async (id: number, membreData: Partial<Membre>): Promise<ApiResponse<Membre>> => {
     try {
-      const { data } = await axiosClient.put(`/membre`, {
+      // Ne pas envoyer l'email s'il n'a pas changé pour éviter les conflits de validation
+      const payload: Record<string, unknown> = {
         nom: membreData.nom,
         prenom: membreData.prenom,
-        email: membreData.email,
         statut: membreData.statut || '',
         grade: membreData.grade || null,
         biographie: membreData.biographie || '',
@@ -170,13 +172,24 @@ export const membresApi = {
         researchgate: membreData.researchgate || '',
         google_scholar: membreData.google_scholar || '',
         photo: membreData.photo || '',
-        axe_ids: membreData.axe_ids || [],
-        is_comite: membreData.is_comite || false,
-      });
+        // axes: axes, // Format attendu par le backend - temporairement désactivé
+        //is_comite: membreData.is_comite || false
+      };
+
+      // N'ajouter l'email que s'il est fourni et différent
+      if (membreData.email) {
+        payload.email = membreData.email;
+      }
+
+      const { data } = await axiosClient.put(`/api/membre`, payload);
+      
+      // Le backend retourne { status, message, membre, user, axes_disponibles, axes_selectionnes }
+      const responseData = data.membre || data;
+      
       return {
         success: true,
-        data,
-        message: 'Profil mis à jour avec succès'
+        data: responseData,
+        message: data.message || 'Profil mis à jour avec succès'
       };
     } catch (error) {
       return handleApiError(error) as ApiResponse<Membre>;
@@ -260,5 +273,63 @@ export const getAxes = axesApi.getAxes;
 export const getAxe = axesApi.getById;
 export const getMembresAxe = axesApi.getMembres;
 export const updateMemberProfile = membresApi.update;
-export const getMembre = membresApi.getById; 
+export const getMembre = membresApi.getById;
+
+// ===== GESTION DES PUBLICATIONS =====
+export const publicationsApi = {
+  getAll: async (): Promise<ApiResponse<Publication[]>> => {
+    try {
+      const { data } = await axiosClient.get('/api/publications');
+      return {
+        success: true,
+        data: Array.isArray(data) ? data : data.data || [],
+        message: 'Publications récupérées avec succès'
+      };
+    } catch (error) {
+      return handleApiError(error) as ApiResponse<Publication[]>;
+    }
+  },
+
+  getByMembre: async (membreId: number): Promise<ApiResponse<Publication[]>> => {
+    try {
+      const { data } = await axiosClient.get(`/api/membres/${membreId}/publications`);
+      return {
+        success: true,
+        data: Array.isArray(data) ? data : data.data || [],
+        message: 'Publications du membre récupérées avec succès'
+      };
+    } catch (error) {
+      return handleApiError(error) as ApiResponse<Publication[]>;
+    }
+  }
+};
+
+// ===== GESTION DES PRIX ET DISTINCTIONS =====
+export const prixDistinctionsApi = {
+  getAll: async (): Promise<ApiResponse<PrixDistinction[]>> => {
+    try {
+      const { data } = await axiosClient.get('/api/prix-distinctions');
+      return {
+        success: true,
+        data: Array.isArray(data) ? data : data.data || [],
+        message: 'Prix et distinctions récupérés avec succès'
+      };
+    } catch (error) {
+      return handleApiError(error) as ApiResponse<PrixDistinction[]>;
+    }
+  },
+
+  getByMembre: async (membreId: number): Promise<ApiResponse<PrixDistinction[]>> => {
+    try {
+      const { data } = await axiosClient.get(`/api/membres/${membreId}/prix-distinctions`);
+      return {
+        success: true,
+        data: Array.isArray(data) ? data : data.data || [],
+        message: 'Prix et distinctions du membre récupérés avec succès'
+      };
+    } catch (error) {
+      return handleApiError(error) as ApiResponse<PrixDistinction[]>;
+    }
+  }
+}; 
 

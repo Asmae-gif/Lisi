@@ -91,7 +91,7 @@ class AdminUserController extends Controller
     }
 
     /**
-     * Rejeter un utilisateur.
+     * Rejeter et supprimer un utilisateur.
      */
     public function reject(User $user)
     {
@@ -103,14 +103,30 @@ class AdminUserController extends Controller
                 'message' => 'Impossible de rejeter un administrateur.',
             ], 400);
         }
+        
+        // On supprime l'utilisateur au lieu de juste le rejeter.
+        // Cela évite de garder des utilisateurs "rejetés" dans la base de données.
+        try {
+            DB::beginTransaction();
+            $user->delete();
+            DB::commit();
 
-        $user->update(['is_approved' => false]);
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Compte rejeté et supprimé avec succès.',
+            ], 200);
 
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'Compte rejeté.',
-            'data'    => $user->load(['roles', 'membre']),
-        ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors du rejet et de la suppression', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id
+            ]);
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Erreur lors du rejet.',
+            ], 500);
+        }
     }
 
     /**

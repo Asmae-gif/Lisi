@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,8 @@ interface MemberActionsProps {
   onDelete: (id: number) => void;
   onApprove: (id: number) => void;
   onBlock: (id: number) => void;
+  onReject: (id: number) => void;
+  onUnblock: (id: number) => void;
   onToggleComite: (id: number, isComite: boolean) => void;
 }
 
@@ -27,6 +29,8 @@ export default function MemberActions({
   onDelete, 
   onApprove, 
   onBlock,
+  onReject,
+  onUnblock,
   onToggleComite 
 }: MemberActionsProps) {
   const [localUser, setLocalUser] = React.useState(linkedUser)
@@ -59,33 +63,6 @@ export default function MemberActions({
         </Button>
       )}
 
-      {localUser && (
-        <Button
-          size="sm"
-          variant={localUser.is_blocked ? "default" : "destructive"}
-          onClick={() => {
-            onBlock(localUser.id)
-            setLocalUser(prev => prev ? {
-              ...prev,
-              is_blocked: !prev.is_blocked,
-              is_approved: !prev.is_blocked ? false : prev.is_approved
-            } : null)
-          }}
-          className={`flex items-center ${localUser.is_blocked ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}`}
-        >
-          {localUser.is_blocked ? (
-            <>
-              <UserCheck className="w-3 h-3 mr-1" />
-              Débloquer
-            </>
-          ) : (
-            <>
-              <UserX className="w-3 h-3 mr-1" />
-              Bloquer
-            </>
-          )}
-        </Button>
-      )}
 
       {/* Voir le profil du membre */}
       <Dialog>
@@ -97,6 +74,9 @@ export default function MemberActions({
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Profil du membre</DialogTitle>
+            <DialogDescription>
+              Informations détaillées sur le membre et son compte utilisateur
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="flex items-center gap-4">
@@ -137,32 +117,68 @@ export default function MemberActions({
 
 {/* Informations du compte utilisateur si lié */}
 {localUser && (
-                                            <div className="border-t pt-4">
-                                              <h4 className="font-medium mb-2">Informations du compte</h4>
-                                              <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                  <Label>Email vérifié</Label>
-                                                  <p className="text-sm text-gray-600">
-                                                    {localUser.email_verified_at ? (
-                                                      <>
-                                                        <CheckCircle className="inline w-4 h-4 text-green-600 mr-1" />
-                                                        Oui, le{" "}
-                                                        {new Date(localUser.email_verified_at).toLocaleDateString(
-                                                          "fr-FR",
-                                                        )}
-                                                      </>
-                                                    ) : null}
-                                                  </p>
-                                                </div>
-                                                <div>
-                                                  <Label>Date de création</Label>
-                                                  <p className="text-sm text-gray-600">
-                                                    {new Date(localUser.created_at).toLocaleDateString("fr-FR")}
-                                                  </p>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          )}
+  <div className="border-t pt-4">
+    <h4 className="font-medium mb-2">Informations du compte</h4>
+    <div className="grid grid-cols-2 gap-4">
+      <div>
+        <Label>Statut d'approbation</Label>
+        <p className="text-sm text-gray-600">
+          {localUser.is_approved ? (
+            <>
+              <CheckCircle className="inline w-4 h-4 text-green-600 mr-1" />
+              Approuvé
+            </>
+          ) : (
+            <>
+              <UserX className="inline w-4 h-4 text-red-600 mr-1" />
+              En attente
+            </>
+          )}
+        </p>
+      </div>
+      <div>
+        <Label>Statut de blocage</Label>
+        <p className="text-sm text-gray-600">
+          {localUser.is_blocked ? (
+            <>
+              <UserX className="inline w-4 h-4 text-red-600 mr-1" />
+              Bloqué
+            </>
+          ) : (
+            <>
+              <CheckCircle className="inline w-4 h-4 text-green-600 mr-1" />
+              Actif
+            </>
+          )}
+        </p>
+      </div>
+      <div>
+        <Label>Email vérifié</Label>
+        <p className="text-sm text-gray-600">
+          {localUser.email_verified_at ? (
+            <>
+              <CheckCircle className="inline w-4 h-4 text-green-600 mr-1" />
+              Oui, le{" "}
+              {new Date(localUser.email_verified_at).toLocaleDateString("fr-FR")}
+              
+            </>
+          ) : (
+            <>
+              <UserX className="inline w-4 h-4 text-red-600 mr-1" />
+              Non vérifié
+            </>
+          )}
+        </p>
+      </div>
+      <div>
+        <Label>Date de création</Label>
+        <p className="text-sm text-gray-600">
+          {new Date(localUser.created_at).toLocaleDateString("fr-FR")}
+        </p>
+      </div>
+    </div>
+  </div>
+)}
 
             {/* Informations supplémentaires commentées
             <div>
@@ -216,7 +232,78 @@ export default function MemberActions({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {/* Option pour gérer l'appartenance au comité */}
+          {/* Bouton d'approbation pour les utilisateurs non approuvés */}
+          {localUser && !localUser.is_approved && !localUser.is_blocked && (
+            <DropdownMenuItem
+              onClick={() => {
+                onApprove(localUser.id)
+                setLocalUser(prev => prev ? {
+                  ...prev,
+                  is_approved: true,
+                  email_verified_at: new Date().toISOString()
+                } : null)
+              }}
+              className="flex items-center text-green-600"
+            >
+              <UserCheck className="w-4 h-4 mr-2" />
+              Approuver
+            </DropdownMenuItem>
+          )}
+
+          {/* Bouton de blocage/déblocage */}
+          {localUser && (
+            <DropdownMenuItem
+              onClick={() => {
+                if (localUser.is_blocked) {
+                  onUnblock(localUser.id)
+                  setLocalUser(prev => prev ? {
+                    ...prev,
+                    is_blocked: false
+                  } : null)
+                } else {
+                  onBlock(localUser.id)
+                  setLocalUser(prev => prev ? {
+                    ...prev,
+                    is_blocked: true,
+                    is_approved: false
+                  } : null)
+                }
+              }}
+              className={`flex items-center ${localUser.is_blocked ? 'text-green-600' : 'text-red-600'}`}
+            >
+              {localUser.is_blocked ? (
+                <>
+                  <UserCheck className="w-4 h-4 mr-2" />
+                  Débloquer
+                </>
+              ) : (
+                <>
+                  <UserX className="w-4 h-4 mr-2" />
+                  Bloquer
+                </>
+              )}
+            </DropdownMenuItem>
+          )}
+
+          {/* Bouton de rejet pour les utilisateurs non approuvés */}
+          {localUser && !localUser.is_approved && !localUser.is_blocked && (
+            <DropdownMenuItem
+              onClick={() => {
+                onReject(localUser.id)
+                setLocalUser(prev => prev ? {
+                  ...prev,
+                  is_approved: false
+                } : null)
+              }}
+              className="flex items-center text-red-600"
+            >
+              <UserX className="w-4 h-4 mr-2" />
+              Rejeter
+            </DropdownMenuItem>
+          )}
+
+          {/* Option pour gérer l'appartenance au comité - COMMENTÉE */}
+          {/*
           <DropdownMenuItem
             onClick={() => {
               onToggleComite(membre.id, !isComite)
@@ -236,6 +323,7 @@ export default function MemberActions({
               </>
             )}
           </DropdownMenuItem>
+          */}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

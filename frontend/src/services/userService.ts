@@ -31,7 +31,7 @@ export const getUsers = async (): Promise<User[]> => {
  */
 export const getMembres = async (): Promise<Membre[]> => {
   try {
-    const res = await axiosClient.get("/api/membres");
+    const res = await axiosClient.get("/api/admin/membres");
     
     let membresArray: unknown[] = [];
     
@@ -79,7 +79,7 @@ export const approveUser = async (userId: number): Promise<User | null> => {
         id: userData.id,
         name: userData.name || '',
         email: userData.email,
-        email_verified_at: userData.email_verified_at || new Date().toISOString(),
+        email_verified_at: userData.email_verified_at,
         is_approved: true,
         is_blocked: false,
         created_at: userData.created_at,
@@ -210,12 +210,30 @@ export const rejectUser = async (userId: number): Promise<boolean> => {
 /**
  * Débloque un utilisateur
  * @param userId - ID de l'utilisateur à débloquer
- * @returns true si le déblocage a réussi
+ * @returns Utilisateur mis à jour ou null en cas d'erreur
  */
-export const unblockUser = async (userId: number): Promise<boolean> => {
+export const unblockUser = async (userId: number): Promise<User | null> => {
   try {
-    await axiosClient.post(`/api/admin/users/${userId}/unblock`);
-    return true;
+    const response = await axiosClient.post(`/api/admin/users/${userId}/unblock`);
+    
+    if (response.data.status === 'success' && response.data.data) {
+      const userData = response.data.data;
+      return {
+        id: userData.id,
+        name: userData.name || '',
+        email: userData.email,
+        email_verified_at: userData.email_verified_at,
+        is_approved: userData.is_approved,
+        is_blocked: false, // Forcer à false car c'est un déblocage
+        created_at: userData.created_at,
+        updated_at: userData.updated_at,
+        roles: userData.roles || [],
+        membre: userData.membre ? convertMembre(userData.membre) : null
+      };
+    }
+    
+    console.error("Réponse inattendue:", response.data);
+    return null;
   } catch (err) {
     const error = err as { response?: { data?: { message?: string } } };
     console.error("Erreur lors du déblocage :", error);

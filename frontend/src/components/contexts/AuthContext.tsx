@@ -1,10 +1,12 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import axiosClient from '@/services/axiosClient';
+import socialAuthService from '@/services/socialAuthService';
 import type { AuthContextType, AuthState, LoginCredentials, User, AuthError, RegisterData, ResetPasswordData, ApiErrorResponse} from '@/types/auth';
 import { getXsrfToken } from '@/types/auth';
 import axios from 'axios';
 import { AxiosError } from 'axios';
+import { useToast } from '@/hooks/use-toast';
 
 /**
  * Contexte d'authentification par défaut
@@ -26,6 +28,7 @@ const initialState: AuthState = {
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>(initialState);
+  const { toast } = useToast();
 
   /**
    * Vérifie l'état d'authentification actuel de l'utilisateur
@@ -57,13 +60,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   /**
    * Initialise l'authentification au montage du composant
-   * Ne fait PAS de vérification automatique pour éviter les erreurs 401
+   * Vérifie également si l'utilisateur vient de se connecter via Google
    */
   useEffect(() => {
-    // Ne pas faire de vérification automatique au montage
-    // L'utilisateur sera vérifié seulement lors de la connexion
-    setState((prev: AuthState) => ({ ...prev, loading: false }));
-  }, []);
+    const initializeAuth = async () => {
+      try {
+        // Vérifier si l'utilisateur vient de se connecter via Google
+        if (socialAuthService.checkSocialLoginStatus()) {
+          console.log('🔐 Détection d\'une connexion sociale...');
+          setState((prev: AuthState) => ({ ...prev, loading: true }));
+          
+          const response = await socialAuthService.handleGoogleCallback();
+          if (response.success && response.user) {
+            setState((prev: AuthState) => ({ 
+              ...prev, 
+              user: response.user, 
+              error: null, 
+              loading: false 
+            }));
+            toast({
+              title: "Connexion réussie",
+              description: `Bienvenue, ${response.user.name} !`,
+            });
+            console.log('✅ Connexion sociale réussie:', response.user);
+          } else {
+            setState((prev: AuthState) => ({ 
+              ...prev, 
+              error: response.message, 
+              loading: false 
+            }));
+            toast({
+              title: "Erreur de connexion Google",
+              description: response.message || "Une erreur est survenue.",
+              variant: "destructive",
+            });
+          }
+          
+          // Nettoyer les paramètres d'URL
+          socialAuthService.cleanupSocialLoginParams();
+        } else {
+          // Vérification normale de l'authentification
+          await checkAuth();
+        }
+      } catch (error) {
+        console.error('❌ Erreur lors de l\'initialisation de l\'authentification:', error);
+        setState((prev: AuthState) => ({ 
+          ...prev, 
+          loading: false,
+          error: 'Erreur lors de l\'initialisation de l\'authentification'
+        }));
+      }
+    };
+
+    initializeAuth();
+  }, [checkAuth, toast]);
 
   /**
    * Gère la connexion de l'utilisateur
@@ -90,6 +140,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         ...prev,
         loading: false,
         error: authError.message || 'Erreur lors de la connexion'
+      }));
+      throw error;
+    }
+  };
+
+  /**
+   * Gère la connexion via Google
+   */
+  const loginWithGoogle = async (): Promise<void> => {
+    setState((prev: AuthState) => ({ ...prev, loading: true, error: null }));
+    try {
+      console.log('🔐 Tentative de connexion via Google...');
+      await socialAuthService.redirectToGoogle();
+      // La redirection va se faire automatiquement
+    } catch (error) {
+      console.error('❌ Erreur lors de la connexion Google:', error);
+      setState((prev: AuthState) => ({
+        ...prev,
+        loading: false,
+        error: 'Erreur lors de la connexion Google'
       }));
       throw error;
     }
@@ -136,7 +206,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ ...state, login, logout, clearError }}>
+    <AuthContext.Provider value={{ ...state, login, loginWithGoogle, logout, clearError }}>
       {children}
     </AuthContext.Provider>
   );
@@ -161,14 +231,19 @@ export function useAuth() {
  */
 export const register = async (formData: RegisterData): Promise<{ message: string }> => {
   try {
+    console.log('🔐 Tentative d\'inscription avec les données:', formData);
+    
     // Le token CSRF est géré automatiquement par axiosClient
     const { data } = await axiosClient.post('/api/register', formData);
+    console.log('✅ Inscription réussie:', data);
     return data;
   } catch (error) {
+    console.error('❌ Erreur lors de l\'inscription:', error);
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError;
       if (axiosError.response?.data) {
         const { status, data: resp } = axiosError.response;
+        console.error('❌ Réponse d\'erreur du serveur:', { status, data: resp });
         if (status === 422 && resp && typeof resp === 'object' && 'errors' in resp) {
           const errors = resp.errors as Record<string, string[]>;
           const first = Object.values(errors)[0][0];

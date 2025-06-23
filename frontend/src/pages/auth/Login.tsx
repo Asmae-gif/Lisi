@@ -11,6 +11,7 @@ import { AxiosError } from "axios";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
+import GoogleLoginButton from "@/components/common/GoogleLoginButton";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -158,6 +159,17 @@ export default function Login() {
                 "Se connecter"
               )}
             </Button>
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-muted-foreground">
+                  Ou continuer avec
+                </span>
+              </div>
+            </div>
+            <GoogleLoginButton />
             <div className="text-center text-sm">
               Pas encore de compte ?{" "}
               <Link to="/Register" className="text-[#3ea666] hover:underline hover:text-lisiGold">

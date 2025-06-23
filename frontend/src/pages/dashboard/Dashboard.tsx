@@ -10,6 +10,27 @@ type StatsResponse = {
   membres: number;
   publications: number;
   projets: number;
+  membres_ce_mois: number;
+  publications_ce_mois: number;
+  projets_ce_mois: number;
+};
+
+// Types pour les données des membres et utilisateurs
+type Membre = {
+  id: number;
+  created_at: string;
+  nom: string;
+  prenom: string;
+  email: string;
+  status: string;
+};
+
+type User = {
+  id: number;
+  created_at: string;
+  name: string;
+  email: string;
+  is_approved: number;
 };
 
 /**
@@ -20,8 +41,18 @@ const Dashboard = () => {
   const [stats, setStats] = useState<StatsResponse>({
     membres: 0,
     publications: 0,
-    projets: 0
+    projets: 0,
+    membres_ce_mois: 0,
+    publications_ce_mois: 0,
+    projets_ce_mois: 0
   });
+
+  // Fonction pour formater le sous-titre avec la variation
+  const formatSubtitle = (count: number) => {
+    if (count === 0) return "Aucun ajout ce mois";
+    if (count === 1) return "+1 ce mois";
+    return `+${count} ce mois`;
+  };
 
   // Optimisation avec useMemo pour les données de statistiques
   const statsCards = useMemo(() => [
@@ -30,21 +61,21 @@ const Dashboard = () => {
       value: stats.membres, 
       icon: Users, 
       variant: "default" as const,
-      subtitle: "+2 ce mois"
+      subtitle: formatSubtitle(stats.membres_ce_mois)
     },
     { 
       label: "Publications", 
       value: stats.publications, 
       icon: BookOpen, 
       variant: "success" as const,
-      subtitle: "+4 ce mois"
+      subtitle: formatSubtitle(stats.publications_ce_mois)
     },
     { 
       label: "Projets", 
       value: stats.projets, 
       icon: FolderKanban, 
       variant: "warning" as const,
-      subtitle: "+1 ce mois"
+      subtitle: formatSubtitle(stats.projets_ce_mois)
     },
   ], [stats]);
 
@@ -58,8 +89,42 @@ const Dashboard = () => {
   // Optimisation avec useCallback pour le chargement des statistiques
   const loadStats = useCallback(async () => {
     try {
-      const response = await axiosClient.get<StatsResponse>('/api/stats');
-      setStats(response.data);
+      // Récupérer les statistiques générales
+      const statsResponse = await axiosClient.get<StatsResponse>('/api/stats');
+      
+      // Récupérer les données pour calculer les variations
+      const [usersResponse, membresResponse] = await Promise.all([
+        axiosClient.get('/api/admin/users'),
+        axiosClient.get('/api/admin/membres')
+      ]);
+
+      const users = usersResponse.data.data || usersResponse.data || [];
+      const membres = membresResponse.data.data?.membres || membresResponse.data || [];
+
+      // Calculer les ajouts de ce mois
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+      const membresCeMois = (membres as Membre[]).filter((membre: Membre) => {
+        const createdAt = new Date(membre.created_at);
+        return createdAt >= startOfMonth;
+      }).length;
+
+      const usersCeMois = (users as User[]).filter((user: User) => {
+        const createdAt = new Date(user.created_at);
+        return createdAt >= startOfMonth;
+      }).length;
+
+      // Pour les publications et projets, on peut utiliser des valeurs par défaut ou faire des appels API supplémentaires
+      const publicationsCeMois = 0; // À implémenter avec l'API publications
+      const projetsCeMois = 0; // À implémenter avec l'API projets
+
+      setStats({
+        ...statsResponse.data,
+        membres_ce_mois: membresCeMois,
+        publications_ce_mois: publicationsCeMois,
+        projets_ce_mois: projetsCeMois
+      });
     } catch (error) {
       console.error('Erreur lors du chargement des statistiques:', error);
     }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Users, FileText, Settings, Contact, Image, Building2, FolderKanban,Award  } from 'lucide-react';
+import Header from './Header';
 
 export function Sidebar() {
   const location = useLocation();
@@ -19,11 +20,13 @@ export function Sidebar() {
   ];
 
   return (
+    
     <aside className="fixed left-0 top-0 h-full w-64 bg-white border-r-2 border-lisiGold flex flex-col">
       {/* Header fixe */}
+    
       <div className="p-6 flex-shrink-0">
-        <img src="/logo-lisi.png" alt="Logo LISI" className="h-10 mb-4" />
-        <h2 className="text-2xl font-bold text-lisiGreen">LISI</h2>
+        <img src="/public/images/logofr.png" alt="Logo LISI" className="h-10 mb-4" />
+        
       </div>
       
       {/* Navigation avec scroll */}
@@ -51,7 +54,7 @@ export function Sidebar() {
       {/* Footer optionnel pour plus d'espace */}
       <div className="p-4 flex-shrink-0 border-t border-gray-200">
         <div className="text-xs text-gray-500 text-center">
-          © 2024 LISI
+          © 2025 LISI
         </div>
       </div>
     </aside>

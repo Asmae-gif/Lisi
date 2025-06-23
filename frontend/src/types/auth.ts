@@ -17,8 +17,28 @@ export interface User {
       created_at: string;
       updated_at: string;
     }>;
-    membre?: null | Record<string, unknown>;
+    membre?: Membre | null;
     type?: string;
+  }
+  
+  export interface Membre {
+    id: number;
+    user_id: number;
+    nom: string;
+    prenom: string;
+    statut?: string | null;
+    email_complet?: string | null;
+    biographie?: string | null;
+    photo?: string | null;
+    slug: string;
+    google_id?: string | null;
+    linkedin?: string | null;
+    researchgate?: string | null;
+    google_scholar?: string | null;
+    grade?: string | null;
+    is_comite: boolean;
+    created_at: string;
+    updated_at: string;
   }
   
   export interface RegisterData {
@@ -30,6 +50,19 @@ export interface User {
     statut: string;
   }
 
+  // Types pour l'authentification sociale
+  export interface SocialAuthResponse {
+    success: boolean;
+    message: string;
+    user?: User;
+  }
+
+  export interface GoogleUser {
+    id: string;
+    name: string;
+    email: string;
+    picture?: string;
+  }
 
   export const getUser = async () => {
     const res = await fetch(`${API_BASE}/api/user`, {
@@ -74,6 +107,7 @@ export interface User {
   
   export interface AuthContextType extends AuthState {
     login: (credentials: LoginCredentials) => Promise<User>;
+    loginWithGoogle: () => Promise<void>;
     logout: () => Promise<void>;
     clearError: () => void;
   }

@@ -1,7 +1,6 @@
 import { Sidebar } from './Sidebar'
 import Header from './Header'
-import { useLocation, Outlet } from 'react-router-dom'
-import '../../dashboard.css'
+import { Outlet, useLocation } from 'react-router-dom'
 
 export function Layout() {
   const location = useLocation()
@@ -14,9 +13,9 @@ export function Layout() {
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
-      <div className="flex-1 ml-64">
-        <Header />
-        <main className="p-8">
+      <div className="flex flex-col flex-1 ml-64">
+        <Header /> {/* Affiché horizontalement en haut */}
+        <main className="flex-1 p-6 overflow-y-auto">
           <Outlet />
         </main>
       </div>

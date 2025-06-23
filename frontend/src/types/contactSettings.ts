@@ -61,7 +61,7 @@ export interface ContactSettings {
   export interface Field {
     key: string;
     label: string;
-    type: 'text' | 'textarea' | 'file';
+    type: 'text' | 'textarea' | 'file' | 'location';
     placeholder?: string;
   }
 

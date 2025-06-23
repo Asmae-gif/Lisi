@@ -108,7 +108,12 @@ class MembreController extends Controller
             // 3) Mise à jour du membre
             $membre->update($data);
 
-            // 4) Gérer la synchronisation des axes (si fournis)
+            // 4) Si le membre a un compte utilisateur et que l'email a changé, mettre à jour l'utilisateur aussi
+            if ($membre->user_id && isset($data['email']) && $data['email'] !== $membre->user->email) {
+                $membre->user->update(['email' => $data['email']]);
+            }
+
+            // 5) Gérer la synchronisation des axes (si fournis)
             if ($request->filled('axes')) {
                 $axesSync = collect($request->axes)->mapWithKeys(function ($axe) {
                     return [
@@ -119,7 +124,7 @@ class MembreController extends Controller
                 $membre->axes()->sync($axesSync);
             }
 
-            // 5) Recharger les relations
+            // 6) Recharger les relations
             $membre->load(['axes', 'user']);
             $axes = Axe::all();
 
