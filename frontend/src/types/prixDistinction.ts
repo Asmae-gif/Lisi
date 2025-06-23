@@ -13,6 +13,9 @@ export interface PrixDistinction {
   nom: string;
   description: string;
   date_obtention: string;
+  organisme?: string;
+  image_url?: string;
+  lien_externe?: string;
   membres: PrixDistinctionMembre[];
   created_at: string;
   updated_at: string;

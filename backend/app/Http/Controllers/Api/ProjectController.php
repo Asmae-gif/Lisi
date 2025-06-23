@@ -11,7 +11,7 @@ class ProjectController extends Controller
 {
     public function index(): JsonResponse
     {
-        $projects = Project::all();
+        $projects = Project::with(['finances', 'incubations'])->get();
         return response()->json($projects);
     }
 
@@ -32,6 +32,7 @@ class ProjectController extends Controller
 
     public function show(Project $project): JsonResponse
     {
+        $project->load(['finances', 'incubations']);
         return response()->json($project);
     }
 

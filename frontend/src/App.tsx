@@ -34,8 +34,10 @@ import MembreProfile from "./archive/MembreProfile.tsx";
 import Parametres from "./pages/Parametres/parametres.tsx";
 import Publications from './pages/dashboard/Publications';
 import PublicPublications from './pages/Publications';
+import PublicationDetail from './pages/PublicationDetail';
 import Projets from './pages/dashboard/Projets';
 import Projects from './pages/Projects';
+import ProjectDetail from './pages/ProjectDetail';
 import PartenairesDashboard from './pages/dashboard/Partenaires';
 import Partenaires from './pages/Partenaires';
 import Histoire from './pages/dashboard/Histoire';
@@ -70,7 +72,9 @@ const AppContent = () => {
         <Route path="/gallerie" element={<Gallerie />} />
         <Route path="/equipes" element={<Equipes/>}/>
         <Route path="/projects" element={<Projects />} />
+        <Route path="/projets/:id" element={<ProjectDetail />} />
         <Route path="/publications" element={<PublicPublications />} />
+        <Route path="/publications/:id" element={<PublicationDetail />} />
         <Route path="/prix-distinctions" element={<PrixDistinctions />} />
         <Route path="/partenaires" element={<Partenaires />} />
         <Route 

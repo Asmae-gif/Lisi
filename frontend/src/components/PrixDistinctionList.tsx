@@ -132,10 +132,19 @@ const PrixDistinctionList: React.FC<PrixDistinctionListProps> = ({ onEdit, onDel
                                 Description
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Membre
+                                Organisme
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Membre(s)
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Date d'obtention
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Image
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Lien
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Actions
@@ -145,7 +154,7 @@ const PrixDistinctionList: React.FC<PrixDistinctionListProps> = ({ onEdit, onDel
                     <tbody className="bg-white divide-y divide-gray-200">
                         {filteredAndSortedPrix.length === 0 ? (
                             <tr>
-                                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                                <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
                                     Aucun prix ou distinction trouvé
                                 </td>
                             </tr>
@@ -162,6 +171,11 @@ const PrixDistinctionList: React.FC<PrixDistinctionListProps> = ({ onEdit, onDel
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="text-sm text-gray-900">
+                                            {prix.organisme || 'N/A'}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="text-sm text-gray-900">
                                             {prix.membres && prix.membres.length > 0
                                                 ? prix.membres.map(m => `${m.nom} ${m.prenom}${m.role ? ' (' + m.role + ')' : ''}`).join(', ')
                                                 : 'N/A'}
@@ -170,6 +184,38 @@ const PrixDistinctionList: React.FC<PrixDistinctionListProps> = ({ onEdit, onDel
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="text-sm text-gray-900">
                                             {new Date(prix.date_obtention).toLocaleDateString('fr-FR')}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="text-sm text-gray-900">
+                                            {prix.image_url ? (
+                                                <a
+                                                    href={prix.image_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-600 hover:text-blue-800"
+                                                >
+                                                    Voir image
+                                                </a>
+                                            ) : (
+                                                'N/A'
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="text-sm text-gray-900">
+                                            {prix.lien_externe ? (
+                                                <a
+                                                    href={prix.lien_externe}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-600 hover:text-blue-800"
+                                                >
+                                                    Lien externe
+                                                </a>
+                                            ) : (
+                                                'N/A'
+                                            )}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

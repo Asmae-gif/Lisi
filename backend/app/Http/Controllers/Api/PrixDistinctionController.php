@@ -28,6 +28,9 @@ class PrixDistinctionController extends Controller
                     'nom' => $item->titre, // Mapper titre vers nom
                     'description' => $item->description,
                     'date_obtention' => $item->date_obtention,
+                    'organisme' => $item->organisme,
+                    'image_url' => $item->image_url,
+                    'lien_externe' => $item->lien_externe,
                     'membres' => $item->membres->map(function ($membre) {
                         return [
                             'id' => $membre->id,
@@ -112,6 +115,9 @@ class PrixDistinctionController extends Controller
                     'nom' => $prix->titre,
                     'description' => $prix->description,
                     'date_obtention' => $prix->date_obtention,
+                    'organisme' => $prix->organisme,
+                    'image_url' => $prix->image_url,
+                    'lien_externe' => $prix->lien_externe,
                     'membres' => $prix->membres->map(function ($membre) {
                         return [
                             'id' => $membre->id,
