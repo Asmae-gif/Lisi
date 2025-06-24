@@ -25,7 +25,7 @@ export function Sidebar() {
       {/* Header fixe */}
     
       <div className="p-6 flex-shrink-0">
-        <img src="/public/images/logofr.png" alt="Logo LISI" className="h-10 mb-4" />
+        <img src="/images/logofr.png" alt="Logo LISI" className="h-10 mb-4" />
         
       </div>
       

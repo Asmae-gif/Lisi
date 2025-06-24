@@ -38,6 +38,14 @@ const Contact = () => {
   const loadData = async () => {
     try {
       setLoading(true);
+      
+      // Test temporaire: utilisez les valeurs par défaut pour vérifier le multilingue
+      console.log('🧪 TEST MODE: Utilisation des valeurs par défaut pour tester le multilingue');
+      console.log('🔍 DEFAULT_CONTACT_SETTINGS:', DEFAULT_CONTACT_SETTINGS);
+      setSettings(DEFAULT_CONTACT_SETTINGS);
+      setLoading(false);
+      return;
+      
       const [settingsRes] = await Promise.all([
         axiosClient.get('/api/pages/contact/settings', {
           headers: { 'Accept': 'application/json' }
@@ -53,14 +61,33 @@ const Contact = () => {
         // Vérifier si les données sont dans un sous-objet data
         const settingsData = settingsRes.data.data || settingsRes.data;
         console.log('Données settings à utiliser:', settingsData);
-        setSettings(settingsData);
+        
+        // Debug: vérifier les clés multilingues
+        console.log('🔍 Clés multilingues présentes:', {
+          contact_titre_fr: settingsData.contact_titre_fr,
+          contact_titre_ar: settingsData.contact_titre_ar,
+          contact_titre_en: settingsData.contact_titre_en,
+          allKeys: Object.keys(settingsData)
+        });
+        
+        // Fusionner avec les valeurs par défaut
+        const mergedSettings = {
+          ...DEFAULT_CONTACT_SETTINGS,
+          ...settingsData
+        };
+        console.log('🔍 Settings finaux après fusion:', mergedSettings);
+        
+        setSettings(mergedSettings);
       } else {
         console.error('Format de données invalide pour les paramètres:', settingsRes.data);
+        setSettings(DEFAULT_CONTACT_SETTINGS);
       }
     } catch (err: unknown) {
       console.error('Erreur lors du chargement:', err);
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des données';
       setError(errorMessage);
+      // En cas d'erreur, utiliser les valeurs par défaut
+      setSettings(DEFAULT_CONTACT_SETTINGS);
     } finally {
       setLoading(false);
     }
@@ -112,7 +139,20 @@ const Contact = () => {
 
   // Fonction pour récupérer le contenu dans la langue actuelle
   const getContent = (baseKey: string, fallback?: string) => {
-    return getMultilingualContent(settings, baseKey, i18n.language, fallback);
+    const result = getMultilingualContent(settings, baseKey, i18n.language, fallback);
+    
+    // Debug: afficher les tentatives de récupération
+    console.log(`🔍 getContent Debug:`, {
+      baseKey,
+      currentLanguage: i18n.language,
+      multilingualKey: `${baseKey}_${i18n.language}`,
+      settingsKeys: Object.keys(settings),
+      settingsValue: settings[`${baseKey}_${i18n.language}` as keyof ContactSettings],
+      result,
+      fallback
+    });
+    
+    return result;
   };
 
   // Affichage de l'état de chargement
@@ -194,17 +234,17 @@ const Contact = () => {
       >
       {/* Contact Form */}
       
-    
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
-                {getContent('contact_titre', "Contactez-nous")}
-              </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
-                {getContent('contact_sous_titre', "Nous sommes à votre disposition pour répondre à vos questions, discuter de collaborations ou explorer de nouvelles opportunités de recherche.")}
-              </p>
-            </div>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center">
+                        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                            {getContent('contact_titre', "Contactez-nous")}
+                        </h1>
+                        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                            {getContent('contact_sous_titre', "Nous sommes à votre disposition pour répondre à vos questions, discuter de collaborations ou explorer de nouvelles opportunités de recherche.")}
+                        </p>
+                    </div>
+                </div>
+
         </section>
 
         {/* Informations de contact et formulaire */}
