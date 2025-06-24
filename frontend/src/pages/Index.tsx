@@ -93,11 +93,12 @@ const Index = () => {
     
     if (langSettings && typeof langSettings === 'object') {
       const content = langSettings[baseKey as keyof typeof langSettings];
-      if (content) {
+      if (content && content.trim() !== '') {
         return content;
       }
     }
     
+    // Fallback vers la traduction i18n
     return t(fallbackKey);
   };
 

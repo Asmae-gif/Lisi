@@ -51,7 +51,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    setState((prev: AuthState) => ({ ...prev, loading: true }));
+    // Éviter les appels multiples simultanés
+    setState((prev: AuthState) => {
+      if (prev.loading && !force) {
+        return prev; // Déjà en cours de chargement
+      }
+      return { ...prev, loading: true };
+    });
     
     try {
       const { data } = await axiosClient.get<User>('/api/user');
@@ -212,17 +218,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setState((prev: AuthState) => ({ ...prev, error: null }));
   }, []);
 
-  // Affiche un loader pendant le chargement initial
-  if (state.loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4">Chargement...</p>
-        </div>
-      </div>
-    );
-  }
+  // Plus de loader global - géré individuellement par ProtectedRoute
 
   return (
     <AuthContext.Provider value={{ ...state, login, loginWithGoogle, logout, clearError, checkAuth }}>

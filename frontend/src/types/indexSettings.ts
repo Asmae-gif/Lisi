@@ -144,7 +144,7 @@ const DEFAULT_ENGLISH_SETTINGS: LanguageSettings = {
 
 export const DEFAULT_INDEX_SETTINGS: IndexSettings = {
   // Champs non-traduisibles
-  mission_image: "/images/mission.jpg",
+  mission_image: "/images/mission.png",
   hero_image_side: "/images/hero_side.png",
   mot_directeur_image: "/images/directeur.jfif",
   
