@@ -91,15 +91,30 @@ const Index = () => {
     const languageKey = i18n.language as 'fr' | 'ar' | 'en';
     const langSettings = settings[languageKey];
     
+    let result = '';
     if (langSettings && typeof langSettings === 'object') {
       const content = langSettings[baseKey as keyof typeof langSettings];
       if (content && content.trim() !== '') {
-        return content;
+        result = content;
       }
     }
     
     // Fallback vers la traduction i18n
-    return t(fallbackKey);
+    if (!result) {
+      result = t(fallbackKey);
+    }
+    
+    // Debug: afficher les tentatives de récupération
+    console.log(`🔍 getContent Debug Index:`, {
+      baseKey,
+      currentLanguage: i18n.language,
+      langSettingsKeys: langSettings ? Object.keys(langSettings) : [],
+      content: langSettings ? langSettings[baseKey as keyof typeof langSettings] : null,
+      result,
+      fallbackKey
+    });
+    
+    return result;
   };
 
   // Fonction pour récupérer le titre d'une publication selon la langue

@@ -32,4 +32,34 @@ export const DEFAULT_PRIX_DISTINCTION_SETTINGS: PrixDistinctionSettings = {
     prix_sous_titre_en: 'Our members are regularly recognized for the excellence of their work and their innovative contributions to scientific research.',
     prix_sous_titre_ar: 'يتم تكريم أعضائنا بانتظام تقديراً لتميز أعمالهم ومساهماتهم المبتكرة في البحث العلمي.',
     prix_image: '/images/Create_a_professional_web_header_background_image_-1750719227684.png'
+};
+
+// Fonction utilitaire pour le contenu multilingue
+export const getMultilingualContent = (
+  settings: PrixDistinctionSettings, 
+  baseKey: string, 
+  currentLanguage: string,
+  fallbackKey?: string
+): string => {
+  const languageKey = currentLanguage as 'fr' | 'ar' | 'en';
+  const multilingualKey = `${baseKey}_${languageKey}`;
+  
+  // Essayer d'abord le contenu multilingue
+  const multilingualContent = settings[multilingualKey as keyof PrixDistinctionSettings] as string;
+  if (multilingualContent) {
+    return multilingualContent;
+  }
+  
+  // Fallback vers l'ancien système (champ unique)
+  const legacyContent = settings[baseKey as keyof PrixDistinctionSettings] as string;
+  if (legacyContent) {
+    return legacyContent;
+  }
+  
+  // Fallback vers la clé de traduction
+  if (fallbackKey) {
+    return fallbackKey;
+  }
+  
+  return '';
 }; 

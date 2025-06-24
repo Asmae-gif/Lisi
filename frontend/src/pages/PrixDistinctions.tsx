@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import  { useEffect, useState, useMemo } from 'react';
 import { PrixDistinction } from '../types/prixDistinction';
 import api from '../lib/axios';
 import Header from '@/components/Header';

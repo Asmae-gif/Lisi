@@ -32,48 +32,50 @@ const Recherche= () => {
 
    // Fonction utilitaire pour récupérer le contenu dans la langue actuelle
    const getContent = (baseKey: string, fallbackKey: string): string => {
-    return getMultilingualContent(settings, baseKey, i18n.language, fallbackKey) || t(fallbackKey);
+    const result = getMultilingualContent(settings, baseKey, i18n.language, fallbackKey) || t(fallbackKey);
+    return result;
   };
 
 
   // Optimisation avec useCallback pour le chargement des données
   const loadData = useCallback(async () => {
     try {
-      setLoading(true)
+      setLoading(true);
+  
       const [settingsRes, axesRes] = await Promise.all([
         axiosClient.get('/api/pages/recherche/settings', {
           headers: { 'Accept': 'application/json' }
         }),
         axesApi.getAxes()
-      ])
-      
-      // Vérifier et traiter les paramètres
+      ]);
+  
+      // Traitement settings
       if (settingsRes.data) {
         const settingsData = settingsRes.data.data || settingsRes.data;
-        setSettings(mergeSettingsWithDefaults(settingsData));
+        const mergedSettings = mergeSettingsWithDefaults(settingsData);
+        setSettings(mergedSettings);
       } else {
         setSettings(DEFAULT_RECHERCHE_SETTINGS);
       }
-
-      // Vérifier et traiter les axes
-      const axesData = Array.isArray(axesRes) ? axesRes : (Array.isArray((axesRes as { data: unknown[] })?.data) ? (axesRes as { data: unknown[] }).data : [])
+  
+      // Traitement axes
+      const axesData = Array.isArray(axesRes) ? axesRes : (Array.isArray((axesRes as { data: unknown[] })?.data) ? (axesRes as { data: unknown[] }).data : []);
       if (Array.isArray(axesData)) {
-        if (import.meta.env.DEV) {
-          console.log('Données axes à utiliser:', axesData)
-        }
-        setAxes(axesData as Axe[])
-        if (axesData.length) setActive((axesData[0] as Axe).slug)
+        setAxes(axesData as Axe[]);
+        if (axesData.length) setActive((axesData[0] as Axe).slug);
       } else {
-        console.error('Format de données invalide pour les axes:', axesRes)
+        console.error('Format de données invalide pour les axes:', axesRes);
       }
+  
     } catch (err: unknown) {
-      console.error('Erreur lors du chargement:', err)
-      setError((err as Error).message || 'Erreur lors du chargement des données')
+      console.error('Erreur lors du chargement Recherche:', err);
+      setError((err as Error).message || 'Erreur lors du chargement des données');
       setSettings(DEFAULT_RECHERCHE_SETTINGS);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
+  
 
   useEffect(() => {
     loadData()
