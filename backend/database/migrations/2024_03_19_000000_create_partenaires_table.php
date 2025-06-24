@@ -10,7 +10,9 @@ return new class extends Migration
     {
         Schema::create('partenaires', function (Blueprint $table) {
             $table->id();
-            $table->string('nom');
+            $table->string('nom_fr');
+            $table->string('nom_en')->nullable();
+            $table->string('nom_ar')->nullable();
             $table->string('logo')->nullable();
             $table->string('lien');
             $table->timestamps();

@@ -1,0 +1,43 @@
+{
+  "stats": {
+    "total": "Total des publications",
+    "articles": "Articles",
+    "conferences": "Conférences",
+    "this_year": "Cette année"
+  },
+
+  
+  "no_results": "Aucune publication trouvée",
+  "no_publications": "Aucune publication disponible",
+  "try_other_criteria": "Essayez de modifier vos critères de recherche.",
+  "no_publications_desc": "Aucune publication n'est disponible pour le moment. Revenez bientôt pour découvrir nos nouvelles publications.",
+  "filter_search_placeholder": "Rechercher une publication...",
+  "published_on": "Publié le:",
+  "reference_full": "Référence complète",
+  "authors": "Auteurs",
+  "see_details": "Voir détails",
+  "pdf": "PDF",
+  "doi": "DOI",
+  "loading": "Chargement...",
+  "loading_publication": "Chargement de la publication...",
+  "error": "Erreur",
+  "error_loading": "Erreur lors du chargement de la publication",
+  "not_found": "Publication non trouvée",
+  "not_found_desc": "La publication que vous recherchez n'existe pas ou a été supprimée.",
+  "back_to_publications": "Retour aux publications",
+  "home": "Accueil",
+  "publications": "Publications",
+  "details": "Détails",
+  "summary": "Résumé",
+  "access": "Accès",
+  "type": {
+    "article": "📄 Article scientifique publié dans une revue académique",
+    "conférence": "🎤 Communication présentée lors d'une conférence scientifique",
+    "thèse": "🎓 Thèse de doctorat ou mémoire de recherche",
+    "rapport": "📋 Rapport technique ou de recherche",
+    "livre": "📚 Ouvrage ou chapitre de livre scientifique",
+    "default": "📖 Publication scientifique"
+  },
+  "no_summary": "Aucun résumé disponible.",
+  "search_placeholder": "Rechercher une publication..."
+}

@@ -56,13 +56,17 @@ const PrixDistinctionList: React.FC<PrixDistinctionListProps> = ({ onEdit, onDel
 
     const filteredAndSortedPrix = prixDistinctions
         .filter(prix => 
-            prix.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            prix.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (prix.membres && prix.membres.length > 0 && prix.membres.some(m => `${m.nom} ${m.prenom}`.toLowerCase().includes(searchTerm.toLowerCase())))
+            (prix.titre_fr?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            prix.titre_en?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            prix.titre_ar?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            prix.description_fr?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            prix.description_en?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            prix.description_ar?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (prix.membres && prix.membres.length > 0 && prix.membres.some(m => `${m.nom} ${m.prenom}`.toLowerCase().includes(searchTerm.toLowerCase()))))
         )
         .sort((a, b) => {
-            let aValue = sortBy === 'nom' ? a.nom : a.date_obtention;
-            let bValue = sortBy === 'nom' ? b.nom : b.date_obtention;
+            const aValue = sortBy === 'nom' ? (a.titre_fr || '') : a.date_obtention;
+            const bValue = sortBy === 'nom' ? (b.titre_fr || '') : b.date_obtention;
             
             if (sortOrder === 'asc') {
                 return aValue.localeCompare(bValue);
@@ -162,11 +166,11 @@ const PrixDistinctionList: React.FC<PrixDistinctionListProps> = ({ onEdit, onDel
                             filteredAndSortedPrix.map((prix) => (
                                 <tr key={prix.id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm font-medium text-gray-900">{prix.nom}</div>
+                                        <div className="text-sm font-medium text-gray-900">{prix.titre_fr}</div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="text-sm text-gray-900 max-w-xs truncate">
-                                            {prix.description}
+                                            {prix.description_fr}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">

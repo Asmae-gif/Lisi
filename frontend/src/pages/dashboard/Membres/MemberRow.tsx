@@ -76,6 +76,8 @@ export default function MemberRow({
           onDelete={onDelete}
           onApprove={onApprove}
           onBlock={onBlock}
+          onReject={onReject}
+          onUnblock={onUnblock}
           onToggleComite={onToggleComite}
         />
       </TableCell>

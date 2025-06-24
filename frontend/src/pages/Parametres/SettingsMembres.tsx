@@ -72,7 +72,6 @@ export default function SettingsMembres() {
 
   // Initialiser avec les valeurs par défaut dès le départ
   const [values, setValues] = useState<MembreSettings>(() => {
-    console.log('Initialisation avec les valeurs par défaut:', DEFAULT_MEMBRES_SETTINGS)
     return { ...DEFAULT_MEMBRES_SETTINGS }
   })
   const [files, setFiles] = useState<Record<string, File>>({})

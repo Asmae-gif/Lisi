@@ -9,7 +9,7 @@ class Partenaire extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nom', 'logo', 'lien'];
+    protected $fillable = ['nom_fr', 'nom_en', 'nom_ar', 'logo', 'lien'];
 
     public function galleries()
     {

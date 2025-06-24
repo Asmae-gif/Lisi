@@ -10,8 +10,12 @@ export interface PrixDistinctionMembre {
 
 export interface PrixDistinction {
   id: number;
-  nom: string;
-  description: string;
+  titre_fr: string;
+  titre_en: string;
+  titre_ar: string;
+  description_fr: string;
+  description_en: string;
+  description_ar: string;
   date_obtention: string;
   organisme?: string;
   image_url?: string;
@@ -22,8 +26,12 @@ export interface PrixDistinction {
 }
 
 export interface PrixDistinctionFormData {
-  nom: string;
-  description: string;
+  titre_fr: string;
+  titre_en: string;
+  titre_ar: string;
+  description_fr: string;
+  description_en: string;
+  description_ar: string;
   date_obtention: string;
   organisme?: string;
   image_url?: string;

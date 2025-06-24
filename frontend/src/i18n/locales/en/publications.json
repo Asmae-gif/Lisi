@@ -1,0 +1,41 @@
+{
+  "stats": {
+    "total": "Total Publications",
+    "articles": "Articles",
+    "conferences": "Conferences",
+    "this_year": "This Year"
+  },
+  "no_results": "No publication found",
+  "no_publications": "No publications available",
+  "try_other_criteria": "Try adjusting your search criteria.",
+  "no_publications_desc": "No publications are currently available. Check back soon to see what's new.",
+  "filter_search_placeholder": "Search for a publication...",
+  "published_on": "Published on:",
+  "reference_full": "Full Reference",
+  "authors": "Authors",
+  "see_details": "See details",
+  "pdf": "PDF",
+  "doi": "DOI",
+  "loading": "Loading...",
+  "loading_publication": "Loading publication...",
+  "error": "Error",
+  "error_loading": "Error loading the publication",
+  "not_found": "Publication not found",
+  "not_found_desc": "The publication you are looking for does not exist or has been deleted.",
+  "back_to_publications": "Back to publications",
+  "home": "Home",
+  "publications": "Publications",
+  "details": "Details",
+  "summary": "Summary",
+  "access": "Access",
+  "type": {
+    "article": "📄 Scientific article published in an academic journal",
+    "conférence": "🎤 Talk presented at a scientific conference",
+    "thèse": "🎓 Doctoral thesis or research dissertation",
+    "rapport": "📋 Technical or research report",
+    "livre": "📚 Scientific book or book chapter",
+    "default": "📖 Scientific publication"
+  },
+  "no_summary": "No summary available.",
+  "search_placeholder": "Search for a publication..."
+}

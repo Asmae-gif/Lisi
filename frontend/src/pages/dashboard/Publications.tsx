@@ -12,29 +12,53 @@ import PublicationForm from "@/components/PublicationForm";
 
 interface Publication {
   id: number;
-  titre_publication: string;
-  resume: string;
+  titre_publication_fr: string;
+  titre_publication_en: string;
+  titre_publication_ar: string;
+  resume_fr: string;
+  resume_en: string;
+  resume_ar: string;
   type_publication: string;
   date_publication: string;
   fichier_pdf_url?: string;
   lien_externe_doi?: string;
-  reference_complete: string;
-  auteurs?: Array<{
-    id: number;
-    nom: string;
-    prenom: string;
-  }>;
+  reference_complete_fr: string;
+  reference_complete_en: string;
+  reference_complete_ar: string;
+  auteurs?: Auteur[];
+}
+
+interface Auteur {
+  id: number;
+  nom: string;
+  prenom: string;
 }
 
 interface Column {
   key: keyof Publication;
   label: string;
-  render?: (value: any) => React.ReactNode;
+  render?: (value: unknown) => React.ReactNode;
 }
 
 interface ApiResponse<T> {
   data: T;
   message: string;
+}
+
+interface PublicationFormData {
+    titre_publication_fr: string;
+    titre_publication_en: string;
+    titre_publication_ar: string;
+    resume_fr: string;
+    resume_en: string;
+    resume_ar: string;
+    type_publication: string;
+    date_publication: string;
+    fichier_pdf_url?: string;
+    lien_externe_doi?: string;
+    reference_complete_fr: string;
+    reference_complete_en: string;
+    reference_complete_ar: string;
 }
 
 export default function Publications() {
@@ -51,12 +75,18 @@ export default function Publications() {
     try {
       setIsLoading(true);
       const response = await api.get<ApiResponse<Publication[]>>('/publications');
-      setPublications(response.data.data || response.data);
-    } catch (error: any) {
+      const publicationsData = response.data.data || response.data;
+      if (Array.isArray(publicationsData)) {
+        setPublications(publicationsData);
+      } else {
+        setPublications([]);
+      }
+    } catch (error: unknown) {
       console.error('Erreur:', error);
+      const errorMessage = error instanceof Error ? error.message : "Impossible de récupérer les publications";
       toast({
         title: "Erreur",
-        description: error.response?.data?.message || "Impossible de récupérer les publications",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -88,16 +118,17 @@ export default function Publications() {
         description: "Publication supprimée avec succès",
       });
       fetchPublications();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Impossible de supprimer la publication";
       toast({
         title: "Erreur",
-        description: error.response?.data?.message || "Impossible de supprimer la publication",
+        description: errorMessage,
         variant: "destructive",
       });
     }
   };
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: PublicationFormData & { auteurs: number[] }) => {
     if (isSubmitting) return;
     
     try {
@@ -119,20 +150,29 @@ export default function Publications() {
 
       setIsFormOpen(false);
       fetchPublications();
-    } catch (error: any) {
-      if (error.response?.data?.errors) {
-        const validationErrors = error.response.data.errors;
-        Object.entries(validationErrors).forEach(([field, messages]) => {
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data?: { errors?: Record<string, string[]>, message?: string } } };
+        if (axiosError.response?.data?.errors) {
+          const validationErrors = axiosError.response.data.errors;
+          Object.entries(validationErrors).forEach(([field, messages]) => {
+            toast({
+              title: "Erreur de validation",
+              description: `${field}: ${messages[0]}`,
+              variant: "destructive",
+            });
+          });
+        } else {
           toast({
-            title: "Erreur de validation",
-            description: `${field}: ${(messages as string[])[0]}`,
+            title: "Erreur",
+            description: axiosError.response?.data?.message || "Une erreur est survenue",
             variant: "destructive",
           });
-        });
+        }
       } else {
         toast({
           title: "Erreur",
-          description: error.response?.data?.message || "Une erreur est survenue",
+          description: "Une erreur est survenue",
           variant: "destructive",
         });
       }
@@ -143,17 +183,24 @@ export default function Publications() {
 
   // Filtrer les publications
   const filteredPublications = publications.filter(pub => {
-    const matchesSearch = pub.titre_publication.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         pub.resume.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         pub.reference_complete.toLowerCase().includes(searchTerm.toLowerCase());
+    const searchTermLower = searchTerm.toLowerCase();
+    const matchesSearch = (pub.titre_publication_fr && pub.titre_publication_fr.toLowerCase().includes(searchTermLower)) ||
+                         (pub.titre_publication_en && pub.titre_publication_en.toLowerCase().includes(searchTermLower)) ||
+                         (pub.titre_publication_ar && pub.titre_publication_ar.toLowerCase().includes(searchTermLower)) ||
+                         (pub.resume_fr && pub.resume_fr.toLowerCase().includes(searchTermLower)) ||
+                         (pub.resume_en && pub.resume_en.toLowerCase().includes(searchTermLower)) ||
+                         (pub.resume_ar && pub.resume_ar.toLowerCase().includes(searchTermLower)) ||
+                         (pub.reference_complete_fr && pub.reference_complete_fr.toLowerCase().includes(searchTermLower)) ||
+                         (pub.reference_complete_en && pub.reference_complete_en.toLowerCase().includes(searchTermLower)) ||
+                         (pub.reference_complete_ar && pub.reference_complete_ar.toLowerCase().includes(searchTermLower));
     const matchesType = filterType === 'all' || !filterType || pub.type_publication === filterType;
     return matchesSearch && matchesType;
   });
 
   const columns: Column[] = [
     { 
-      key: 'titre_publication', 
-      label: 'Titre',
+      key: 'titre_publication_fr', 
+      label: 'Titre (FR)',
       render: (value: string) => (
         <div className="font-medium text-gray-900 max-w-xs truncate" title={value}>
           {value}
@@ -163,7 +210,7 @@ export default function Publications() {
     { 
       key: 'auteurs', 
       label: 'Auteurs',
-      render: (auteurs: any[]) => (
+      render: (auteurs?: Auteur[]) => (
         <div className="flex flex-wrap gap-1">
           {auteurs?.map(auteur => (
             <Badge key={auteur.id} variant="outline" className="text-xs">
@@ -177,7 +224,7 @@ export default function Publications() {
       key: 'type_publication', 
       label: 'Type',
       render: (value: string) => {
-        const variants: { [key: string]: string } = {
+        const variants: { [key: string]: 'default' | 'secondary' | 'outline' | 'destructive' } = {
           'article': 'default',
           'conférence': 'secondary',
           'chapitre': 'outline',
@@ -186,7 +233,7 @@ export default function Publications() {
           'thèse': 'secondary'
         };
         return (
-          <Badge variant={variants[value] as any || 'outline'}>
+          <Badge variant={variants[value] || 'outline'}>
             {value}
           </Badge>
         );
@@ -337,13 +384,19 @@ export default function Publications() {
               <PublicationForm
                 initialData={selectedPublication ? {
                   id: selectedPublication.id,
-                  titre_publication: selectedPublication.titre_publication,
-                  resume: selectedPublication.resume,
+                  titre_publication_fr: selectedPublication.titre_publication_fr,
+                  titre_publication_en: selectedPublication.titre_publication_en,
+                  titre_publication_ar: selectedPublication.titre_publication_ar,
+                  resume_fr: selectedPublication.resume_fr,
+                  resume_en: selectedPublication.resume_en,
+                  resume_ar: selectedPublication.resume_ar,
                   type_publication: selectedPublication.type_publication,
                   date_publication: selectedPublication.date_publication,
                   fichier_pdf_url: selectedPublication.fichier_pdf_url,
                   lien_externe_doi: selectedPublication.lien_externe_doi,
-                  reference_complete: selectedPublication.reference_complete,
+                  reference_complete_fr: selectedPublication.reference_complete_fr,
+                  reference_complete_en: selectedPublication.reference_complete_en,
+                  reference_complete_ar: selectedPublication.reference_complete_ar,
                   auteurs: selectedPublication.auteurs?.map(a => a.id) || []
                 } : {}}
                 onSubmit={handleSubmit}

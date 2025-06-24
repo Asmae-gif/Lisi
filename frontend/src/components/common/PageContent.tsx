@@ -12,6 +12,9 @@ interface PageContentProps {
   backButtonText?: string;
   backButtonPath?: string;
   className?: string;
+  hero?: boolean;
+  backgroundImage?: string;
+  backgroundClassName?: string;
 }
 
 const PageContent: React.FC<PageContentProps> = ({
@@ -22,12 +25,28 @@ const PageContent: React.FC<PageContentProps> = ({
   showBackButton = false,
   backButtonText,
   backButtonPath = '/index',
-  className = ''
+  className = '',
+  hero = false,
+  backgroundImage,
+  backgroundClassName = '',
 }) => {
   const { t } = useTranslation();
 
+  // Hero section style: match Membres.tsx and similar
+  const sectionClass = hero
+    ? `bg-gradient-to-br from-green-50 to-indigo-100 py-16 ${className}`
+    : `py-20 bg-background ${className}`;
+
+  const sectionStyle = hero && backgroundImage
+    ? {
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }
+    : undefined;
+
   return (
-    <section className={`py-20 bg-background ${className}`}>
+    <section className={sectionClass} style={sectionStyle}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Bouton retour */}
         {showBackButton && (
@@ -43,23 +62,22 @@ const PageContent: React.FC<PageContentProps> = ({
         )}
 
         {/* En-tête de page */}
-        <div className="text-center mb-16">
-          {subtitle && (
-            <p className="text-primary font-semibold mb-4">{subtitle}</p>
-          )}
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-8">
-            {title}
-          </h1>
-          {description && (
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              {description}
-            </p>
-          )}
-        </div>
+       
+        <div className="text-center">
+  <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">{title}</h1>
+  {subtitle && (
+    <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+      {subtitle}
+    </p>
+  )}
+</div>
+
+          </div>
+
 
         {/* Contenu */}
         {children}
-      </div>
+   
     </section>
   );
 };

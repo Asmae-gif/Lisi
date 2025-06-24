@@ -1,0 +1,26 @@
+{
+    "search_prix_placeholder": "ابحث عن جائزة أو تكريم...",
+    "title_not_defined": "العنوان غير محدد",
+    "title_not_defined_en": "العنوان غير محدد",
+    "title_not_defined_ar": "العنوان غير محدد",
+    "description_not_available": "الوصف غير متوفر",
+    "description_not_available_fr": "الوصف غير متوفر",
+    "description_not_available_ar": "الوصف غير متوفر",
+    "project_hero_title_default": "الجوائز والتكريمات",
+    "project_hero_subtitle_default": "يحصل أعضاؤنا بانتظام على جوائز تقديراً لتميزهم ومساهماتهم المبتكرة في البحث العلمي.",
+    "stats": {
+      "total": "الإجمالي",
+      "individual_awards": "جوائز فردية",
+      "collective_awards": "جوائز جماعية",
+      "this_year": "خلال هذا العام"
+    },
+    "organisme": "الجهة المانحة",
+    "awarded_to": "مُنحت لـ",
+    "date_awarded": "تاريخ الحصول",
+    "no_member": "لا يوجد أعضاء",
+    "no_prix_found": "لم يتم العثور على جوائز",
+    "no_prix_available": "لا توجد جوائز متاحة",
+    "no_prix_available_message": "لا توجد أي جوائز أو تكريمات مسجلة حالياً.",
+    "try_changing_search_criteria": "حاول تغيير معايير البحث."
+  }
+  

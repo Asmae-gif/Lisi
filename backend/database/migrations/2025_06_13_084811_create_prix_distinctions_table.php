@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(){
     Schema::create('prix_distinctions', function (Blueprint $table) {
         $table->id();
-        $table->string('titre');
-        $table->text('description')->nullable();
+        $table->string('titre_fr');
+        $table->string('titre_en')->nullable();
+        $table->string('titre_ar')->nullable();
+        $table->text('description_fr')->nullable();
+        $table->text('description_en')->nullable();
+        $table->text('description_ar')->nullable();
         $table->date('date_obtention');
         $table->string('organisme')->nullable();
         $table->string('image_url')->nullable();

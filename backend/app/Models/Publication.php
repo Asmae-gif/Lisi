@@ -10,13 +10,19 @@ class Publication extends Model
     use HasFactory;
 
     protected $fillable = [
-        'titre_publication',
-        'resume',
+        'titre_publication_fr',
+        'titre_publication_en',
+        'titre_publication_ar',
+        'resume_fr',
+        'resume_en',
+        'resume_ar',
         'type_publication',
         'date_publication',
         'fichier_pdf_url',
         'lien_externe_doi',
-        'reference_complete',
+        'reference_complete_fr',
+        'reference_complete_en',
+        'reference_complete_ar',
     ];
 
     public function auteurs()

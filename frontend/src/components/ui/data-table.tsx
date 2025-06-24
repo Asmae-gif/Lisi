@@ -41,6 +41,7 @@ export function DataTable<T extends { id: number }>({
 }: DataTableProps<T>) {
   const tableColumns: ColumnDef<T>[] = [
     ...columns.map((col) => ({
+      id: String(col.key),
       accessorKey: col.key,
       header: col.label,
       cell: ({ row }: { row: Row<T> }) => {

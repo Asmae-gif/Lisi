@@ -11,6 +11,7 @@ import { Search } from "lucide-react"
 import { membresApi } from '@/services/api';
 import { buildImageUrl } from '@/utils/imageUtils';
 import { useTranslation } from 'react-i18next';
+import PageContent from '@/components/common/PageContent';
 
 const Membres: React.FC = () => {
   const [openCategories, setOpenCategories] = useState<string[]>([]);
@@ -59,8 +60,6 @@ const Membres: React.FC = () => {
       setSortDirection('asc');
     }
   };
-
-  
 
   const filteredMembersData = useMemo(() => {
     if (!searchQuery.trim()) {
@@ -180,26 +179,15 @@ const Membres: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-
-      <section 
-        className="bg-gradient-to-br from-green-50 to-indigo-100 py-16"
-        style={settings.membres_image ? {
-          backgroundImage: `url(${buildImageUrl(settings.membres_image)})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        } : undefined}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              <span className="block">{title}</span>
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              {subtitle}
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* Hero Section */}
+      <PageContent
+          hero
+          title={title}
+          subtitle={subtitle}
+          backgroundImage={settings.membres_image ? buildImageUrl(settings.membres_image) : undefined}
+        >
+          <></>
+        </PageContent>
 
       <div className="max-w-6xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-8">{t('search_member')}</h1>

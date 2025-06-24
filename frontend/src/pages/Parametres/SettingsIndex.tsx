@@ -3,7 +3,7 @@ import SettingsForm from '@/components/common/SettingsForm'
 import { indexSettingsApi } from '@/services/settingsApi'
 import { AVAILABLE_LANGUAGES, LanguageCode, IndexSettings, LanguageSettings, DEFAULT_INDEX_SETTINGS } from '@/types/indexSettings'
 import { buildImageUrl } from '@/utils/imageUtils'
-import axiosClient from '@/services/axiosClient'
+
 
 /**
  * Composant de paramètres pour la page d'accueil (Index)
@@ -119,9 +119,24 @@ const mergeSettingsWithDefaults = (apiData: Partial<IndexSettings> | null | unde
     return DEFAULT_INDEX_SETTINGS;
   }
   
+  // Merge profond pour les champs de langue
+  const mergedLanguages: Record<string, LanguageSettings> = {};
+  AVAILABLE_LANGUAGES.forEach(lang => {
+    const langCode = lang.code;
+    const defaultLang = DEFAULT_INDEX_SETTINGS[langCode] as LanguageSettings;
+    const apiLang = apiData[langCode] as LanguageSettings | undefined;
+    
+    // Merge profond: prendre les valeurs de l'API si elles existent, sinon les valeurs par défaut
+    mergedLanguages[langCode] = {
+      ...defaultLang,
+      ...(apiLang && typeof apiLang === 'object' ? apiLang : {})
+    };
+  });
+  
   return {
     ...DEFAULT_INDEX_SETTINGS,
-    ...apiData
+    ...apiData,
+    ...mergedLanguages
   };
 };
 

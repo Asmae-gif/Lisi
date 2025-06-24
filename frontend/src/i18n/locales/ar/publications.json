@@ -1,0 +1,41 @@
+{
+  "stats": {
+    "total": "إجمالي المنشورات",
+    "articles": "المقالات",
+    "conferences": "المؤتمرات",
+    "this_year": "خلال هذا العام"
+  },
+  "no_results": "لم يتم العثور على منشورات",
+  "no_publications": "لا توجد منشورات متاحة",
+  "try_other_criteria": "حاول تغيير معايير البحث الخاصة بك.",
+  "no_publications_desc": "لا توجد منشورات متاحة حالياً. عد لاحقاً لاكتشاف جديدنا.",
+  "filter_search_placeholder": "ابحث عن منشور...",
+  "published_on": "تاريخ النشر:",
+  "reference_full": "المرجع الكامل",
+  "authors": "المؤلفون",
+  "see_details": "عرض التفاصيل",
+  "pdf": "ملف PDF",
+  "doi": "رابط DOI",
+  "loading": "جاري التحميل...",
+  "loading_publication": "جاري تحميل المنشور...",
+  "error": "خطأ",
+  "error_loading": "حدث خطأ أثناء تحميل المنشور",
+  "not_found": "المنشور غير موجود",
+  "not_found_desc": "المنشور الذي تبحث عنه غير موجود أو تم حذفه.",
+  "back_to_publications": "العودة إلى المنشورات",
+  "home": "الرئيسية",
+  "publications": "المنشورات",
+  "details": "التفاصيل",
+  "summary": "الملخص",
+  "access": "الوصول",
+  "type": {
+    "article": " مقال علمي منشور في مجلة أكاديمية",
+    "conférence": " مداخلة مقدّمة في مؤتمر علمي",
+    "thèse": " أطروحة دكتوراه أو مذكرة بحث",
+    "rapport": " تقرير تقني أو بحثي",
+    "livre": " كتاب أو فصل من كتاب",
+    "default": " منشور علمي"
+  },
+  "no_summary": "لا يوجد ملخص متاح.",
+  "search_placeholder": "   ابحث عن منشور....."
+}

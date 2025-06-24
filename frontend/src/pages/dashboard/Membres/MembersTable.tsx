@@ -134,9 +134,10 @@ const TableSkeleton = () => (
     onApprove,
     onBlock,
     onToggleComite,
-   
+    onReject,
+    onUnblock
   }: MobileMemberCardProps) => (
-    <Card className="mb-4">
+    <Card key={membre.id}>
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
@@ -158,7 +159,8 @@ const TableSkeleton = () => (
             onApprove={onApprove}
             onToggleComite={(id) => onToggleComite(id, !membre.is_comite)}
             onBlock={onBlock}
-            
+            onReject={onReject}
+            onUnblock={onUnblock}
           />
         </div>
       </CardContent>

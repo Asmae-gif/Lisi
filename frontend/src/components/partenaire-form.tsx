@@ -1,9 +1,16 @@
 import React from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTranslation } from 'react-i18next';
 
 interface Partenaire {
   id: number;
-  nom: string;
+  nom_fr: string;
+  nom_en: string;
+  nom_ar: string;
   logo: string | null;
   lien: string;
   created_at: string;
@@ -11,87 +18,133 @@ interface Partenaire {
 }
 
 interface PartenaireFormData {
-  nom: string;
-  logo: string;
-  lien: string;
+    nom_fr: string;
+    nom_en: string;
+    nom_ar: string;
+    logo: string;
+    lien: string;
 }
 
 interface PartenaireFormProps {
-  partenaire: Partenaire | null;
-  onSubmit: (data: PartenaireFormData) => void;
-  onClose: () => void;
-  isSubmitting: boolean;
+    partenaire?: Partenaire | null;
+    onSubmit: (data: PartenaireFormData) => void;
+    onClose: () => void;
+    isSubmitting: boolean;
 }
 
 export function PartenaireForm({ partenaire, onSubmit, onClose, isSubmitting }: PartenaireFormProps) {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    onSubmit({
-      nom: formData.get('nom') as string,
-      logo: formData.get('logo') as string,
-      lien: formData.get('lien') as string,
+    const { t } = useTranslation();
+    const [formData, setFormData] = React.useState<PartenaireFormData>({
+        nom_fr: partenaire?.nom_fr || '',
+        nom_en: partenaire?.nom_en || '',
+        nom_ar: partenaire?.nom_ar || '',
+        logo: partenaire?.logo || '',
+        lien: partenaire?.lien || ''
     });
-  };
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4">
-          {partenaire ? 'Modifier le partenaire' : 'Ajouter un partenaire'}
-        </h2>
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Nom</label>
-              <input
-                type="text"
-                name="nom"
-                defaultValue={partenaire?.nom}
-                className="w-full p-2 border rounded"
-                required
-                disabled={isSubmitting}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">URL du logo</label>
-              <input
-                type="url"
-                name="logo"
-                defaultValue={partenaire?.logo || ''}
-                className="w-full p-2 border rounded"
-                placeholder="https://exemple.com/logo.png"
-                disabled={isSubmitting}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Lien</label>
-              <input
-                type="url"
-                name="lien"
-                defaultValue={partenaire?.lien}
-                className="w-full p-2 border rounded"
-                required
-                placeholder="https://exemple.com"
-                disabled={isSubmitting}
-              />
-            </div>
-          </div>
-          <div className="mt-6 flex justify-end space-x-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              disabled={isSubmitting}
-            >
-              Annuler
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'En cours...' : (partenaire ? 'Modifier' : 'Ajouter')}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onSubmit(formData);
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    return (
+        <Dialog open={true} onOpenChange={onClose}>
+            <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                    <DialogTitle>
+                        {partenaire ? t('partenaires.form.edit') : t('partenaires.form.add')}
+                    </DialogTitle>
+                </DialogHeader>
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <Tabs defaultValue="fr">
+                        <TabsList className="grid w-full grid-cols-3">
+                            <TabsTrigger value="fr">Français</TabsTrigger>
+                            <TabsTrigger value="en">English</TabsTrigger>
+                            <TabsTrigger value="ar">العربية</TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent value="fr" className="space-y-4">
+                            <div>
+                                <Label htmlFor="nom_fr">Nom (FR)</Label>
+                                <Input
+                                    id="nom_fr"
+                                    name="nom_fr"
+                                    value={formData.nom_fr}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                            
+                        </TabsContent>
+
+                        <TabsContent value="en" className="space-y-4">
+                            <div>
+                                <Label htmlFor="nom_en">Name (EN)</Label>
+                                <Input
+                                    id="nom_en"
+                                    name="nom_en"
+                                    value={formData.nom_en}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                           
+                        </TabsContent>
+
+                        <TabsContent value="ar" className="space-y-4">
+                            <div>
+                                <Label htmlFor="nom_ar">الاسم (AR)</Label>
+                                <Input
+                                    id="nom_ar"
+                                    name="nom_ar"
+                                    value={formData.nom_ar}
+                                    onChange={handleChange}
+                                    className="text-right"
+                                />
+                            </div>
+                          
+                        </TabsContent>
+                    </Tabs>
+
+                    <div className="space-y-4">
+                        <div>
+                            <Label htmlFor="logo">URL du Logo</Label>
+                            <Input
+                                id="logo"
+                                name="logo"
+                                value={formData.logo}
+                                onChange={handleChange}
+                                placeholder="https://example.com/logo.png"
+                            />
+                        </div>
+
+                        <div>
+                            <Label htmlFor="lien">Site Web</Label>
+                            <Input
+                                id="lien"
+                                name="lien"
+                                value={formData.lien}
+                                onChange={handleChange}
+                                placeholder="https://example.com"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end gap-3">
+                        <Button type="button" variant="outline" onClick={onClose}>
+                            {t('common.cancel')}
+                        </Button>
+                        <Button type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? t('common.saving') : t('common.save')}
+                        </Button>
+                    </div>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
 } 

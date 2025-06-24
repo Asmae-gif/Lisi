@@ -1,12 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '@/lib/api';
 import { getStatusColor, formatStatus, getTypeColor, formatType } from '../utils/projectUtils';
 import ProjectDetails from '@/components/ProjectDetails';
 
 interface Project {
     id: number;
-    name: string;
-    description: string;
+    name: string; // Keep for fallback
+    name_fr: string; // Made required for explicit display
+    name_en: string; // Made required for explicit display
+    name_ar: string; // Made required for explicit display
+    description: string; // Keep for fallback
+    description_fr: string; // Made required for explicit display
+    description_en: string; // Made required for explicit display
+    description_ar: string; // Made required for explicit display
     type_projet: string;
     status: string;
     date_debut: string;
@@ -32,6 +38,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ onEditProject }) => {
         } catch (err) {
             console.error('Erreur lors du chargement des projets:', err);
             setLoading(false);
+            setError('Erreur lors du chargement des projets'); // Static French error message
         }
     };
 
@@ -40,12 +47,13 @@ const ProjectList: React.FC<ProjectListProps> = ({ onEditProject }) => {
     }, []);
 
     const handleDelete = async (id: number) => {
-        if (window.confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) {
+        if (window.confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) { // Static French confirmation
             try {
                 await api.delete(`/projects/${id}`);
                 await fetchProjects();
             } catch (err) {
                 console.error('Erreur lors de la suppression:', err);
+                setError('Erreur lors de la suppression du projet'); // Static French error message
             }
         }
     };
@@ -64,6 +72,8 @@ const ProjectList: React.FC<ProjectListProps> = ({ onEditProject }) => {
         onEditProject?.(projectId);
     };
 
+    // Removed getProjectName and getProjectDescription functions
+
     if (loading) return <div className="flex justify-center items-center h-64">Chargement...</div>;
     if (error) return <div className="text-red-500 text-center">{error}</div>;
 
@@ -81,7 +91,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ onEditProject }) => {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="bg-white rounded-lg shadow-lg p-6">
-                <h1 className="text-2xl font-bold mb-6 text-gray-800">Liste des Projets</h1>
+                <h1 className="text-2xl font-bold mb-6 text-gray-800">Liste des projets</h1>
                 <div className="overflow-x-auto">
                     <table className="min-w-full bg-white">
                         <thead>
@@ -98,23 +108,23 @@ const ProjectList: React.FC<ProjectListProps> = ({ onEditProject }) => {
                         <tbody className="divide-y divide-gray-200">
                             {projects.map((project) => (
                                 <tr key={project.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{project.name}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{project.description}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{project.name_fr || '-'}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{project.description_fr || '-'}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getTypeColor(project.type_projet)}`}>
-                                            {formatType(project.type_projet)}
+                                            {formatType(project.type_projet)} {/* Directly display formatted type */}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(project.status)}`}>
-                                            {formatStatus(project.status)}
+                                            {formatStatus(project.status)} {/* Directly display formatted status */}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {project.date_debut ? new Date(project.date_debut).toLocaleDateString() : '-'}
+                                        {project.date_debut ? new Date(project.date_debut).toLocaleDateString('fr-FR') : 'N/A'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {project.date_fin ? new Date(project.date_fin).toLocaleDateString() : '-'}
+                                        {project.date_fin ? new Date(project.date_fin).toLocaleDateString('fr-FR') : 'N/A'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <div className="flex space-x-2">
@@ -147,5 +157,4 @@ const ProjectList: React.FC<ProjectListProps> = ({ onEditProject }) => {
         </div>
     );
 };
-
-export default ProjectList; 
+export default ProjectList;

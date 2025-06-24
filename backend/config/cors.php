@@ -16,7 +16,22 @@ return [
     */
 
    
-        'paths' => ['api/*', 'sanctum/csrf-cookie'],
+        'paths' => [
+            'api/*', 
+            'sanctum/csrf-cookie',
+            'partenaires',
+            'partenaires/*',
+            'admin/partenaires',
+            'admin/partenaires/*',
+            'axes',
+            'axes/*',
+            'admin/axes',
+            'admin/axes/*',
+            'prix-distinctions',
+            'prix-distinctions/*',
+            'admin/prix-distinctions',
+            'admin/prix-distinctions/*'
+        ],
     
         'allowed_methods' => ['*'],
     

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Plus, Brain, Search, Filter, Eye, Edit, Trash2 } from "lucide-react";
+import { Plus, Brain, Search, Filter } from "lucide-react";
 import { DataTable } from "@/components/ui/data-table";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
@@ -56,7 +56,7 @@ export default function AxesDashboard() {
   const [filterIcon, setFilterIcon] = useState('all');
   const { toast } = useToast();
 
-  const fetchAxes = async () => {
+  const getAxes = async () => {
     try {
       setIsLoading(true);
       const response = await api.get<ApiResponse<Axe[]>>('/axes');
@@ -80,7 +80,7 @@ export default function AxesDashboard() {
   };
 
   useEffect(() => {
-    fetchAxes();
+    getAxes();
   }, []);
 
   const handleAdd = () => {

@@ -5,7 +5,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useLaravelApi } from "./hooks/useLaravelApi";
 import { Layout } from './components/dashboard/layout'
-import { ThemeProvider } from './lib/theme'
+import { ThemeProvider } from '@/lib/theme'
 import Index from "./pages/Index";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
@@ -44,6 +44,10 @@ import Histoire from './pages/dashboard/Histoire';
 import PrixDistinctionsDashboard from './pages/dashboard/PrixDistinctions';
 import PrixDistinctions from './pages/PrixDistinctions';
 import TestPage from './pages/TestPage';
+import SettingsPublications from "./pages/Parametres/SettingsPublications";
+import SettingsProjet from "./pages/Parametres/SettingsProjets";
+import SettingsPrixDistinctions from "./pages/Parametres/SettingsPrixDistinctions";
+import SettingsPartenaires from "./pages/Parametres/SettingsPartenaires";
 
 const queryClient = new QueryClient();
 
@@ -70,7 +74,7 @@ const AppContent = () => {
         <Route path="/password-reset/:token" element={<ResetPassword />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/gallerie" element={<Gallerie />} />
-        <Route path="/equipes" element={<Equipes/>}/>
+  
         <Route path="/projects" element={<Projects />} />
         <Route path="/projets/:id" element={<ProjectDetail />} />
         <Route path="/publications" element={<PublicPublications />} />
@@ -103,10 +107,14 @@ const AppContent = () => {
           <Route path="axes" element={<ProtectedRoute><AxesDashboard /></ProtectedRoute>} />
           <Route path="parametres" element={<ProtectedRoute><Parametres /></ProtectedRoute>} />
           <Route path="settings-recherche" element={<ProtectedRoute><SettingsRecherche /></ProtectedRoute>} />
-          <Route path="settings-equipe" element={<ProtectedRoute><SettingsMembres /></ProtectedRoute>} />
+          <Route path="settings-membres" element={<ProtectedRoute><SettingsMembres /></ProtectedRoute>} />
+          <Route path="settings-publications" element={<ProtectedRoute><SettingsPublications /></ProtectedRoute>} />
           <Route path="settings-galerie" element={<ProtectedRoute><SettingsGalerie /></ProtectedRoute>} />
           <Route path="settings-index" element={<ProtectedRoute><SettingsIndex /></ProtectedRoute>} />
           <Route path="settings-contact" element={<ProtectedRoute><SettingsContact /></ProtectedRoute>} />
+          <Route path="settings-projet" element={<ProtectedRoute><SettingsProjet /></ProtectedRoute>} />
+          <Route path="settings-prix-distinctions" element={<ProtectedRoute><SettingsPrixDistinctions /></ProtectedRoute>} />
+          <Route path="settings-partenaires" element={<ProtectedRoute><SettingsPartenaires /></ProtectedRoute>} />
           <Route path="contact" element={<ProtectedRoute><ContactDashboard /></ProtectedRoute>} />
           <Route path="gallery" element={<ProtectedRoute><Gallery /></ProtectedRoute>} />
           <Route path="publications" element={<ProtectedRoute><Publications /></ProtectedRoute>} />

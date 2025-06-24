@@ -10,6 +10,7 @@ export interface LanguageSettings {
   mission_texte_1: string;
   mission_texte_2: string;
 
+
   // Piliers de la mission
   pilier_valeur1_titre: string;
   pilier_valeur1_description: string;
@@ -31,6 +32,9 @@ export interface LanguageSettings {
   // Domaines Section
   domaines_titre: string;
   domaines_sous_titre: string;
+  domaines_description: string;
+  domaines_texte_final: string;
+ 
 }
 
 export interface IndexSettings {
@@ -79,6 +83,10 @@ const DEFAULT_FRENCH_SETTINGS: LanguageSettings = {
   actualites_sous_titre: "DERNIÈRES NOUVELLES",
   domaines_titre: "Domaines de recherche",
   domaines_sous_titre: "NOS EXPERTISES",
+  domaines_description: "Nos domaines de recherche couvrent les technologies les plus avancées",
+  domaines_texte_final: "Ces domaines représentent notre expertise et notre vision pour l'avenir"
+   
+   
 };
 
 const DEFAULT_ARABIC_SETTINGS: LanguageSettings = {
@@ -103,6 +111,9 @@ const DEFAULT_ARABIC_SETTINGS: LanguageSettings = {
   actualites_sous_titre: "آخر الأخبار",
   domaines_titre: "مجالات البحث",
   domaines_sous_titre: "خبراتنا",
+  domaines_description: "تغطي مجالات بحثنا أحدث التقنيات",
+  domaines_texte_final: "تمثل هذه المجالات خبرتنا ورؤيتنا للمستقبل"
+   
 };
 
 const DEFAULT_ENGLISH_SETTINGS: LanguageSettings = {
@@ -127,12 +138,14 @@ const DEFAULT_ENGLISH_SETTINGS: LanguageSettings = {
   actualites_sous_titre: "LATEST NEWS",
   domaines_titre: "Research Areas",
   domaines_sous_titre: "OUR EXPERTISE",
+  domaines_description: "Our research areas cover the most advanced technologies",
+   domaines_texte_final: "These areas represent our expertise and vision for the future"
 };
 
 export const DEFAULT_INDEX_SETTINGS: IndexSettings = {
   // Champs non-traduisibles
-  mission_image: "/images/placeholder.svg",
-  hero_image_side: "/images/placeholder.svg",
+  mission_image: "/images/mission.jpg",
+  hero_image_side: "/images/hero_side.png",
   mot_directeur_image: "/images/directeur.jfif",
   
   nbr_membres: "30+",

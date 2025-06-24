@@ -27,7 +27,9 @@ class PartenaireController extends Controller
             Log::info('Tentative d\'ajout d\'un partenaire', $request->all());
             
             $validated = $request->validate([
-                'nom' => 'required|string|max:255',
+                'nom_fr' => 'required|string|max:255',
+                'nom_en' => 'string|max:255',
+                'nom_ar' => 'string|max:255',
                 'logo' => 'nullable|url|max:255',
                 'lien' => 'required|url|max:255',
             ]);
@@ -53,7 +55,9 @@ class PartenaireController extends Controller
             $partenaire = Partenaire::findOrFail($id);
             
             $validated = $request->validate([
-                'nom' => 'required|string|max:255',
+                'nom_fr' => 'required|string|max:255',
+                'nom_en' => 'string|max:255',
+                'nom_ar' => 'string|max:255',
                 'logo' => 'nullable|url|max:255',
                 'lien' => 'required|url|max:255',
             ]);

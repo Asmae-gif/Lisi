@@ -30,7 +30,7 @@ const parametresPages = [
     color: 'bg-green-500'
   },
   { 
-    path: '/dashboard/settings-equipe', 
+    path: '/dashboard/settings-membres', 
     name: 'Paramètres de Nos Membres',
     description: 'Configuration des titres et images de la page équipe/membres',
     icon: Users,
@@ -58,11 +58,25 @@ const parametresPages = [
     color: 'bg-pink-500'
   },
   { 
-    path: '/dashboard/settings-base-donnees', 
-    name: 'Paramètres de base de données',
-    description: 'Configuration des connexions et paramètres de base de données',
+    path: '/dashboard/settings-projet', 
+    name: 'Paramètres de projet',
+    description: 'Configuration des paramètres de projet',
     icon: Database,
     color: 'bg-gray-500'
+  },
+  { 
+    path: '/dashboard/settings-prix-distinctions', 
+    name: 'Paramètres des prix et distinctions',
+    description: 'Configuration des titres et descriptions de la section prix et distinctions',
+    icon: Globe,
+    color: 'bg-indigo-500'
+  },
+  { 
+    path: '/dashboard/settings-partenaires', 
+    name: 'Paramètres des partenaires',
+    description: 'Configuration des titres et descriptions de la section partenaires',
+    icon: Globe,
+    color: 'bg-indigo-500'
   },
   { 
     path: '/dashboard/settings-securite', 

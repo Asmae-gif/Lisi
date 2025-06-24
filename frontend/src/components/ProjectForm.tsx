@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '@/lib/api';
 import { PROJECT_STATUSES, PROJECT_TYPES } from '../utils/projectUtils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AxiosError } from 'axios';
 
 interface ProjectFormProps {
     projectId?: number;
@@ -9,8 +11,13 @@ interface ProjectFormProps {
 }
 
 interface ProjectFormData {
-    name: string;
-    description: string;
+    name_fr: string;
+    name_en: string;
+    name_ar: string;
+    description?: string;
+    description_fr: string;
+    description_en: string;
+    description_ar: string;
     type_projet: string;
     status: string;
     date_debut: string;
@@ -33,8 +40,12 @@ const getStatusColor = (status: string) => {
 
 const ProjectForm: React.FC<ProjectFormProps> = ({ projectId, onSuccess, onCancel }) => {
     const [formData, setFormData] = useState<ProjectFormData>({
-        name: '',
-        description: '',
+        name_fr: '',
+        name_en: '',
+        name_ar: '',
+        description_fr: '',
+        description_en: '',
+        description_ar: '',
         type_projet: 'finance',
         status: 'en_attente',
         date_debut: '',
@@ -42,6 +53,14 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId, onSuccess, onCance
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState('fr');
+
+    // Ensure tab exists, fallback to 'fr'
+    useEffect(() => {
+        if (!['fr', 'en', 'ar'].includes(activeTab)) {
+            setActiveTab('fr');
+        }
+    }, [activeTab]);
 
     const fetchProject = useCallback(async () => {
         if (!projectId) return;
@@ -49,9 +68,15 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId, onSuccess, onCance
         try {
             setLoading(true);
             const response = await api.get(`/projects/${projectId}`);
-            // Formatage des dates pour les inputs type date
             setFormData({
-                ...response.data,
+                name_fr: response.data.name_fr || '',
+                name_en: response.data.name_en || '',
+                name_ar: response.data.name_ar || '',
+                description_fr: response.data.description_fr || '',
+                description_en: response.data.description_en || '',
+                description_ar: response.data.description_ar || '',
+                type_projet: response.data.type_projet,
+                status: response.data.status,
                 date_debut: response.data.date_debut ? response.data.date_debut.substring(0, 10) : '',
                 date_fin: response.data.date_fin ? response.data.date_fin.substring(0, 10) : '',
             });
@@ -72,22 +97,32 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId, onSuccess, onCance
         setError(null);
 
         try {
-            // Debug: afficher les données envoyées
-            console.log('Données envoyées:', formData);
-            
+            const dataToSend = {
+                name_fr: formData.name_fr,
+                name_en: formData.name_en,
+                name_ar: formData.name_ar,
+                description_fr: formData.description_fr,
+                description_en: formData.description_en,
+                description_ar: formData.description_ar,
+                name: formData.name_fr,
+                description: formData.description_fr,
+                type_projet: formData.type_projet,
+                status: formData.status,
+                date_debut: formData.date_debut,
+                date_fin: formData.date_fin,
+            };
+
             if (projectId) {
-                const response = await api.put(`/projects/${projectId}`, formData);
-                console.log('Réponse mise à jour:', response.data);
+                await api.put(`/projects/${projectId}`, dataToSend);
             } else {
-                const response = await api.post('/projects', formData);
-                console.log('Réponse création:', response.data);
+                await api.post('/projects', dataToSend);
             }
             onSuccess();
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Erreur lors de la sauvegarde:', err);
-            if (err.response?.data?.message) {
+            if (err instanceof AxiosError && err.response?.data?.message) {
                 setError(err.response.data.message);
-            } else if (err.response?.data?.errors) {
+            } else if (err instanceof AxiosError && err.response?.data?.errors) {
                 const errorMessages = Object.values(err.response.data.errors).flat();
                 setError(errorMessages.join(', '));
             } else {
@@ -120,32 +155,96 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId, onSuccess, onCance
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nom</label>
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                        disabled={loading}
-                    />
-                </div>
-
-                <div>
-                    <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
-                    <textarea
-                        id="description"
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        rows={3}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                        disabled={loading}
-                    />
-                </div>
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="grid w-full grid-cols-3">
+                        <TabsTrigger value="fr">Français</TabsTrigger>
+                        <TabsTrigger value="en">English</TabsTrigger>
+                        <TabsTrigger value="ar">العربية</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="fr">
+                        <div>
+                            <label htmlFor="name_fr" className="block text-sm font-medium text-gray-700">Nom du projet (Français)</label>
+                            <input
+                                type="text"
+                                id="name_fr"
+                                name="name_fr"
+                                value={formData.name_fr}
+                                onChange={handleChange}
+                                required
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                disabled={loading}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="description_fr" className="block text-sm font-medium text-gray-700">Description (Français)</label>
+                            <textarea
+                                id="description_fr"
+                                name="description_fr"
+                                value={formData.description_fr}
+                                onChange={handleChange}
+                                rows={3}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                disabled={loading}
+                            />
+                        </div>
+                    </TabsContent>
+                    <TabsContent value="en">
+                        <div>
+                            <label htmlFor="name_en" className="block text-sm font-medium text-gray-700">Project Name (English)</label>
+                            <input
+                                type="text"
+                                id="name_en"
+                                name="name_en"
+                                value={formData.name_en}
+                                onChange={handleChange}
+                                required
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                disabled={loading}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="description_en" className="block text-sm font-medium text-gray-700">Description (English)</label>
+                            <textarea
+                                id="description_en"
+                                name="description_en"
+                                value={formData.description_en}
+                                onChange={handleChange}
+                                rows={3}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                disabled={loading}
+                            />
+                        </div>
+                    </TabsContent>
+                    <TabsContent value="ar">
+                        <div>
+                            <label htmlFor="name_ar" className="block text-sm font-medium text-gray-700" style={{direction: 'rtl', textAlign: 'right'}}>اسم المشروع (العربية)</label>
+                            <input
+                                type="text"
+                                id="name_ar"
+                                name="name_ar"
+                                value={formData.name_ar}
+                                onChange={handleChange}
+                                required
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                disabled={loading}
+                                style={{direction: 'rtl', textAlign: 'right'}}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="description_ar" className="block text-sm font-medium text-gray-700" style={{direction: 'rtl', textAlign: 'right'}}>الوصف (العربية)</label>
+                            <textarea
+                                id="description_ar"
+                                name="description_ar"
+                                value={formData.description_ar}
+                                onChange={handleChange}
+                                rows={3}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                disabled={loading}
+                                style={{direction: 'rtl', textAlign: 'right'}}
+                            />
+                        </div>
+                    </TabsContent>
+                </Tabs>
 
                 <div>
                     <label htmlFor="type_projet" className="block text-sm font-medium text-gray-700">Type de projet</label>
@@ -202,6 +301,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId, onSuccess, onCance
                         onChange={handleChange}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                         disabled={loading}
+                        required
                     >
                         {PROJECT_STATUSES.map(status => (
                             <option key={status.value} value={status.value}>
@@ -211,19 +311,19 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId, onSuccess, onCance
                     </select>
                 </div>
 
-                <div className="flex justify-end space-x-3">
+                <div className="flex justify-end space-x-2">
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                        className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         disabled={loading}
                     >
                         Annuler
                     </button>
                     <button
                         type="submit"
+                        className="px-4 py-2 bg-indigo-600 text-white rounded-md shadow-sm text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         disabled={loading}
-                        className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
                     >
                         {loading ? 'Enregistrement...' : 'Enregistrer'}
                     </button>
@@ -233,5 +333,4 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId, onSuccess, onCance
     );
 };
 
-export { getStatusColor, PROJECT_STATUSES };
-export default ProjectForm; 
+export default ProjectForm;

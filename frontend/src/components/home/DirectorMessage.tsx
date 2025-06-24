@@ -77,10 +77,16 @@ const DirectorMessage = () => {
               {getContent('mot_directeur_description', 'mot_directeur_description')}
             </blockquote>
 
-            <div className="border-l-4 border-green-600 pl-6">
-              <div className="font-semibold text-gray-900 text-lg">{t('nom_directeur')}</div>
-              <div className="text-green-600 font-medium">{t('titre_directeur')}</div>
-            </div>
+            <div
+  className={`${
+    i18n.language === 'ar' ? 'border-r-4 pr-6 text-right' : 'border-l-4 pl-6 text-left'
+  } border-green-600`}
+  dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
+>
+  <div className="font-semibold text-gray-900 text-lg">{t('nom_directeur')}</div>
+  <div className="text-green-600 font-medium">{t('titre_directeur')}</div>
+</div>
+
           </div>
         </div>
       </div>

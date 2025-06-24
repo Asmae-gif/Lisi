@@ -53,11 +53,11 @@ const AxesRecherche: React.FC<AxesRechercheProps> = () => {
 
   if (loading) {
     return (
-      <section className="py-20">
+      <section className="py-20" >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {[1, 2, 3, 4, 5, 6].map((index) => (
             <div key={index} className="group bg-card rounded-2xl p-6 shadow-lg border animate-pulse">
-              <div className="flex items-start space-x-4">
+              <div className="flex items-start rtl:space-x-revers space-x-4">
                 <div className="flex-shrink-0">
                   <div className="w-12 h-12 bg-gray-200 rounded-xl"></div>
                 </div>

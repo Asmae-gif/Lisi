@@ -22,13 +22,19 @@ class PublicationController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'titre_publication' => 'required|string|max:255',
-            'resume' => 'required|string',
+            'titre_publication_fr' => 'required|string|max:255',
+            'titre_publication_en' => 'nullable|string|max:255',
+            'titre_publication_ar' => 'nullable|string|max:255',
+            'resume_fr' => 'required|string',
+            'resume_en' => 'nullable|string',
+            'resume_ar' => 'nullable|string',
             'type_publication' => 'required|string',
             'date_publication' => 'required|date',
             'fichier_pdf' => 'nullable|file|mimes:pdf|max:10240', // max 10MB
             'lien_externe_doi' => 'nullable|url',
-            'reference_complete' => 'required|string',
+            'reference_complete_fr' => 'nullable|string',
+            'reference_complete_en' => 'nullable|string',
+            'reference_complete_ar' => 'nullable|string',
             'auteurs' => 'required|array',
             'auteurs.*' => 'exists:membres,id'
         ]);
@@ -78,13 +84,19 @@ class PublicationController extends Controller
     public function update(Request $request, Publication $publication)
     {
         $validator = Validator::make($request->all(), [
-            'titre_publication' => 'sometimes|string|max:255',
-            'resume' => 'sometimes|string',
+            'titre_publication_fr' => 'sometimes|string|max:255',
+            'titre_publication_en' => 'nullable|string|max:255',
+            'titre_publication_ar' => 'nullable|string|max:255',
+            'resume_fr' => 'sometimes|string',
+            'resume_en' => 'nullable|string',
+            'resume_ar' => 'nullable|string',
             'type_publication' => 'sometimes|string',
             'date_publication' => 'sometimes|date',
             'fichier_pdf' => 'nullable|file|mimes:pdf|max:10240',
             'lien_externe_doi' => 'nullable|url',
-            'reference_complete' => 'sometimes|string',
+            'reference_complete_fr' => 'nullable|string',
+            'reference_complete_en' => 'nullable|string',
+            'reference_complete_ar' => 'nullable|string',
             'auteurs' => 'sometimes|array',
             'auteurs.*' => 'exists:membres,id'
         ]);

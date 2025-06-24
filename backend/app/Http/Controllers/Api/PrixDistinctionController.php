@@ -25,8 +25,12 @@ class PrixDistinctionController extends Controller
             $transformedPrix = $prix->map(function ($item) {
                 return [
                     'id' => $item->id,
-                    'nom' => $item->titre, // Mapper titre vers nom
-                    'description' => $item->description,
+                    'titre_fr' => $item->titre_fr,
+                    'titre_en' => $item->titre_en,
+                    'titre_ar' => $item->titre_ar,
+                    'description_fr' => $item->description_fr,
+                    'description_en' => $item->description_en,
+                    'description_ar' => $item->description_ar,
                     'date_obtention' => $item->date_obtention,
                     'organisme' => $item->organisme,
                     'image_url' => $item->image_url,
@@ -71,8 +75,12 @@ class PrixDistinctionController extends Controller
     {
         try {
             $validated = $request->validate([
-                'nom' => 'required|string|max:255', // Accepter 'nom' du frontend
-                'description' => 'nullable|string',
+                'titre_fr' => 'required|string|max:255', // Accepter 'nom' du frontend
+                'titre_en' => 'nullable|string|max:255',
+                'titre_ar' => 'nullable|string|max:255',
+                'description_fr' => 'nullable|string',
+                'description_en' => 'nullable|string',
+                'description_ar' => 'nullable|string',
                 'date_obtention' => 'required|date',
                 'organisme' => 'nullable|string|max:255',
                 'image_url' => 'nullable|string|max:255',
@@ -85,8 +93,12 @@ class PrixDistinctionController extends Controller
             
             // Mapper 'nom' vers 'titre' pour la base de données
             $prixData = [
-                'titre' => $validated['nom'],
-                'description' => $validated['description'] ?? null,
+                'titre_fr' => $validated['titre_fr'],
+                'titre_en' => $validated['titre_en'] ?? null,
+                'titre_ar' => $validated['titre_ar'] ?? null,
+                'description_fr' => $validated['description_fr'] ?? null,
+                'description_en' => $validated['description_en'] ?? null,
+                'description_ar' => $validated['description_ar'] ?? null,
                 'date_obtention' => $validated['date_obtention'],
                 'organisme' => $validated['organisme'] ?? null,
                 'image_url' => $validated['image_url'] ?? null,
@@ -112,8 +124,12 @@ class PrixDistinctionController extends Controller
                 'success' => true,
                 'data' => [
                     'id' => $prix->id,
-                    'nom' => $prix->titre,
-                    'description' => $prix->description,
+                    'titre_fr' => $prix->titre_fr,
+                    'titre_en' => $prix->titre_en,
+                    'titre_ar' => $prix->titre_ar,
+                    'description_fr' => $prix->description_fr,
+                    'description_en' => $prix->description_en,
+                    'description_ar' => $prix->description_ar,
                     'date_obtention' => $prix->date_obtention,
                     'organisme' => $prix->organisme,
                     'image_url' => $prix->image_url,
@@ -152,8 +168,12 @@ class PrixDistinctionController extends Controller
                 'success' => true,
                 'data' => [
                     'id' => $prix->id,
-                    'nom' => $prix->titre,
-                    'description' => $prix->description,
+                    'titre_fr' => $prix->titre_fr,
+                    'titre_en' => $prix->titre_en,
+                    'titre_ar' => $prix->titre_ar,
+                    'description_fr' => $prix->description_fr,
+                    'description_en' => $prix->description_en,
+                    'description_ar' => $prix->description_ar,
                     'date_obtention' => $prix->date_obtention,
                     'membre_id' => $prix->membre_id,
                     'membre' => $prix->membre ? [
@@ -181,8 +201,12 @@ class PrixDistinctionController extends Controller
     {
         try {
             $validated = $request->validate([
-                'nom' => 'sometimes|string|max:255', // Accepter 'nom' du frontend
-                'description' => 'nullable|string',
+                'titre_fr' => 'sometimes|string|max:255', // Accepter 'nom' du frontend
+                'titre_en' => 'nullable|string|max:255',
+                'titre_ar' => 'nullable|string|max:255',
+                'description_fr' => 'nullable|string',
+                'description_en' => 'nullable|string',
+                'description_ar' => 'nullable|string',
                 'date_obtention' => 'sometimes|date',
                 'organisme' => 'nullable|string|max:255',
                 'image_url' => 'nullable|string|max:255',
@@ -203,8 +227,12 @@ class PrixDistinctionController extends Controller
                 'success' => true,
                 'data' => [
                     'id' => $prixDistinction->id,
-                    'nom' => $prixDistinction->titre,
-                    'description' => $prixDistinction->description,
+                    'titre_fr' => $prixDistinction->titre_fr,
+                    'titre_en' => $prixDistinction->titre_en,
+                    'titre_ar' => $prixDistinction->titre_ar,
+                    'description_fr' => $prixDistinction->description_fr,
+                    'description_en' => $prixDistinction->description_en,
+                    'description_ar' => $prixDistinction->description_ar,
                     'date_obtention' => $prixDistinction->date_obtention,
                     'membre_id' => $prixDistinction->membre_id,
                     'membre' => $prixDistinction->membre ? [
@@ -254,8 +282,12 @@ class PrixDistinctionController extends Controller
             $transformedPrix = $prix->map(function ($item) {
                 return [
                     'id' => $item->id,
-                    'nom' => $item->titre,
-                    'description' => $item->description,
+                    'titre_fr' => $item->titre_fr,
+                    'titre_en' => $item->titre_en,
+                    'titre_ar' => $item->titre_ar,
+                    'description_fr' => $item->description_fr,
+                    'description_en' => $item->description_en,
+                    'description_ar' => $item->description_ar,
                     'date_obtention' => $item->date_obtention,
                     'membre_id' => $item->membre_id,
                     'membre' => $item->membre ? [

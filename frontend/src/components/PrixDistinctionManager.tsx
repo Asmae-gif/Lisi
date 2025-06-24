@@ -1,20 +1,7 @@
 import React, { useState } from 'react';
 import PrixDistinctionList from './PrixDistinctionList';
 import PrixDistinctionForm from './PrixDistinctionForm';
-
-interface PrixDistinction {
-    id: number;
-    nom: string;
-    description: string;
-    date_obtention: string;
-    membre_id: number;
-    membre?: {
-        nom: string;
-        prenom: string;
-    };
-    created_at: string;
-    updated_at: string;
-}
+import { PrixDistinction } from '@/types/prixDistinction';
 
 const PrixDistinctionManager: React.FC = () => {
     const [showForm, setShowForm] = useState(false);

@@ -5,21 +5,30 @@ import { DataTable } from "@/components/ui/data-table";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import api from "@/lib/api";
 import { PartenaireForm } from '@/components/partenaire-form';
 
 interface Partenaire {
   id: number;
-  nom: string;
+  nom_fr: string;
+  nom_en: string;
+  nom_ar: string;
   logo: string | null;
   lien: string;
   created_at: string;
   updated_at: string;
 }
 
+interface Column<T> {
+  key: keyof T;
+  label: string;
+  render?: (value: unknown) => React.ReactNode;
+}
+
 interface PartenaireFormData {
-  nom: string;
+  nom_fr: string;
+  nom_en: string;
+  nom_ar: string;
   logo: string;
   lien: string;
 }
@@ -36,27 +45,35 @@ export default function Partenaires() {
   const [selectedPartenaire, setSelectedPartenaire] = useState<Partenaire | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const { toast } = useToast();
 
-  const fetchPartenaires = async () => {
+  const getPartenaires = async () => {
     try {
       setIsLoading(true);
       const response = await api.get<ApiResponse<Partenaire[]>>('/partenaires');
-      setPartenaires(response.data.data || response.data);
-    } catch (error: any) {
+      const partenairesData = response.data.data || response.data;
+      if (Array.isArray(partenairesData)) {
+        setPartenaires(partenairesData);
+      } else {
+        setPartenaires([]);
+      }
+    } catch (error: unknown) {
       console.error('Erreur:', error);
+      const errorMessage = error instanceof Error ? error.message : "Impossible de récupérer les partenaires";  
       toast({
         title: "Erreur",
-        description: error.response?.data?.message || "Impossible de récupérer la liste des partenaires",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   useEffect(() => {
-    fetchPartenaires();
+    getPartenaires();
   }, []);
 
   const handleAdd = () => {
@@ -68,21 +85,26 @@ export default function Partenaires() {
     setSelectedPartenaire(partenaire);
     setIsFormOpen(true);
   };
+  const handleView = (partenaire: Partenaire) => {
+    setSelectedPartenaire(partenaire);
+    setIsDetailsModalOpen(true);
+  };
 
   const handleDelete = async (id: number) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce partenaire ?')) return;
 
     try {
-      await api.delete(`/partenaires/${id}`);
+      await api.delete(`/admin/partenaires/${id}`);
       toast({
         title: "Succès",
         description: "Partenaire supprimé avec succès",
       });
-      fetchPartenaires();
-    } catch (error: any) {
+      getPartenaires();
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Impossible de supprimer le partenaire";
       toast({
         title: "Erreur",
-        description: error.response?.data?.message || "Impossible de supprimer le partenaire",
+        description: errorMessage,
         variant: "destructive",
       });
     }
@@ -93,37 +115,80 @@ export default function Partenaires() {
     
     try {
       setIsSubmitting(true);
-
+      console.log('Données envoyées:', data);
+    
       if (selectedPartenaire) {
-        await api.put(`/partenaires/${selectedPartenaire.id}`, data);
+        const response = await api.put(`/admin/partenaires/${selectedPartenaire.id}`, data);
+        console.log('Réponse de modification:', response);
+        const updatedPartenaire = response.data.data || response.data;
+    
+        setPartenaires(prev =>
+          prev.map(p => p.id === selectedPartenaire.id ? updatedPartenaire : p)
+        );
+    
         toast({
           title: "Succès",
           description: "Partenaire modifié avec succès",
         });
       } else {
-        await api.post('/partenaires', data);
+        const response = await api.post('/partenaires', data);
+        console.log('Réponse de création:', response);
+        const newPartenaire = response.data.data || response.data;
+    
+        setPartenaires(prev => [...prev, newPartenaire]);
+    
         toast({
           title: "Succès",
           description: "Partenaire ajouté avec succès",
         });
       }
-
+    
       setIsFormOpen(false);
-      fetchPartenaires();
-    } catch (error: any) {
-      if (error.response?.data?.errors) {
-        const validationErrors = error.response.data.errors;
-        Object.entries(validationErrors).forEach(([field, messages]) => {
+    } catch (error: unknown) {
+      console.error('Erreur complète:', error);
+      
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { 
+          response?: { 
+            data?: { 
+              errors?: Record<string, string[]>,
+              message?: string 
+            },
+            status?: number
+          } 
+        };
+        
+        console.error('Détails de l\'erreur:', {
+          status: axiosError.response?.status,
+          data: axiosError.response?.data
+        });
+
+        if (axiosError.response?.data?.errors) {
+          const validationErrors = axiosError.response.data.errors;
+          Object.entries(validationErrors).forEach(([field, messages]) => {
+            toast({
+              title: "Erreur de validation",
+              description: `${field}: ${messages[0]}`,
+              variant: "destructive",
+            });
+          });
+        } else if (axiosError.response?.data?.message) {
           toast({
-            title: "Erreur de validation",
-            description: `${field}: ${(messages as string[])[0]}`,
+            title: "Erreur",
+            description: axiosError.response.data.message,
             variant: "destructive",
           });
-        });
+        } else {
+          toast({
+            title: "Erreur",
+            description: "Une erreur est survenue lors de la création du partenaire",
+            variant: "destructive",
+          });
+        }
       } else {
         toast({
           title: "Erreur",
-          description: error.response?.data?.message || "Une erreur est survenue",
+          description: "Une erreur inattendue est survenue",
           variant: "destructive",
         });
       }
@@ -134,32 +199,38 @@ export default function Partenaires() {
 
   // Filtrer les partenaires
   const filteredPartenaires = partenaires.filter(partenaire =>
-    partenaire.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    partenaire.nom_fr.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    partenaire.nom_en.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    partenaire.nom_ar.toLowerCase().includes(searchTerm.toLowerCase()) ||
     partenaire.lien.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const columns = [
+  const columns: Column<Partenaire>[] = [
     { 
-      key: 'nom' as const, 
+      key: 'nom_fr',
       label: 'Nom du partenaire',
-      render: (value: string) => (
-        <div className="font-medium text-gray-900">
-          {value}
+      render: (value) => (
+        <div className="font-medium text-gray-900 max-w-xs truncate" title={String(value)}>
+          {String(value)}
         </div>
       )
     },
     { 
-      key: 'logo' as const, 
+      key: 'logo',
       label: 'Logo',
-      render: (value: string | null) => value ? (
+      render: (value) => value ? (
         <div className="flex items-center justify-center">
           <img 
-            src={value} 
+            src={String(value)} 
             alt="Logo" 
             className="h-12 w-12 object-contain rounded-lg border bg-white p-1"
             onError={(e) => {
-              e.currentTarget.style.display = 'none';
-              e.currentTarget.nextElementSibling!.style.display = 'flex';
+              const target = e.currentTarget as HTMLImageElement;
+              target.style.display = 'none';
+              const nextSibling = target.nextElementSibling as HTMLElement;
+              if (nextSibling) {
+                nextSibling.style.display = 'flex';
+              }
             }}
           />
           <div className="h-12 w-12 bg-gray-100 rounded-lg border flex items-center justify-center text-gray-400 text-xs" style={{display: 'none'}}>
@@ -173,15 +244,15 @@ export default function Partenaires() {
       )
     },
     { 
-      key: 'lien' as const, 
+      key: 'lien',
       label: 'Site web',
-      render: (value: string) => {
-        const domain = value.replace(/^https?:\/\//, '').replace(/^www\./, '');
+      render: (value) => {
+        const domain = String(value).replace(/^https?:\/\//, '').replace(/^www\./, '');
         return (
           <div className="flex items-center gap-2">
             <Globe className="w-4 h-4 text-blue-600" />
             <a 
-              href={value} 
+              href={String(value)} 
               target="_blank" 
               rel="noopener noreferrer" 
               className="text-blue-600 hover:underline text-sm"
@@ -193,25 +264,10 @@ export default function Partenaires() {
       }
     },
     { 
-      key: 'created_at' as const, 
+      key: 'created_at',
       label: 'Ajouté le',
-      render: (value: string) => new Date(value).toLocaleDateString('fr-FR')
-    },
-    { 
-      key: 'actions' as const, 
-      label: 'Actions',
-      render: (value: any, partenaire: Partenaire) => (
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => window.open(partenaire.lien, '_blank')}
-          >
-            <ExternalLink className="w-4 h-4" />
-          </Button>
-        </div>
-      )
-    },
+      render: (value) => new Date(String(value)).toLocaleDateString('fr-FR')
+    }
   ];
 
   return (

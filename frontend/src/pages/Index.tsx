@@ -13,7 +13,22 @@ import { useTranslation } from 'react-i18next';
 import { buildImageUrl } from '@/utils/imageUtils';
 import { useLocation } from 'react-router-dom';
 import publicationApi from '@/services/publicationApi';
-import { Publication } from '@/components/dashboard/publications-table';
+
+// Interface pour les publications avec support multilingue
+interface Publication {
+  id: number;
+  titre_publication?: string; // Ancienne structure
+  titre_publication_fr?: string; // Nouvelle structure
+  titre_publication_en?: string;
+  titre_publication_ar?: string;
+  resume?: string;
+  type_publication: string;
+  date_publication: string;
+  fichier_pdf_url?: string;
+  lien_externe_doi?: string;
+  reference_complete?: string;
+  auteurs?: number[];
+}
 
 const ICON_BG_COLORS = [
   "bg-blue-100 group-hover:bg-blue-400 group-hover:text-white",
@@ -84,6 +99,28 @@ const Index = () => {
     }
     
     return t(fallbackKey);
+  };
+
+  // Fonction pour récupérer le titre d'une publication selon la langue
+  const getPublicationTitle = (publication: Publication): string => {
+    const lang = i18n.language as 'fr' | 'ar' | 'en';
+    
+    // Essayer d'abord avec la nouvelle structure multilingue
+    if (publication.titre_publication_fr || publication.titre_publication_en || publication.titre_publication_ar) {
+      switch (lang) {
+        case 'fr':
+          return publication.titre_publication_fr || publication.titre_publication_en || publication.titre_publication_ar || 'Titre non disponible';
+        case 'en':
+          return publication.titre_publication_en || publication.titre_publication_fr || publication.titre_publication_ar || 'Title not available';
+        case 'ar':
+          return publication.titre_publication_ar || publication.titre_publication_fr || publication.titre_publication_en || 'العنوان غير متوفر';
+        default:
+          return publication.titre_publication_fr || publication.titre_publication_en || publication.titre_publication_ar || 'Titre non disponible';
+      }
+    }
+    
+    // Fallback vers l'ancienne structure
+    return publication.titre_publication || 'Titre non disponible';
   };
 
   // Statistiques dynamiques
@@ -192,13 +229,18 @@ const Index = () => {
                   );
                 })()}
                 <div className="flex flex-col sm:flex-row gap-4 mb-16">
-                  <Link
-                    to="/index#mission" 
-                    className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center group"
-                  >
-                    {t('decouvrir_mission')}
-                    <IconMapper iconKey="ArrowRight" className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
+                <Link
+  to="/index#mission" 
+  className={`bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center group ${i18n.language === 'ar' ? 'flex-row-reverse' : ''}`}
+  dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
+>
+  {t('decouvrir_mission')}
+  <IconMapper 
+    iconKey="ArrowRight" 
+    className={`${i18n.language === 'ar' ? 'mr-2' : 'ml-2'} h-4 w-4 group-hover:translate-x-1 transition-transform`} 
+  />
+</Link>
+
                   <Link
                     to="/recherche"
                     className="border border-[#C2A060] text-[#C2A060] px-8 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors text-center"
@@ -292,10 +334,22 @@ const Index = () => {
                 <p className="text-primary font-semibold mb-2">{getContent('actualites_sous_titre', 'actualites_sous_titre')}</p>
                 <h2 className="text-4xl font-bold text-foreground">{getContent('actualites_titre', 'actualites_titre')}</h2>
               </div>
-              <Link to="/publications" className="text-primary hover:text-primary/80 flex items-center font-medium group">
-                Toutes les actualités
-                <IconMapper iconKey="ArrowRight" className="ml-1 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
+              <Link
+  to="/publications"
+  className={`text-primary hover:text-primary/80 flex items-center font-medium group ${i18n.language === 'ar' ? 'flex-row-reverse' : ''}`}
+  dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
+>
+  {t('toutes_actualites')}
+  <IconMapper
+    iconKey="ArrowRight"
+    className={`h-5 w-5 transition-transform ${
+      i18n.language === 'ar'
+        ? 'mr-1 group-hover:-translate-x-1'
+        : 'ml-1 group-hover:translate-x-1'
+    }`}
+  />
+</Link>
+
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {latestPublications.map((item) => (
@@ -306,11 +360,23 @@ const Index = () => {
                       {item.type_publication}
                     </span>
                   </div>
-                  <h3 className="font-bold text-foreground leading-tight text-lg mb-4">{item.titre_publication}</h3>
-                  <Link to={`/publications/${item.id}`} className="text-primary hover:text-primary/80 font-medium flex items-center group">
-                    Lire la suite
-                    <IconMapper iconKey="ArrowRight" className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
+                  <h3 className="font-bold text-foreground leading-tight text-lg mb-4">{getPublicationTitle(item)}</h3>
+
+                  <Link to={`/publications/${item.id}`} className={`text-primary hover:text-primary/80 font-medium flex items-center group ${i18n.language === 'ar' ? 'flex-row-reverse' : ''}`}
+  dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
+>
+  {t('lire_suite')}
+  <IconMapper
+    iconKey="ArrowRight"
+    className={`h-5 w-5 transition-transform ${
+      i18n.language === 'ar'
+        ? 'mr-1 group-hover:-translate-x-1'
+        : 'ml-1 group-hover:translate-x-1'
+    }`}
+  />
+</Link>
+
+                  
                 </article>
               ))}
             </div>
@@ -343,12 +409,17 @@ const Index = () => {
                 {getContent('domaines_texte_final', 'domaines_texte_final')}
               </p>
               <Link 
-                to="/recherche" 
-                className="inline-flex items-center bg-primary text-primary-foreground px-8 py-4 rounded-xl font-semibold hover:bg-primary/90 transition-all duration-300 hover:shadow-lg hover:scale-105"
-              >
-                Explorer nos recherches
-                <IconMapper iconKey="ArrowRight" className="ml-2 h-5 w-5" />
-              </Link>
+  to="/recherche" 
+  className={`inline-flex items-center bg-primary text-primary-foreground px-8 py-4 rounded-xl font-semibold hover:bg-primary/90 transition-all duration-300 hover:shadow-lg hover:scale-105 ${i18n.language === 'ar' ? 'flex-row-reverse' : ''}`}
+  dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
+>
+  {t('explorer_recherches')}
+  <IconMapper 
+    iconKey="ArrowRight" 
+    className={`${i18n.language === 'ar' ? 'mr-2' : 'ml-2'} h-5 w-5`} 
+  />
+</Link>
+
             </div>
           </div>
         </section>

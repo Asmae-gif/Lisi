@@ -1,0 +1,26 @@
+{
+    "search_prix_placeholder": "Search for an award or distinction...",
+    "title_not_defined": "Title not defined",
+    "title_not_defined_en": "Title not defined",
+    "title_not_defined_ar": "Title not defined",
+    "description_not_available": "Description not available",
+    "description_not_available_en": "Description not available",
+    "description_not_available_ar": "Description not available",
+    "project_hero_title_default": "Awards and Distinctions",
+    "project_hero_subtitle_default": "Our members are regularly recognized for the excellence of their work and their innovative contributions to scientific research.",
+    "stats": {
+      "total": "Total",
+      "individual_awards": "Individual awards",
+      "collective_awards": "Collective awards",
+      "this_year": "This year"
+    },
+    "organisme": "Organization",
+    "awarded_to": "Awarded to",
+    "date_awarded": "Date awarded",
+    "no_member": "No member",
+    "no_prix_found": "No awards found",
+    "no_prix_available": "No awards available",
+    "no_prix_available_message": "No award or distinction is recorded at the moment.",
+    "try_changing_search_criteria": "Try changing the search criteria."
+  }
+  

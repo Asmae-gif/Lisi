@@ -1,0 +1,26 @@
+{
+    "search_prix_placeholder": "Rechercher un prix ou une distinction...",
+    "title_not_defined": "Titre non défini",
+    "title_not_defined_en": "Titre non défini",
+    "title_not_defined_ar": "Titre non défini",
+    "description_not_available": "Description non disponible",
+    "description_not_available_en": "Description non disponible",
+    "description_not_available_ar": "Description non disponible",
+    "project_hero_title_default": "Prix et Distinctions",
+    "project_hero_subtitle_default": "Nos membres sont régulièrement récompensés pour l'excellence de leurs travaux et leurs contributions innovantes à la recherche scientifique.",
+    "stats": {
+      "total": "Total des prix et distinctions",
+      "individual_awards": "Prix individuels",
+      "collective_awards": "Prix collectifs",
+      "this_year": "Cette année"
+    },
+    "organisme": "Organisme",
+    "awarded_to": "Attribué à",
+    "date_awarded": "Date d'obtention",
+    "no_member": "Aucun membre",
+    "no_prix_found": "Aucun prix trouvé",
+    "no_prix_available": "Aucun prix disponible",
+    "no_prix_available_message": "Aucun prix ou distinction n'est enregistré pour le moment.",
+    "try_changing_search_criteria": "Essayez de modifier les critères de recherche."
+  }
+  

@@ -1,0 +1,15 @@
+{
+    "stats": {
+        "total": "Total Partenaires",
+        "academic": "Partenaires Académiques",
+        "industrial": "Partenaires Industriels"
+    },
+    "intro": {
+        "title": "Collaborations d'Excellence",
+        "description": "Notre réseau de partenaires comprend des institutions académiques de renommée mondiale, des centres de recherche innovants et des entreprises technologiques de pointe. Ces collaborations nous permettent de mener des projets ambitieux et de contribuer significativement à l'avancement des connaissances scientifiques."
+    },
+    "noPartenaires": {
+        "title": "Aucun partenaire disponible",
+        "description": "Aucun partenaire n'est disponible pour le moment. Revenez bientôt pour découvrir nos nouvelles collaborations."
+    }
+} 

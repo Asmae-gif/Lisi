@@ -34,14 +34,25 @@ const AxeCard: React.FC<AxeCardProps> = ({
     // Récupérer le contenu dans la langue actuelle
     const title = getAxeContent(axe, 'title', i18n.language);
     const problematique = getAxeContent(axe, 'problematique', i18n.language);
-
+    const isArabic = i18n.language === 'ar';
+    
+    // Gestionnaire de clic qui empêche la propagation et la navigation par défaut
+    const handleClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (onClick) {
+        onClick();
+      }
+    };
+    
   if (variant === 'compact') {
     return (
       <div 
         className={`group bg-card rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border cursor-pointer ${className}`}
-        onClick={onClick}
+        onClick={handleClick}
       >
-        <div className="flex items-start space-x-4">
+        <div className={`flex items-start ${isArabic ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
+
           <div className="flex-shrink-0">
             <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
               <Icon className="w-6 h-6 text-primary group-hover:text-primary-foreground" />
@@ -66,8 +77,8 @@ const AxeCard: React.FC<AxeCardProps> = ({
   if (variant === 'detailed') {
     return (
       <div 
-        className={`group bg-card rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border cursor-pointer ${className}`}
-        onClick={onClick}
+        className={`group bg-card rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border cursor-pointer h-full flex flex-col ${className}`}
+        onClick={handleClick}
       >
         <div className="flex items-center space-x-4 mb-4">
           <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
@@ -77,7 +88,7 @@ const AxeCard: React.FC<AxeCardProps> = ({
             {title}
           </h3>
         </div>
-        <p className="text-muted-foreground leading-relaxed">
+        <p className="text-muted-foreground leading-relaxed flex-1">
           {problematique}
         </p>
       </div>
@@ -88,7 +99,7 @@ const AxeCard: React.FC<AxeCardProps> = ({
   return (
     <div 
       className={`group bg-card rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border cursor-pointer ${className}`}
-      onClick={onClick}
+      onClick={handleClick}
     >
       <div className="flex items-start space-x-4">
         <div className="flex-shrink-0">

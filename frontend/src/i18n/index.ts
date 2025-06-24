@@ -26,6 +26,29 @@ import fr_galerie from './locales/fr/galerie.json';
 import en_galerie from './locales/en/galerie.json';
 import ar_galerie from './locales/ar/galerie.json';
 
+import fr_project from './locales/fr/project.json';
+import en_project from './locales/en/project.json';
+import ar_project from './locales/ar/project.json';
+
+import fr_publications from './locales/fr/publications.json';
+import en_publications from './locales/en/publications.json';
+import ar_publications from './locales/ar/publications.json';
+
+import fr_translation from './locales/fr/translation.json';
+import en_translation from './locales/en/translation.json';
+import ar_translation from './locales/ar/translation.json';
+
+import fr_prixDistinctions from './locales/fr/prixDistinctions.json';
+import en_prixDistinctions from './locales/en/prixDistinctions.json';
+import ar_prixDistinctions from './locales/ar/prixDistinctions.json';
+
+import fr_partenaires from './locales/fr/partenaires.json';
+import en_partenaires from './locales/en/partenaires.json';
+import ar_partenaires from './locales/ar/partenaires.json';
+ 
+
+
+
 i18n
   .use(LanguageDetector)     // détecte la langue automatiquement
   .use(initReactI18next)     // passe i18n à react-i18next
@@ -37,7 +60,12 @@ i18n
         membres: fr_membres,
         recherche: fr_recherche,
         contact: fr_contact,
-        galerie: fr_galerie
+        galerie: fr_galerie,
+        project: fr_project,
+        publications: fr_publications,
+        translation: fr_translation,
+        prixDistinctions: fr_prixDistinctions,
+        partenaires: fr_partenaires
       },
       en: { 
         header: en_header,
@@ -45,7 +73,12 @@ i18n
         membres: en_membres,
         recherche: en_recherche,
         contact: en_contact,
-        galerie: en_galerie
+        galerie: en_galerie,
+        project: en_project,
+        publications: en_publications,
+        translation: en_translation,
+        prixDistinctions: en_prixDistinctions,
+        partenaires: en_partenaires
       },
       ar: { 
         header: ar_header,
@@ -53,11 +86,16 @@ i18n
         membres: ar_membres,
         recherche: ar_recherche,
         contact: ar_contact,
-        galerie: ar_galerie
+        galerie: ar_galerie,
+        project: ar_project,
+        publications: ar_publications,
+        translation: ar_translation,
+        prixDistinctions: ar_prixDistinctions,
+        partenaires: ar_partenaires
       }
     },
     fallbackLng: 'fr',       // langue par défaut
-    ns: ['header', 'index', 'membres', 'recherche', 'contact', 'galerie'], // namespace(s) utilisés
+    ns: ['header', 'index', 'membres', 'recherche', 'contact', 'galerie', 'project', 'publications', 'translation', 'prixDistinctions', 'partenaires'], // namespace(s) utilisés
     defaultNS: 'header',
     interpolation: {
       escapeValue: false     // pas d'échappement HTML nécessaire

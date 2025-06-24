@@ -10,8 +10,12 @@ class PrixDistinction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'titre',
-        'description',
+        'titre_fr',
+        'titre_en',
+        'titre_ar',
+        'description_fr',
+        'description_en',
+        'description_ar',
         'date_obtention',
         'organisme',
         'image_url',

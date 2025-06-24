@@ -16,8 +16,12 @@ class PrixDistinctionTestSeeder extends Seeder
     {
         // Créer un prix de test
         $prix = PrixDistinction::create([
-            'titre' => 'Prix de Recherche Excellence',
-            'description' => 'Prix décerné pour l\'excellence en recherche',
+            'titre_fr' => 'Prix de Recherche Excellence',
+            'titre_en' => 'Research Excellence Award',
+            'titre_ar' => 'جائزة الاستكشاف المتقدمة',
+            'description_fr' => 'Prix décerné pour l\'excellence en recherche',
+            'description_en' => 'Award given for excellence in research',
+            'description_ar' => 'جائزة منحت للاستكشاف المتقدمة',
             'date_obtention' => '2024-01-15',
             'organisme' => 'Académie des Sciences',
             'image_url' => null,

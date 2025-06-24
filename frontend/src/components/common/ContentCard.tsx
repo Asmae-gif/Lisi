@@ -15,6 +15,7 @@ interface ContentCardProps {
   children?: React.ReactNode;
   className?: string;
   hoverEffect?: boolean;
+  currentLanguage?: string;
 }
 
 const ContentCard: React.FC<ContentCardProps> = ({
@@ -29,7 +30,8 @@ const ContentCard: React.FC<ContentCardProps> = ({
   externalLink,
   children,
   className = '',
-  hoverEffect = true
+  hoverEffect = true,
+  currentLanguage
 }) => {
   const cardClasses = `bg-card rounded-2xl p-6 shadow-lg border ${
     hoverEffect ? 'hover:shadow-xl transition-all duration-300 hover:-translate-y-2' : ''
@@ -66,7 +68,11 @@ const ContentCard: React.FC<ContentCardProps> = ({
 
       {/* Contenu principal */}
       <div className="space-y-3">
-        <h3 className="font-bold text-foreground leading-tight text-lg">
+        <h3
+          className="font-bold text-foreground leading-tight text-lg"
+          dir={currentLanguage === 'ar' ? 'rtl' : 'ltr'}
+          style={{ textAlign: currentLanguage === 'ar' ? 'right' : 'left' }}
+        >
           {title}
         </h3>
         
@@ -77,15 +83,19 @@ const ContentCard: React.FC<ContentCardProps> = ({
         )}
         
         {description && (
-          <p className="text-muted-foreground leading-relaxed">
+          <p
+            className="text-muted-foreground leading-relaxed"
+            dir={currentLanguage === 'ar' ? 'rtl' : 'ltr'}
+            style={{ textAlign: currentLanguage === 'ar' ? 'right' : 'left' }}
+          >
             {description}
           </p>
         )}
 
         {children}
 
-        {/* Liens */}
-        {(link || externalLink) && (
+        {/* Liens - Commentés pour éviter le double lien, car la carte entière est déjà un lien */}
+        {/* {(link || externalLink) && (
           <div className="pt-4">
             {link ? (
               <Link 
@@ -107,12 +117,12 @@ const ContentCard: React.FC<ContentCardProps> = ({
               </a>
             )}
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
 
-  // Si pas de lien, retourner juste le contenu
+  // Si la carte ne doit pas être un lien, retourner juste le contenu
   if (!link && !externalLink) {
     return <CardContent />;
   }

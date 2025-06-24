@@ -8,6 +8,7 @@ import { useGalerieSettings } from '@/hooks/useGalerieSettings';
 import { useTranslation } from 'react-i18next';
 import { buildImageUrl } from '@/utils/imageUtils';
 import LoadingSkeleton from '@/components/common/LoadingSkeleton';
+import PageContent from '@/components/common/PageContent';
 
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
@@ -197,25 +198,14 @@ const Gallery = () => {
       <Header />
       <main>
         {/* Hero Section */}
-        <section 
-          className="bg-gradient-to-br from-lisiGreen to-indigo-100 py-16"
-          style={settings.galerie_image ? {
-            backgroundImage: `url(${buildImageUrl(settings.galerie_image)})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          } : undefined}
+        <PageContent
+          hero
+          title={title}
+          subtitle={subtitle}
+          backgroundImage={settings.galerie_image ? buildImageUrl(settings.galerie_image) : undefined}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                <span className="block">{title}</span>
-              </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                {subtitle}
-              </p>
-            </div>
-          </div>
-        </section>
+            <></>
+        </PageContent>
 
         {/* Category Filter */}
         <section className="py-8 bg-white">

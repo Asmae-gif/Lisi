@@ -49,5 +49,5 @@ export const DEFAULT_MEMBRES_SETTINGS: MembreSettings = {
   membres_sous_titre_en: 'Discover the team of researchers, teachers and PhD students who make up our laboratory',
   membres_titre_ar: 'أعضاءنا',
   membres_sous_titre_ar: 'اكتشف فريق الباحثين والمعلمين وطلاب الدكتوراه الذين يشكلون مختبرنا',
-  membres_image: ''
+  membres_image: '/images/A_professional_web_header_background_image_with_di-1750593752409.png'
 } 

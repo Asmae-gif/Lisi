@@ -87,7 +87,19 @@ const Recherche= () => {
           key={axe.id} 
           axe={axe} 
           variant="detailed"
-          onClick={() => setActive(axe.slug)}
+          onClick={() => {
+            setActive(axe.slug);
+            // Défilement vers la section des onglets
+            setTimeout(() => {
+              const tabsSection = document.getElementById('tabs-section');
+              if (tabsSection) {
+                tabsSection.scrollIntoView({ 
+                  behavior: 'smooth',
+                  block: 'start'
+                });
+              }
+            }, 100);
+          }}
           className={active === axe.slug ? 'ring-2 ring-primary' : ''}
         />
       );
@@ -240,13 +252,16 @@ const Recherche= () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          <div
+  className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 items-stretch"
+  dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
+>
             {domainCards}
           </div>
         </div>
       </section>
 
-      <section className="py-20 px-4 bg-white">
+      <section id="tabs-section" className="py-20 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-12 text-center">
             {getContent('title_analysis', 'analysis.title')}

@@ -1,0 +1,45 @@
+import { useState, useEffect } from 'react';
+import axiosClient from '@/services/axiosClient';
+import { PublicationSettings, DEFAULT_PUBLICATIONS_SETTINGS } from '@/types/PublicationsSettings';
+
+export const usePublicationsSettings = () => {
+  const [settings, setSettings] = useState<PublicationSettings>(DEFAULT_PUBLICATIONS_SETTINGS);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        await axiosClient.get('/sanctum/csrf-cookie');
+        
+        const response = await axiosClient.get('/api/pages/publications/settings', {
+          headers: { 'Accept': 'application/json' }
+        });
+
+        const settingsData = response.data.data || response.data;
+
+        if (settingsData && typeof settingsData === 'object') {
+          setSettings({
+            ...DEFAULT_PUBLICATIONS_SETTINGS,
+            ...settingsData
+          });
+        } else {
+          setSettings(DEFAULT_PUBLICATIONS_SETTINGS);
+        }
+      } catch (err) {
+        console.error('Erreur lors du chargement des paramètres de publications:', err);
+        setError('Erreur lors du chargement des paramètres');
+        setSettings(DEFAULT_PUBLICATIONS_SETTINGS);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSettings();
+  }, []);
+
+  return { settings, loading, error };
+}; 
