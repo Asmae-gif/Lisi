@@ -110,6 +110,7 @@ export interface User {
     loginWithGoogle: () => Promise<void>;
     logout: () => Promise<void>;
     clearError: () => void;
+    checkAuth: (force?: boolean) => Promise<void>;
   }
   
   export interface AuthError {

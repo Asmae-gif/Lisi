@@ -18,8 +18,16 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
  */
 const initialState: AuthState = {
   user: null,
-  loading: true,
+  loading: false,
   error: null,
+};
+
+/**
+ * Vérifie si une route nécessite une authentification
+ */
+const isProtectedRoute = (pathname: string): boolean => {
+  const protectedRoutes = ['/dashboard', '/profile'];
+  return protectedRoutes.some(route => pathname.startsWith(route));
 };
 
 /**
@@ -33,10 +41,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   /**
    * Vérifie l'état d'authentification actuel de l'utilisateur
    */
-  const checkAuth = useCallback(async () => {
+  const checkAuth = useCallback(async (force: boolean = false) => {
+    // Ne pas vérifier automatiquement si on n'est pas sur une route protégée
+    if (!force && typeof window !== 'undefined') {
+      const currentPath = window.location.pathname;
+      if (!isProtectedRoute(currentPath)) {
+        setState((prev: AuthState) => ({ ...prev, loading: false }));
+        return;
+      }
+    }
+
+    setState((prev: AuthState) => ({ ...prev, loading: true }));
+    
     try {
       const { data } = await axiosClient.get<User>('/api/user');
-      setState((prev: AuthState) => ({ ...prev, user: data, error: null }));
+      setState((prev: AuthState) => ({ ...prev, user: data, error: null, loading: false }));
     } catch (error) {
       const authError = error as AuthError;
       // Ne pas afficher d'erreur pour les 401 (utilisateur non connecté)
@@ -44,17 +63,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setState((prev: AuthState) => ({
           ...prev,
           user: null,
-          error: null // Pas d'erreur pour un utilisateur non connecté
+          error: null, // Pas d'erreur pour un utilisateur non connecté
+          loading: false
         }));
       } else {
         setState((prev: AuthState) => ({
           ...prev,
           user: null,
-          error: authError.message || 'Erreur lors de la vérification de l\'authentification'
+          error: authError.message || 'Erreur lors de la vérification de l\'authentification',
+          loading: false
         }));
       }
-    } finally {
-      setState((prev: AuthState) => ({ ...prev, loading: false }));
     }
   }, []);
 
@@ -99,7 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Nettoyer les paramètres d'URL
           socialAuthService.cleanupSocialLoginParams();
         } else {
-          // Vérification normale de l'authentification
+          // Vérification conditionnelle de l'authentification selon la route
           await checkAuth();
         }
       } catch (error) {
@@ -206,7 +225,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ ...state, login, loginWithGoogle, logout, clearError }}>
+    <AuthContext.Provider value={{ ...state, login, loginWithGoogle, logout, clearError, checkAuth }}>
       {children}
     </AuthContext.Provider>
   );
