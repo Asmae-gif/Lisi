@@ -1,4 +1,4 @@
-import  { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { projectApi } from '../services/projectApi';
 import ContentCard from '@/components/common/ContentCard';
 import ContentGrid from '@/components/common/ContentGrid';
@@ -7,141 +7,136 @@ import { useTranslation } from 'react-i18next';
 import { Project } from '@/types/project';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useProjectSettings } from '@/hooks/useProjectSettings'; // Import the new hook
-import { buildImageUrl } from '@/utils/imageUtils'; // Import buildImageUrl
+import { useProjectSettings } from '@/hooks/useProjectSettings';
+import { buildImageUrl } from '@/utils/imageUtils';
+import { ProjectSettings } from '@/types/ProjectSettings';
 
 export default function Projects() {
-    const [projects, setProjects] = useState<Project[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedStatus, setSelectedStatus] = useState('all');
-    const { t, i18n } = useTranslation('project');
-    const { settings, loading: settingsLoading, error: settingsError } = useProjectSettings(); // Use the new hook
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const { t, i18n } = useTranslation('project');
+  const { settings, loading: settingsLoading, error: settingsError } = useProjectSettings();
 
-    const fetchProjects = async () => {
-        try {
-            setLoading(true);
-            const response = await projectApi.getAll();
-            setProjects(response.data);
-            setError(null);
-        } catch (error) {
-            console.error('Error fetching projects:', error);
-            setError(t('error_loading_projects')); // Translate error message
-        } finally {
-            setLoading(false);
-        }
-    };
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      const response = await projectApi.getAll();
+      setProjects(response.data);
+      setError(null);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      setError(t('error_loading_projects'));
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    useEffect(() => {
-        fetchProjects();
-    }, []);
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
-    const getStatusColor = (status: string) => {
-        if (!status) return 'bg-gray-100 text-gray-800';
-        
-        switch (status.toLowerCase()) {
-            case 'en cours':
-                return 'bg-blue-100 text-blue-800';
-            case 'terminé':
-                return 'bg-green-100 text-green-800';
-            case 'en attente':
-                return 'bg-yellow-100 text-yellow-800';
-            case 'annulé':
-                return 'bg-red-100 text-red-800';
-            default:
-                return 'bg-gray-100 text-gray-800';
-        }
-    };
+  const getLocalizedField = (
+    settings: ProjectSettings,
+    baseKey: string,
+    lang: string,
+    fallback: string
+  ) => {
+    return settings?.[`${baseKey}_${lang}`] || settings?.[`${baseKey}_fr`] || fallback;
+  };
 
-    // Options de filtres
-    const filterOptions = useMemo(() => {
-        const statuses = [...new Set(projects.map(p => p.status || 'Non défini'))];
-        return statuses.map(status => ({
-            value: status.toLowerCase(),
-            label: status,
-            count: projects.filter(p => (p.status || 'Non défini').toLowerCase() === status.toLowerCase()).length
-        }));
-    }, [projects]);
+  const mapStatusToKey = (status?: string) => {
+    switch (status?.toLowerCase()) {
+      case 'en cours': return 'status_in_progress';
+      case 'terminé': return 'status_finished';
+      case 'en attente': return 'status_pending';
+      case 'annulé': return 'status_cancelled';
+      default: return 'status_not_defined';
+    }
+  };
 
-    // Filtrage des projets
-    const filteredProjects = useMemo(() => {
-        return projects.filter(project => {
-            const projectTitleFr = project.name_fr || '';
-            const projectTitleEn = project.name_en || '';
-            const projectTitleAr = project.name_ar || '';
-            const projectDescriptionFr = project.description_fr || '';
-            const projectDescriptionEn = project.description_en || '';
-            const projectDescriptionAr = project.description_ar || '';
-            const projectStatus = project.status || '';
-            
-            const matchesSearch = projectTitleFr.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                projectTitleEn.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                projectTitleAr.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                projectDescriptionFr.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                projectDescriptionEn.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                projectDescriptionAr.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesStatus = selectedStatus === 'all' || projectStatus.toLowerCase() === selectedStatus;
-            return matchesSearch && matchesStatus;
-        });
-    }, [projects, searchTerm, selectedStatus]);
+  const getStatusColor = (status: string) => {
+    if (!status) return 'bg-gray-100 text-gray-800';
+    switch (status.toLowerCase()) {
+      case 'en cours': return 'bg-blue-100 text-blue-800';
+      case 'terminé': return 'bg-green-100 text-green-800';
+      case 'en attente': return 'bg-yellow-100 text-yellow-800';
+      case 'annulé': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
 
-    const getProjectTitle = (project: Project) => {
-        switch (i18n.language) {
-            case 'fr': return project.name_fr || project.name || t('title_not_defined');
-            case 'en': return project.name_en || project.name || t('title_not_defined_en');
-            case 'ar': return project.name_ar || project.name || t('title_not_defined_ar');
-            default: return project.name || t('title_not_defined');
-        }
-    };
+  const filterOptions = useMemo(() => {
+    const statuses = [...new Set(projects.map(p => p.status || 'Non défini'))];
+    return statuses.map(status => ({
+      value: status.toLowerCase(),
+      label: status,
+      count: projects.filter(p => (p.status || 'Non défini').toLowerCase() === status.toLowerCase()).length
+    }));
+  }, [projects]);
 
-    const getProjectDescription = (project: Project) => {
-        switch (i18n.language) {
-            case 'fr': return project.description_fr || project.description || t('description_not_available');
-            case 'en': return project.description_en || project.description || t('description_not_available_en');
-            case 'ar': return project.description_ar || project.description || t('description_not_available_ar');
-            default: return project.description || t('description_not_available');
-        }
-    };
+  const filteredProjects = useMemo(() => {
+    return projects.filter(project => {
+      const titles = [project.name_fr, project.name_en, project.name_ar].map(t => t || '');
+      const descriptions = [project.description_fr, project.description_en, project.description_ar].map(d => d || '');
+      const matchesSearch = [...titles, ...descriptions].some(text =>
+        text.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      const matchesStatus = selectedStatus === 'all' || (project.status || '').toLowerCase() === selectedStatus;
+      return matchesSearch && matchesStatus;
+    });
+  }, [projects, searchTerm, selectedStatus]);
 
-    const heroTitle = settings[`projet_titre_${i18n.language}` as keyof typeof settings] || settings.projet_titre_fr;
-    const heroSubtitle = settings[`projet_sous_titre_${i18n.language}` as keyof typeof settings] || settings.projet_sous_titre_fr;
+  const getProjectTitle = (project: Project) => {
+    switch (i18n.language) {
+      case 'fr': return project.name_fr || project.name || t('title_not_defined');
+      case 'en': return project.name_en || project.name || t('title_not_defined_en');
+      case 'ar': return project.name_ar || project.name || t('title_not_defined_ar');
+      default: return project.name || t('title_not_defined');
+    }
+  };
 
-    return (
-        <div className="min-h-screen bg-background">
-            <Header />
-            {/* Section hero */}
-            <section
-                className="bg-gradient-to-br from-green-50 to-indigo-100 py-16"
-                style={settings.projet_image ? {
-                    backgroundImage: `url(${buildImageUrl(settings.projet_image)})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                } : undefined}
-            >
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center">
-                        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                            {heroTitle || t('project_hero_title_default')}
-                        </h1>
-                        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                            {heroSubtitle || t('project_hero_subtitle_default')}
-                        </p>
-                    </div>
-                </div>
-            </section>
+  const getProjectDescription = (project: Project) => {
+    switch (i18n.language) {
+      case 'fr': return project.description_fr || project.description || t('description_not_available');
+      case 'en': return project.description_en || project.description || t('description_not_available_en');
+      case 'ar': return project.description_ar || project.description || t('description_not_available_ar');
+      default: return project.description || t('description_not_available');
+    }
+  };
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <section className="py-20 px-4">
-                {/* Barre de filtres */}
-                <FilterBar
-                    searchPlaceholder={t('search_project_placeholder')}
-                    searchValue={searchTerm}
-                    onSearchChange={setSearchTerm}
-                    filterOptions={filterOptions}
-                    selectedFilter={selectedStatus}
-                    onFilterChange={setSelectedStatus}
-                />
+  const heroTitle = getLocalizedField(settings, 'projet_titre', i18n.language, t('project_hero_title_default'));
+  const heroSubtitle = getLocalizedField(settings, 'projet_sous_titre', i18n.language, t('project_hero_subtitle_default'));
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <section
+        className="bg-gradient-to-br from-green-50 to-indigo-100 py-16"
+        style={settings.projet_image ? {
+          backgroundImage: `url(${buildImageUrl(settings.projet_image)})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        } : undefined}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">{heroTitle}</h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">{heroSubtitle}</p>
+        </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-20 px-4">
+          <FilterBar
+            searchPlaceholder={t('search_project_placeholder')}
+            searchValue={searchTerm}
+            onSearchChange={setSearchTerm}
+            filterOptions={filterOptions}
+            selectedFilter={selectedStatus}
+            onFilterChange={setSelectedStatus}
+          />
 
                 {/* Statistiques */}
                 <div className="mb-8">

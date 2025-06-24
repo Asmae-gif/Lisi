@@ -5,106 +5,93 @@ import ContentGrid from '@/components/common/ContentGrid';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useTranslation } from 'react-i18next';
-import { PartenaireSettings, DEFAULT_PARTENAIRE_SETTINGS } from '@/types/PartenaireSettings';
-import axiosClient from '@/services/axiosClient';
+import { PartenaireSettings } from '@/types/PartenaireSettings';
+import { usePartenaireSettings } from '@/hooks/usePartenaireSettings';
 import { buildImageUrl } from '@/utils/imageUtils';
 
 interface Partenaire {
-    id: number;
-    nom_fr: string;
-    nom_en: string;
-    nom_ar: string;
-    logo?: string;
-    lien?: string;
-    created_at: string;
-    updated_at: string;
+  id: number;
+  nom_fr: string;
+  nom_en: string;
+  nom_ar: string;
+  logo?: string;
+  lien?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export default function Partenaires() {
-    const [partenaires, setPartenaires] = useState<Partenaire[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [settings, setSettings] = useState<PartenaireSettings>(DEFAULT_PARTENAIRE_SETTINGS);
-    const { t, i18n } = useTranslation('partenaires');
-    const currentLang = i18n.language;
+  const [partenaires, setPartenaires] = useState<Partenaire[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { t, i18n } = useTranslation('partenaires');
+  const currentLang = i18n.language;
+  const { settings, loading: settingsLoading, error: settingsError } = usePartenaireSettings();
 
-    const getSettings = async () => {
-        try {
-            const response = await axiosClient.get('/api/pages/partenaires/settings');
-            if (response.data.data) {
-                setSettings(response.data.data);
-            }
-        } catch (error) {
-            console.error('Error fetching settings:', error);
-        }
+  useEffect(() => {
+    const fetchPartenaires = async () => {
+      try {
+        setLoading(true);
+        const response = await partenaireApi.getAll();
+        setPartenaires(response.data.data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching partenaires:', err);
+        setError(t('errors.loadingPartenaires'));
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const getPartenaires = async () => {
-        try {
-            setLoading(true);
-            const response = await partenaireApi.getAll();
-            setPartenaires(response.data.data);
-            setError(null);
-        } catch (error) {
-            console.error('Error fetching partenaires:', error);
-            setError(t('errors.loadingPartenaires'));
-        } finally {
-            setLoading(false);
-        }
-    };
+    fetchPartenaires();
+  }, [t]);
 
-    useEffect(() => {
-        getPartenaires();
-        getSettings();
-    }, []);
+  const getLocalizedTitle = (partenaire: Partenaire) => {
+    switch (currentLang) {
+      case 'en':
+        return partenaire.nom_en || partenaire.nom_fr;
+      case 'ar':
+        return partenaire.nom_ar || partenaire.nom_fr;
+      default:
+        return partenaire.nom_fr;
+    }
+  };
 
-    const getLocalizedTitle = (partenaire: Partenaire) => {
-        switch(currentLang) {
-            case 'en':
-                return partenaire.nom_en || partenaire.nom_fr;
-            case 'ar':
-                return partenaire.nom_ar || partenaire.nom_fr;
-            default:
-                return partenaire.nom_fr;
-        }
-    };
+  const getLocalizedField = (baseKey: string) => {
+    return settings?.[`${baseKey}_${currentLang}` as keyof PartenaireSettings]
+      || settings?.[`${baseKey}_fr` as keyof PartenaireSettings]
+      || '';
+  };
 
-    const getLocalizedHeading = () => {
-        const key = `partenaire_heading_${currentLang}` as keyof PartenaireSettings;
-        return settings?.[key] || settings?.partenaire_heading_fr || "Collaborations d'Excellence";
-    };
+  const heroTitle = getLocalizedField('partenaire_titre') || t('project_hero_title_default');
+  const heroSubtitle = getLocalizedField('partenaire_sous_titre') || t('project_hero_subtitle_default');
+  const heading = getLocalizedField('partenaire_heading') || t('default_heading');
+  const description = getLocalizedField('partenaire_description') || t('default_description');
 
-    const getLocalizedDescription = () => {
-        const key = `partenaire_description_${currentLang}` as keyof PartenaireSettings;
-        return settings?.[key] || settings?.partenaire_description_fr || "Notre réseau de partenaires comprend des institutions académiques de renommée mondiale, des centres de recherche innovants et des entreprises technologiques de pointe. Ces collaborations nous permettent de mener des projets ambitieux et de contribuer significativement à l'avancement des connaissances scientifiques.";
-    };
+  return (
+    <div className={`min-h-screen bg-white ${currentLang === 'ar' ? 'rtl' : 'ltr'}`}>
+      <Header />
 
-    const heroTitle = settings?.[`partenaire_titre_${i18n.language}` as keyof typeof settings] || settings?.partenaire_titre_fr;
-    const heroSubtitle = settings?.[`partenaire_sous_titre_${i18n.language}` as keyof typeof settings] || settings?.partenaire_sous_titre_fr;
-
-    return (
-        <div className={`min-h-screen bg-white ${currentLang === 'ar' ? 'rtl' : 'ltr'}`}>
-            <Header />
-           
-            {/* Hero Section */}
-            <section className="bg-gradient-to-br from-green-50 to-indigo-100 py-16"
-                style={settings?.partenaire_image ? {
-                    backgroundImage: `url(${buildImageUrl(settings.partenaire_image)})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                } : undefined}
-            >
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center">
-                        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                            {heroTitle || t('project_hero_title_default')}
-                        </h1>
-                        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                            {heroSubtitle || t('project_hero_subtitle_default')}
-                        </p>
-                    </div>
-                </div>
-            </section>
+      {/* Hero Section */}
+      <section
+        className="bg-gradient-to-br from-green-50 to-indigo-100 py-16"
+        style={settings?.partenaire_image ? {
+          backgroundImage: `url(${buildImageUrl(settings.partenaire_image)})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        } : undefined}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              {heroTitle}
+            </h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              {heroSubtitle}
+            </p>
+          </div>
+        </div>
+      </section>
 
             {/* Contenu principal */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 px-4">
@@ -168,10 +155,10 @@ export default function Partenaires() {
                 <div className="mb-8 bg-gradient-to-r from-gray-50 to-gray-100 p-8 rounded-2xl border border-gray-200">
                     <div className="text-center max-w-4xl mx-auto">
                         <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                            {getLocalizedHeading()}
+                            {getLocalizedField('partenaire_heading')}
                         </h2>
                         <p className="text-lg text-gray-700 leading-relaxed">
-                            {getLocalizedDescription()}
+                            {getLocalizedField('partenaire_description')}
                         </p>
                     </div>
                 </div>

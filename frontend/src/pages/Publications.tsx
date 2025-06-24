@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { publicationApi } from '../services/publicationApi';
-import PageContent from '@/components/common/PageContent';
 import ContentCard from '@/components/common/ContentCard';
 import ContentGrid from '@/components/common/ContentGrid';
 import FilterBar from '@/components/common/FilterBar';
