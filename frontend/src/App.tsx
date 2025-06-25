@@ -20,6 +20,7 @@ import AxesDashboard from './pages/dashboard/Axes/AxesDashboard'
 import ProtectedRoute from './components/dashboard/ProtectedRoute';
 import SettingsRecherche from "@/pages/Parametres/SettingsRecherche";
 import SettingsMembres from "@/pages/Parametres/SettingsMembres";
+import SettingsActivityReports from "@/pages/Parametres/SettingsActivityReports";
 import SettingsGalerie from "@/pages/Parametres/SettingsGalerie";
 import SettingsIndex from "./pages/Parametres/SettingsIndex.tsx";
 import Contact from "./pages/Contact";
@@ -48,6 +49,9 @@ import SettingsPublications from "./pages/Parametres/SettingsPublications";
 import SettingsProjet from "./pages/Parametres/SettingsProjets";
 import SettingsPrixDistinctions from "./pages/Parametres/SettingsPrixDistinctions";
 import SettingsPartenaires from "./pages/Parametres/SettingsPartenaires";
+import AdminActivityReports from './pages/dashboard/AdminActivityReports';
+import PublicActivityReports from './pages/ActivityReports';
+    
 
 const queryClient = new QueryClient();
 
@@ -81,6 +85,8 @@ const AppContent = () => {
         <Route path="/publications/:id" element={<PublicationDetail />} />
         <Route path="/prix-distinctions" element={<PrixDistinctions />} />
         <Route path="/partenaires" element={<Partenaires />} />
+        <Route path="/activity-reports" element={<PublicActivityReports />} />
+        <Route path="/rapports-activite" element={<PublicActivityReports />} />
         <Route 
           path="/profile" 
           element={
@@ -108,6 +114,7 @@ const AppContent = () => {
           <Route path="parametres" element={<ProtectedRoute><Parametres /></ProtectedRoute>} />
           <Route path="settings-recherche" element={<ProtectedRoute><SettingsRecherche /></ProtectedRoute>} />
           <Route path="settings-membres" element={<ProtectedRoute><SettingsMembres /></ProtectedRoute>} />
+          <Route path="settings-activity-reports" element={<ProtectedRoute><SettingsActivityReports /></ProtectedRoute>} />
           <Route path="settings-publications" element={<ProtectedRoute><SettingsPublications /></ProtectedRoute>} />
           <Route path="settings-galerie" element={<ProtectedRoute><SettingsGalerie /></ProtectedRoute>} />
           <Route path="settings-index" element={<ProtectedRoute><SettingsIndex /></ProtectedRoute>} />
@@ -122,6 +129,7 @@ const AppContent = () => {
           <Route path="partenaires" element={<ProtectedRoute><PartenairesDashboard /></ProtectedRoute>} />
           <Route path="histoire" element={<ProtectedRoute><Histoire /></ProtectedRoute>} />
           <Route path="prix-distinctions" element={<ProtectedRoute><PrixDistinctionsDashboard /></ProtectedRoute>} />
+          <Route path="activity-reports" element={<ProtectedRoute><AdminActivityReports /></ProtectedRoute>} />
          
         </Route>
 

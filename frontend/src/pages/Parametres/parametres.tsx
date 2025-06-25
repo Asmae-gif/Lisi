@@ -84,6 +84,13 @@ const parametresPages = [
     description: 'Configuration des paramètres de sécurité et permissions',
     icon: Shield,
     color: 'bg-yellow-500'
+  },
+  { 
+    path: '/dashboard/settings-activity-reports', 
+    name: 'Paramètres des rapports d\'activités',
+    description: 'Configuration des titres et descriptions de la section rapports d\'activités',
+    icon: FileText,
+    color: 'bg-indigo-500'
   }
 ];
 

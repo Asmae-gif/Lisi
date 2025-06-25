@@ -2,6 +2,7 @@ import axiosClient from './axiosClient';
 import { IndexSettings } from '../types/indexSettings';
 import { RechercheSettings } from '../types/rechercheSettings';
 import { MembreSettings } from '../types/MembresSettings';
+import { ActivityReportsSettings } from '../types/ActivityReportsSettings';
 
 /**
  * Service API unifié pour tous les paramètres
@@ -187,9 +188,27 @@ export const equipeSettingsApi = {
   }
 };
 
+/**
+ * Service pour les paramètres de la page rapports d'activité
+ */
+export const activityReportsSettingsApi = {
+  async getSettings(): Promise<ActivityReportsSettings> {
+    return settingsUtils.getSettings<ActivityReportsSettings>('activity-reports');
+  },
+
+  async updateSettings(settings: Partial<ActivityReportsSettings>, files?: Record<string, File>): Promise<ActivityReportsSettings> {
+    return settingsUtils.updateSettings<ActivityReportsSettings>('activity-reports', settings, files);
+  },
+
+  async deleteImage(imageKey: string): Promise<SettingsApiResponse<unknown>> {
+    return settingsUtils.deleteImage('activity-reports', imageKey);
+  }
+};
+
 // Export par défaut pour compatibilité
 export default {
   index: indexSettingsApi,
   recherche: rechercheSettingsApi,
-  equipe: equipeSettingsApi
+  equipe: equipeSettingsApi,
+  activityReports: activityReportsSettingsApi
 }; 

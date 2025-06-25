@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => ({
         target: 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        // Ne pas supprimer /api car Laravel l'attend
       },
     },
   },

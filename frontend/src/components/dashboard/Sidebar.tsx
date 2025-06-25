@@ -17,6 +17,7 @@ export function Sidebar() {
     { path: '/dashboard/partenaires', icon: Building2, label: 'Partenaires' },
     { path: '/dashboard/contact', icon: Contact, label: 'Contact' },
     { path: '/dashboard/gallery', icon: Image, label: 'Galerie' },
+    { path: '/dashboard/activity-reports', icon: FileText, label: 'Activités' },
   ];
 
   return (

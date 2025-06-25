@@ -19,7 +19,7 @@ import { Edit, Trash2, Eye } from "lucide-react"
 interface Column<T> {
   key: keyof T
   label: string
-  render?: (value: unknown) => React.ReactNode
+  render?: (value: unknown, item?: T) => React.ReactNode
 }
 
 interface DataTableProps<T> {
@@ -46,7 +46,8 @@ export function DataTable<T extends { id: number }>({
       header: col.label,
       cell: ({ row }: { row: Row<T> }) => {
         const value = row.getValue(col.key as string)
-        return col.render ? col.render(value) : value
+        const item = row.original
+        return col.render ? col.render(value, item) : value
       },
     })),
     {

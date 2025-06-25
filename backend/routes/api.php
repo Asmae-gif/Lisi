@@ -39,6 +39,8 @@ use App\Http\Controllers\Api\HistoireController;
 use App\Http\Controllers\Api\ProjetFinanceController;
 use App\Http\Controllers\Api\ProjetIncubeController;
 use App\Http\Controllers\Api\PrixDistinctionController;
+use App\Http\Controllers\Api\ActivityReportController;
+
 
 // Autres Controllers
 use App\Http\Controllers\Api\ProjectController;
@@ -110,6 +112,20 @@ Route::prefix('prix-distinctions')->group(function () {
     Route::put('/{prix_distinction}', [PrixDistinctionController::class, 'update']);
     Route::delete('/{prix_distinction}', [PrixDistinctionController::class, 'destroy']);
 });
+
+// Routes publiques pour les rapports d'activité
+Route::prefix('activity-reports')->group(function () {
+    Route::get('/', [ActivityReportController::class, 'index']);
+    Route::get('/{activityReport}', [ActivityReportController::class, 'show']);
+});
+
+// Routes protégées pour les rapports d'activité (admin uniquement)
+Route::middleware('auth:sanctum')->prefix('activity-reports')->group(function () {
+    Route::post('/', [ActivityReportController::class, 'store']);
+    Route::put('/{activityReport}', [ActivityReportController::class, 'update']);
+    Route::delete('/{activityReport}', [ActivityReportController::class, 'destroy']);
+});
+
 
 // Routes publiques pour les partenaires
 Route::prefix('partenaires')->group(function () {

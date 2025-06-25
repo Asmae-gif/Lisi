@@ -20,7 +20,8 @@ export const navigationItems = [
       { key: 'prix-distinctions', path: '/prix-distinctions', label: 'Prix et Distinctions' },
       { key: 'partenaires', path: '/partenaires', label: 'Partenaires' },
       { key: 'gallery', path: '/gallerie', label: 'gallery' },
-      { key: 'equipes', path: '/equipes', label: 'equipes' }
+      { key: 'equipes', path: '/equipes', label: 'equipes' },
+      { key: 'activity-reports', path: '/activity-reports', label: 'Activités' }
     ]
   },
   { key: 'contact', path: '/contact', label: 'contact' }
