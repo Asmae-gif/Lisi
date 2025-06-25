@@ -10,7 +10,9 @@ export const usePartenaireSettings = () => {
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        await axiosClient.get('/sanctum/csrf-cookie');
+        setLoading(true);
+        setError(null);
+        
         const response = await axiosClient.get('/api/pages/partenaires/settings', {
           headers: { Accept: 'application/json' }
         });
@@ -19,7 +21,8 @@ export const usePartenaireSettings = () => {
         if (data && typeof data === 'object') {
           setSettings({ ...DEFAULT_PARTENAIRE_SETTINGS, ...data });
         } else {
-          throw new Error('Format de données invalide');
+          console.warn('Format de données invalide, utilisation des paramètres par défaut');
+          setSettings(DEFAULT_PARTENAIRE_SETTINGS);
         }
       } catch (err) {
         console.error('Erreur chargement paramètres partenaires :', err);

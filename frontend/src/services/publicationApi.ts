@@ -1,8 +1,8 @@
-import axios from '../lib/axios';
+import axiosClient from '@/services/axiosClient';
 
 export const publicationApi = {
-    getAll: () => axios.get('/api/publications'),
-    getOne: (id: number) => axios.get(`/api/publications/${id}`),
+    getAll: () => axiosClient.get('/api/publications'),
+    getOne: (id: number) => axiosClient.get(`/api/publications/${id}`),
 };
 
 export default publicationApi;

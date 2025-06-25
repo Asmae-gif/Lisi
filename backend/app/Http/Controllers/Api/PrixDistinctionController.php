@@ -163,7 +163,7 @@ class PrixDistinctionController extends Controller
     public function show(PrixDistinction $prixDistinction)
     {
         try {
-            $prix = $prixDistinction->load('membre');
+            $prix = $prixDistinction->load('membres');
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -175,11 +175,18 @@ class PrixDistinctionController extends Controller
                     'description_en' => $prix->description_en,
                     'description_ar' => $prix->description_ar,
                     'date_obtention' => $prix->date_obtention,
-                    'membre_id' => $prix->membre_id,
-                    'membre' => $prix->membre ? [
-                        'nom' => $prix->membre->nom,
-                        'prenom' => $prix->membre->prenom
-                    ] : null,
+                    'organisme' => $prix->organisme,
+                    'image_url' => $prix->image_url,
+                    'lien_externe' => $prix->lien_externe,
+                    'membres' => $prix->membres->map(function ($membre) {
+                        return [
+                            'id' => $membre->id,
+                            'nom' => $membre->nom,
+                            'prenom' => $membre->prenom,
+                            'role' => $membre->pivot->role,
+                            'ordre' => $membre->pivot->ordre
+                        ];
+                    }),
                     'created_at' => $prix->created_at,
                     'updated_at' => $prix->updated_at
                 ],
@@ -201,7 +208,7 @@ class PrixDistinctionController extends Controller
     {
         try {
             $validated = $request->validate([
-                'titre_fr' => 'sometimes|string|max:255', // Accepter 'nom' du frontend
+                'titre_fr' => 'sometimes|string|max:255',
                 'titre_en' => 'nullable|string|max:255',
                 'titre_ar' => 'nullable|string|max:255',
                 'description_fr' => 'nullable|string',
@@ -211,16 +218,36 @@ class PrixDistinctionController extends Controller
                 'organisme' => 'nullable|string|max:255',
                 'image_url' => 'nullable|string|max:255',
                 'lien_externe' => 'nullable|string|max:255',
-                'membre_id' => 'sometimes|exists:membres,id',
+                'membres' => 'sometimes|array',
+                'membres.*.membre_id' => 'required_with:membres|exists:membres,id',
+                'membres.*.role' => 'nullable|string|max:255',
+                'membres.*.ordre' => 'nullable|integer|min:0',
             ]);
             
-            // Mapper 'nom' vers 'titre' pour la base de données
-            if (isset($validated['nom'])) {
-                $validated['titre'] = $validated['nom'];
-                unset($validated['nom']);
+            // Extraire les membres des données validées
+            $membres = $validated['membres'] ?? null;
+            unset($validated['membres']);
+            
+            // Mettre à jour le prix/distinction
+            $prixDistinction->update($validated);
+            
+            // Mettre à jour les membres si fournis
+            if ($membres !== null) {
+                // Supprimer tous les membres existants
+                $prixDistinction->membres()->detach();
+                
+                // Ajouter les nouveaux membres
+                foreach ($membres as $membreData) {
+                    $prixDistinction->addMembre(
+                        Membre::find($membreData['membre_id']),
+                        $membreData['role'] ?? null,
+                        $membreData['ordre'] ?? 0
+                    );
+                }
             }
             
-            $prixDistinction->update($validated);
+            // Recharger avec les membres pour la réponse
+            $prixDistinction->load('membres');
             
             // Retourner dans le format attendu par le frontend
             return response()->json([
@@ -234,11 +261,18 @@ class PrixDistinctionController extends Controller
                     'description_en' => $prixDistinction->description_en,
                     'description_ar' => $prixDistinction->description_ar,
                     'date_obtention' => $prixDistinction->date_obtention,
-                    'membre_id' => $prixDistinction->membre_id,
-                    'membre' => $prixDistinction->membre ? [
-                        'nom' => $prixDistinction->membre->nom,
-                        'prenom' => $prixDistinction->membre->prenom
-                    ] : null,
+                    'organisme' => $prixDistinction->organisme,
+                    'image_url' => $prixDistinction->image_url,
+                    'lien_externe' => $prixDistinction->lien_externe,
+                    'membres' => $prixDistinction->membres->map(function ($membre) {
+                        return [
+                            'id' => $membre->id,
+                            'nom' => $membre->nom,
+                            'prenom' => $membre->prenom,
+                            'role' => $membre->pivot->role,
+                            'ordre' => $membre->pivot->ordre
+                        ];
+                    }),
                     'created_at' => $prixDistinction->created_at,
                     'updated_at' => $prixDistinction->updated_at
                 ],
@@ -276,7 +310,9 @@ class PrixDistinctionController extends Controller
     public function byMembre($membreId)
     {
         try {
-            $prix = PrixDistinction::where('membre_id', $membreId)->get();
+            $prix = PrixDistinction::whereHas('membres', function ($query) use ($membreId) {
+                $query->where('membres.id', $membreId);
+            })->with('membres')->get();
             
             // Transformer les données pour correspondre au format attendu par le frontend
             $transformedPrix = $prix->map(function ($item) {
@@ -289,11 +325,18 @@ class PrixDistinctionController extends Controller
                     'description_en' => $item->description_en,
                     'description_ar' => $item->description_ar,
                     'date_obtention' => $item->date_obtention,
-                    'membre_id' => $item->membre_id,
-                    'membre' => $item->membre ? [
-                        'nom' => $item->membre->nom,
-                        'prenom' => $item->membre->prenom
-                    ] : null,
+                    'organisme' => $item->organisme,
+                    'image_url' => $item->image_url,
+                    'lien_externe' => $item->lien_externe,
+                    'membres' => $item->membres->map(function ($membre) {
+                        return [
+                            'id' => $membre->id,
+                            'nom' => $membre->nom,
+                            'prenom' => $membre->prenom,
+                            'role' => $membre->pivot->role,
+                            'ordre' => $membre->pivot->ordre
+                        ];
+                    }),
                     'created_at' => $item->created_at,
                     'updated_at' => $item->updated_at
                 ];

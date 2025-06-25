@@ -4,6 +4,7 @@ import ContentCard from '@/components/common/ContentCard';
 import ContentGrid from '@/components/common/ContentGrid';
 import FilterBar from '@/components/common/FilterBar';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { useTranslation } from 'react-i18next';
 import { buildImageUrl } from '@/utils/imageUtils';
 import { usePublicationsSettings } from '@/hooks/usePublicationsSettings';
@@ -84,12 +85,19 @@ export default function Publications() {
     const fetchPublications = async () => {
         try {
             setLoading(true);
-            const response = await publicationApi.getAll();
-            setPublications(response.data);
             setError(null);
+            const response = await publicationApi.getAll();
+            const data = response.data.data || response.data;
+            if (Array.isArray(data)) {
+              setPublications(data);
+            } else {
+              console.warn('Format de données invalide pour les publications');
+              setPublications([]);
+            }
         } catch (error) {
             console.error('Error fetching publications:', error);
             setError('Erreur lors du chargement des publications');
+            setPublications([]);
         } finally {
             setLoading(false);
         }
@@ -180,8 +188,12 @@ export default function Publications() {
         <div className="min-h-screen bg-white">
           <Header />
           <div className="flex items-center justify-center min-h-[50vh]">
-            <span className="text-gray-500 text-lg">Chargement...</span>
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <span className="text-gray-500 text-lg">Chargement des publications...</span>
+            </div>
           </div>
+          <Footer />
         </div>
       );
     }
@@ -191,8 +203,23 @@ export default function Publications() {
         <div className="min-h-screen bg-white">
           <Header />
           <div className="flex items-center justify-center min-h-[50vh]">
-            <p className="text-red-600">{error || settingsError}</p>
+            <div className="text-center max-w-md mx-auto px-4">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Erreur de chargement</h3>
+              <p className="text-gray-600 mb-4">{error || settingsError}</p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Réessayer
+              </button>
+            </div>
           </div>
+          <Footer />
         </div>
       );
     }
@@ -225,80 +252,80 @@ console.log('filteredPublications:', filteredPublications);
         </section>
 
         {/* Contenu principal */}
-       
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <section className="py-20 px-4">
-          {/* Statistiques */}
-          <div className="mb-12">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
-                <div className="flex items-center rtl:space-x-reverse space-x-3">
-                  <div className="p-2 bg-blue-500 rounded-lg">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-blue-600">{t('stats.total')}</p>
-                    <p className="text-2xl font-bold text-blue-900">{publications.length}</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
-                <div className="flex items-center rtl:space-x-reverse space-x-3">
-                  <div className="p-2 bg-green-500 rounded-lg">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                    </svg>
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-green-600">{t('stats.articles')}</p>
-                    <p className="text-2xl font-bold text-green-900">
-                      {publications.filter(p => p.type_publication?.toLowerCase() === 'article').length}
-                    </p>
+          <section className="py-20">
+            {/* Statistiques */}
+            <div className="mb-12">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+                  <div className="flex items-center rtl:space-x-reverse space-x-3">
+                    <div className="p-2 bg-blue-500 rounded-lg">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                    </div>
+                    <div className="ml-4">
+                      <p className="text-sm font-medium text-blue-600">{t('stats.total')}</p>
+                      <p className="text-2xl font-bold text-blue-900">{publications.length}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              
-              <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
-                <div className="flex items-center rtl:space-x-reverse space-x-3">
-                  <div className="p-2 bg-purple-500 rounded-lg">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-purple-600">{t('stats.conferences')}</p>
-                    <p className="text-2xl font-bold text-purple-900">
-                      {publications.filter(p => p.type_publication?.toLowerCase() === 'conférence').length}
-                    </p>
+                
+                <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
+                  <div className="flex items-center rtl:space-x-reverse space-x-3">
+                    <div className="p-2 bg-green-500 rounded-lg">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                      </svg>
+                    </div>
+                    <div className="ml-4">
+                      <p className="text-sm font-medium text-green-600">{t('stats.articles')}</p>
+                      <p className="text-2xl font-bold text-green-900">
+                        {publications.filter(p => p.type_publication?.toLowerCase() === 'article').length}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              
-              <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-6 rounded-xl border border-orange-200">
-                <div className="flex items-center rtl:space-x-reverse space-x-3">
-                  <div className="p-2 bg-orange-500 rounded-lg">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                
+                <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
+                  <div className="flex items-center rtl:space-x-reverse space-x-3">
+                    <div className="p-2 bg-purple-500 rounded-lg">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    </div>
+                    <div className="ml-4">
+                      <p className="text-sm font-medium text-purple-600">{t('stats.conferences')}</p>
+                      <p className="text-2xl font-bold text-purple-900">
+                        {publications.filter(p => p.type_publication?.toLowerCase() === 'conférence').length}
+                      </p>
+                    </div>
                   </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-orange-600">{t('stats.this_year')}</p>
-                    <p className="text-2xl font-bold text-orange-900">
-                      {publications.filter(p => {
-                        const pubDate = new Date(p.date_publication);
-                        const currentYear = new Date().getFullYear();
-                        return pubDate.getFullYear() === currentYear;
-                      }).length}
-                    </p>
+                </div>
+                
+                <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-6 rounded-xl border border-orange-200">
+                  <div className="flex items-center rtl:space-x-reverse space-x-3">
+                    <div className="p-2 bg-orange-500 rounded-lg">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="ml-4">
+                      <p className="text-sm font-medium text-orange-600">{t('stats.this_year')}</p>
+                      <p className="text-2xl font-bold text-orange-900">
+                        {publications.filter(p => {
+                          const pubDate = new Date(p.date_publication);
+                          const currentYear = new Date().getFullYear();
+                          return pubDate.getFullYear() === currentYear;
+                        }).length}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
           </section>
+          
           {/* Barre de filtres */}
           <FilterBar
             searchPlaceholder={t('search_placeholder')}
@@ -308,6 +335,7 @@ console.log('filteredPublications:', filteredPublications);
             selectedFilter={selectedType}
             onFilterChange={setSelectedType}
           />
+          
           {/* Liste des publications */}
           {filteredPublications.length > 0 ? (
             <ContentGrid columns={2}>
@@ -471,6 +499,8 @@ console.log('filteredPublications:', filteredPublications);
             </div>
           )}
         </div>
+        
+        <Footer />
       </div>
     );
 } 

@@ -13,8 +13,6 @@ export const usePublicationsSettings = () => {
         setLoading(true);
         setError(null);
         
-        await axiosClient.get('/sanctum/csrf-cookie');
-        
         const response = await axiosClient.get('/api/pages/publications/settings', {
           headers: { 'Accept': 'application/json' }
         });
@@ -27,6 +25,7 @@ export const usePublicationsSettings = () => {
             ...settingsData
           });
         } else {
+          console.warn('Format de données invalide, utilisation des paramètres par défaut');
           setSettings(DEFAULT_PUBLICATIONS_SETTINGS);
         }
       } catch (err) {

@@ -11,5 +11,19 @@
     "noPartenaires": {
         "title": "Aucun partenaire disponible",
         "description": "Aucun partenaire n'est disponible pour le moment. Revenez bientôt pour découvrir nos nouvelles collaborations."
-    }
+    },
+    "common": {
+        "visitWebsite": "Visiter le site web"
+    },
+    "errors": {
+        "loadingPartenaires": "Erreur lors du chargement des partenaires"
+    },
+    "form": {
+        "add": "Ajouter un partenaire",
+        "edit": "Modifier le partenaire"
+    },
+    "project_hero_title_default": "Nos Partenaires",
+    "project_hero_subtitle_default": "Nous collaborons avec des institutions académiques prestigieuses et des entreprises innovantes pour faire avancer la recherche et développer des solutions technologiques de pointe.",
+    "default_heading": "Collaborations d'Excellence",
+    "default_description": "Notre réseau de partenaires comprend des institutions académiques de renommée mondiale, des centres de recherche innovants et des entreprises technologiques de pointe."
 } 

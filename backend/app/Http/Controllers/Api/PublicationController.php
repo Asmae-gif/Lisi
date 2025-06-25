@@ -14,7 +14,8 @@ class PublicationController extends Controller
 {
     public function index()
     {
-        $publications = Publication::orderBy('date_publication', 'desc')
+        $publications = Publication::with('auteurs')
+            ->orderBy('date_publication', 'desc')
             ->get();
         return response()->json($publications);
     }

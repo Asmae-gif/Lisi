@@ -5,11 +5,25 @@
         "industrial": "Industrial Partners"
     },
     "intro": {
-        "title": "Excellence in Collaboration",
-        "description": "Our partner network includes world-renowned academic institutions, innovative research centers, and cutting-edge technology companies. These collaborations enable us to conduct ambitious projects and make significant contributions to the advancement of scientific knowledge."
+        "title": "Excellence Collaborations",
+        "description": "Our partner network includes world-renowned academic institutions, innovative research centers, and leading-edge technology companies. These collaborations enable us to carry out ambitious projects and make significant contributions to the advancement of scientific knowledge."
     },
     "noPartenaires": {
         "title": "No partners available",
-        "description": "No partners are available at the moment. Check back soon to discover our new collaborations."
-    }
+        "description": "No partners are available at the moment. Come back soon to discover our new collaborations."
+    },
+    "common": {
+        "visitWebsite": "Visit website"
+    },
+    "errors": {
+        "loadingPartenaires": "Error loading partners"
+    },
+    "form": {
+        "add": "Add partner",
+        "edit": "Edit partner"
+    },
+    "project_hero_title_default": "Our Partners",
+    "project_hero_subtitle_default": "We collaborate with prestigious academic institutions and innovative companies to advance research and develop cutting-edge technological solutions",
+    "default_heading": "Excellence Collaborations",
+    "default_description": "Our partner network includes world-renowned academic institutions, innovative research centers, and leading-edge technology companies."
 } 

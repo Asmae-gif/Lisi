@@ -39,7 +39,14 @@ export interface Publication {
   fichier_pdf_url?: string;
   lien_externe_doi?: string;
   reference_complete: string;
-  auteurs?: number[];
+  auteurs?: Array<{
+    id: number;
+    nom: string;
+    prenom: string;
+    email?: string;
+    photo?: string;
+    grade?: string;
+  }>;
 }
 
 interface PublicationsTableProps {
@@ -54,7 +61,7 @@ const columns = (onEdit?: (publication: Publication) => void, onDelete?: (public
     id: "select",
     header: ({ table }) => (
       <Checkbox
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+        checked={table.getIsAllPageRowsSelected() || table.getIsSomePageRowsSelected() ? "indeterminate" : false}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
@@ -87,9 +94,24 @@ const columns = (onEdit?: (publication: Publication) => void, onDelete?: (public
     cell: ({ row }) => <div className="max-w-[500px] truncate">{row.getValue("titre_publication")}</div>,
   },
   {
-    accessorKey: "resume",
+    accessorKey: "auteurs",
     header: "Auteurs",
-    cell: ({ row }) => <div>{row.getValue("resume")}</div>,
+    cell: ({ row }) => {
+      const auteurs = row.getValue("auteurs") as Array<{id: number, nom: string, prenom: string}>;
+      if (!auteurs || auteurs.length === 0) {
+        return <div className="text-gray-400">Aucun auteur</div>;
+      }
+      return (
+        <div className="max-w-[300px]">
+          {auteurs.map((auteur, index) => (
+            <div key={auteur.id} className="text-sm">
+              {auteur.prenom} {auteur.nom}
+              {index < auteurs.length - 1 && ", "}
+            </div>
+          ))}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "type_publication",

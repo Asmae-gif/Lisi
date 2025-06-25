@@ -44,6 +44,26 @@ export function PartenaireForm({ partenaire, onSubmit, onClose, isSubmitting }: 
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Validation côté client
+        if (!formData.nom_fr.trim()) {
+            alert('Le nom en français est requis');
+            return;
+        }
+        
+        if (!formData.lien.trim()) {
+            alert('Le lien du site web est requis');
+            return;
+        }
+        
+        // Vérifier que le lien est une URL valide
+        try {
+            new URL(formData.lien);
+        } catch {
+            alert('Veuillez entrer une URL valide (ex: https://example.com)');
+            return;
+        }
+        
         onSubmit(formData);
     };
 
@@ -57,7 +77,7 @@ export function PartenaireForm({ partenaire, onSubmit, onClose, isSubmitting }: 
             <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
                     <DialogTitle>
-                        {partenaire ? t('partenaires.form.edit') : t('partenaires.form.add')}
+                        {partenaire ? 'Modifier le partenaire' : 'Ajouter un partenaire'}
                     </DialogTitle>
                 </DialogHeader>
 
@@ -137,10 +157,10 @@ export function PartenaireForm({ partenaire, onSubmit, onClose, isSubmitting }: 
 
                     <div className="flex justify-end gap-3">
                         <Button type="button" variant="outline" onClick={onClose}>
-                            {t('common.cancel')}
+                            Annuler
                         </Button>
                         <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? t('common.saving') : t('common.save')}
+                            {isSubmitting ? 'Enregistrement...' : 'Enregistrer'}
                         </Button>
                     </div>
                 </form>
