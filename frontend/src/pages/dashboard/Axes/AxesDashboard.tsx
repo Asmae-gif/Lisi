@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import api from "@/lib/api";
 import { AxeForm } from "./AxeForm";
 import { AxeDetailsModal } from "./AxeDetailsModal";
+import DashboardPageLayout from "@/components/layout/DashboardPageLayout";
 
 interface Axe {
   id: number;
@@ -223,57 +224,34 @@ export default function AxesDashboard() {
     }
   ];
 
+  // Options de filtre
+  const filterOptions = [
+    { value: "all", label: "Toutes les icônes" },
+    { value: "Brain", label: "Intelligence Artificielle" },
+    { value: "Shield", label: "Cybersécurité" },
+    { value: "Network", label: "Systèmes" },
+    { value: "Database", label: "Big Data" },
+    { value: "Smartphone", label: "IoT" }
+  ];
+
   return (
-    <div className="p-6 space-y-6">
-      {/* En-tête de la page */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <Brain className="w-8 h-8 text-blue-600" />
-            Axes de Recherche
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Gérez les axes de recherche du laboratoire
-          </p>
-        </div>
-        <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="mr-2 h-4 w-4" />
-          Nouvel axe
-        </Button>
-      </div>
-
-      {/* Filtres et recherche */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Rechercher par titre ou slug..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <Select value={filterIcon} onValueChange={setFilterIcon}>
-              <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="Toutes les icônes" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes les icônes</SelectItem>
-                <SelectItem value="Brain">Intelligence Artificielle</SelectItem>
-                <SelectItem value="Shield">Cybersécurité</SelectItem>
-                <SelectItem value="Network">Systèmes</SelectItem>
-                <SelectItem value="Database">Big Data</SelectItem>
-                <SelectItem value="Smartphone">IoT</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
-
+    <DashboardPageLayout
+      title="Axes de Recherche"
+      description="Gérez les axes de recherche du laboratoire"
+      icon={Brain}
+      iconColor="text-blue-600"
+      onAdd={handleAdd}
+      addButtonText="Nouvel axe"
+      showSearch={true}
+      searchPlaceholder="Rechercher par titre ou slug..."
+      searchValue={searchTerm}
+      onSearchChange={setSearchTerm}
+      showFilter={true}
+      filterOptions={filterOptions}
+      filterValue={filterIcon}
+      onFilterChange={setFilterIcon}
+      showStats={false}
+    >
       {/* Tableau des axes */}
       <Card>
         <CardHeader>
@@ -289,8 +267,8 @@ export default function AxesDashboard() {
             isLoading={isLoading}
             onView={handleView}
             onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+            onDelete={handleDelete}
+          />
         </CardContent>
       </Card>
 
@@ -304,12 +282,12 @@ export default function AxesDashboard() {
               </h2>
             </div>
             <div className="p-6">
-      <AxeForm
+              <AxeForm
                 isOpen={isFormOpen}
                 onClose={() => setIsFormOpen(false)}
                 editingAxe={selectedAxe}
-        onSubmit={handleSubmit}
-      />
+                onSubmit={handleSubmit}
+              />
             </div>
           </div>
         </div>
@@ -317,13 +295,13 @@ export default function AxesDashboard() {
 
       {/* Modal de détails */}
       {isDetailsModalOpen && selectedAxe && (
-      <AxeDetailsModal
-        isOpen={isDetailsModalOpen}
+        <AxeDetailsModal
+          isOpen={isDetailsModalOpen}
           onClose={() => setIsDetailsModalOpen(false)}
           axe={selectedAxe}
           onEdit={handleEdit}
         />
       )}
-    </div>
+    </DashboardPageLayout>
   );
 }

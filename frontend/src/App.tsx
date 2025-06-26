@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useLaravelApi } from "./hooks/useLaravelApi";
 import { Layout } from './components/dashboard/layout'
 import { ThemeProvider } from '@/lib/theme'
+import Chatbot from './components/Chatbot';
 import Index from "./pages/Index";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
@@ -51,6 +52,7 @@ import SettingsPrixDistinctions from "./pages/Parametres/SettingsPrixDistinction
 import SettingsPartenaires from "./pages/Parametres/SettingsPartenaires";
 import AdminActivityReports from './pages/dashboard/AdminActivityReports';
 import PublicActivityReports from './pages/ActivityReports';
+import ChatbotAnalytics from './pages/dashboard/ChatbotAnalytics';
     
 
 const queryClient = new QueryClient();
@@ -130,12 +132,16 @@ const AppContent = () => {
           <Route path="histoire" element={<ProtectedRoute><Histoire /></ProtectedRoute>} />
           <Route path="prix-distinctions" element={<ProtectedRoute><PrixDistinctionsDashboard /></ProtectedRoute>} />
           <Route path="activity-reports" element={<ProtectedRoute><AdminActivityReports /></ProtectedRoute>} />
+          <Route path="chatbot-analytics" element={<ProtectedRoute><ChatbotAnalytics /></ProtectedRoute>} />
          
         </Route>
 
         {/* ❌ Page non trouvée */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      
+      {/* 🤖 Chatbot - visible sur toutes les pages */}
+      <Chatbot />
     </BrowserRouter>
   );
 };

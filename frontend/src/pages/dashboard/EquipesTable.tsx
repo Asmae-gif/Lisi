@@ -13,6 +13,7 @@ import NotificationBanner from "@/components/common/NotificationBanner"
 import LoadingSkeleton from "@/components/common/LoadingSkeleton"
 import SearchInput from "@/components/common/SearchInput"
 import UserAvatar from "@/components/common/UserAvatar"
+import DashboardPageLayout from "@/components/layout/DashboardPageLayout"
 
 // Lazy load des composants lourds
 const LazyDialog = lazy(() => import("@/components/ui/dialog").then(module => ({ default: module.Dialog })))
@@ -93,6 +94,17 @@ export default function MembresParAxePage() {
     message: string
   } | null>(null)
 
+  // Charger les données initiales
+  useEffect(() => {
+    loadData()
+  }, [loadData])
+
+  // Optimisation avec useCallback pour les notifications
+  const showNotification = useCallback((type: "success" | "error", message: string) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 5000);
+  }, []);
+
   // Optimisation avec useCallback pour le chargement des données
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -146,11 +158,6 @@ export default function MembresParAxePage() {
     }
   }, [showNotification])
 
-  // Charger les données initiales
-  useEffect(() => {
-    loadData()
-  }, [loadData])
-
   // Optimisation avec useMemo pour les membres disponibles
   const availableMembres = useMemo(() => {
     if (!Array.isArray(membres) || !selectedAxe || !Array.isArray(axeMembres)) {
@@ -198,12 +205,12 @@ export default function MembresParAxePage() {
     }
 
     // Si l'axe a déjà des membres pré-chargés, les utiliser
-    if (Array.isArray(selectedAxe.membres) && selectedAxe.membres.length > 0) {
-      const membresWithPosition = selectedAxe.membres.map((membre, index) => ({
-        id: typeof membre.pivot?.id === 'number' ? membre.pivot.id : index,
+    if (selectedAxe.membres && selectedAxe.membres.length > 0) {
+      const membresWithPosition = selectedAxe.membres.map(membre => ({
+        id: membre.pivot?.id || 0,
         axe_id: selectedAxe.id,
         membre_id: membre.id,
-        position: membre.pivot?.position || 'Membre',
+        position: membre.pivot?.position || 'membre',
         membre: membre
       }));
       setFilteredAxeMembres(membresWithPosition);
@@ -216,11 +223,6 @@ export default function MembresParAxePage() {
   }, [selectedAxe?.id, axeMembres]);
 
   // Optimisation avec useCallback pour les fonctions d'action
-  const showNotification = useCallback((type: "success" | "error", message: string) => {
-    setNotification({ type, message });
-    setTimeout(() => setNotification(null), 5000);
-  }, []);
-
   const handleSelectAxe = useCallback((axe: Axe) => {
     setSelectedAxe(axe);
     setSearchTerm("");
@@ -325,27 +327,19 @@ export default function MembresParAxePage() {
   }, [showNotification]);
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gestion des Équipes de Recherche</h1>
-          <p className="text-gray-600 mt-1">Gérez les membres par axe de recherche</p>
-        </div>
-        {/* Barre de recherche */}
-        <div className="max-w-md">
-          <SearchInput
-            placeholder="Rechercher un membre..."
-            value={searchTerm}
-            onChange={setSearchTerm}
-          />
-        </div>
-        <Button onClick={openAddModal} className="flex items-center gap-2">
-          <UserPlus className="h-4 w-4" />
-          Ajouter un membre
-        </Button>
-      </div>
-
+    <DashboardPageLayout
+      title="Gestion des Équipes de Recherche"
+      description="Gérez les membres par axe de recherche"
+      icon={Users}
+      iconColor="text-blue-600"
+      onAdd={openAddModal}
+      addButtonText="Ajouter un membre"
+      showSearch={true}
+      searchPlaceholder="Rechercher un membre..."
+      searchValue={searchTerm}
+      onSearchChange={setSearchTerm}
+      showStats={false}
+    >
       {/* Onglets des axes */}
       <div className="border-b border-gray-200">
         <nav className="flex space-x-8">
@@ -670,6 +664,6 @@ export default function MembresParAxePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </DashboardPageLayout>
   )
 }

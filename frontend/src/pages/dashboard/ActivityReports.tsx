@@ -150,194 +150,89 @@ export default function ActivityReports() {
   ];
 
   return (
-    <div className="p-6 space-y-6">
-      {/* En-tête de la page */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <FileText className="w-8 h-8 text-blue-600" />
-            Rapports d'Activité
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Gérez les rapports d'activité annuels du laboratoire
-          </p>
-        </div>
-        <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="mr-2 h-4 w-4" />
-          Nouveau rapport
-        </Button>
-      </div>
-
-      {/* Filtres et recherche */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+    <div className="p-8">
+      <h1 className="text-2xl font-bold mb-4">Gestion des rapports d'activité</h1>
+      <button className="btn btn-primary mb-4" onClick={handleAdd}>Ajouter un rapport</button>
+      
+      {/* Modal du formulaire */}
+      {isFormOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div
+            className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg"
+            style={{ maxHeight: '90vh', overflowY: 'auto' }}
+          >
+            <h2 className="text-xl font-semibold mb-4">{selectedReport ? 'Modifier' : 'Ajouter'} un rapport</h2>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Date du rapport *
+                </label>
                 <Input
-                  placeholder="Rechercher par date ou année..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  type="date"
+                  value={form.report_date}
+                  onChange={(e) => setForm(prev => ({ ...prev, report_date: e.target.value }))}
+                  required
+                  className="w-full"
                 />
               </div>
-            </div>
-            <Select value={filterYear} onValueChange={setFilterYear}>
-              <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="Toutes les années" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes les années</SelectItem>
-                {availableYears.map(year => (
-                  <SelectItem key={year} value={year.toString()}>
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={sortOrder} onValueChange={(value: 'asc' | 'desc') => setSortOrder(value)}>
-              <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="Tri par date" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="desc">Plus récent d'abord</SelectItem>
-                <SelectItem value="asc">Plus ancien d'abord</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Statistiques */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total des rapports</p>
-                <p className="text-2xl font-bold">{stats.total}</p>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Fichier PDF {selectedReport ? '' : '*'}
+                </label>
+                <Input
+                  type="file"
+                  onChange={handleFileChange}
+                  accept="application/pdf"
+                  required={!selectedReport}
+                  className="w-full"
+                />
+                {selectedReport && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    Laissez vide pour conserver le fichier actuel
+                  </p>
+                )}
               </div>
-              <FileText className="w-8 h-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Cette année</p>
-                <p className="text-2xl font-bold">{stats.currentYear}</p>
+
+              <div className="flex justify-end space-x-3 pt-4 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCancel}
+                  disabled={isSubmitting}
+                >
+                  Annuler
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  {isSubmitting ? 'En cours...' : (selectedReport ? 'Modifier' : 'Ajouter')}
+                </Button>
               </div>
-              <Calendar className="w-8 h-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Années couvertes</p>
-                <p className="text-2xl font-bold">{stats.yearsCovered}</p>
-              </div>
-              <FileText className="w-8 h-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Dernier rapport</p>
-                <p className="text-lg font-bold">{stats.latestYear || '-'}</p>
-              </div>
-              <FileText className="w-8 h-8 text-orange-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Tableau des rapports */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Filter className="w-5 h-5" />
-            Liste des rapports d'activité ({filteredReports.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      {reports.length > 0 ? (
+        <>
           <DataTable
             columns={columns}
-            data={filteredReports}
+            data={reports}
             isLoading={isLoading}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />
-        </CardContent>
-      </Card>
-
-      {/* Modal du formulaire */}
-      {isFormOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b">
-              <h2 className="text-2xl font-bold">
-                {selectedReport ? 'Modifier le rapport d\'activité' : 'Nouveau rapport d\'activité'}
-              </h2>
-            </div>
-            <div className="p-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Date du rapport *
-                  </label>
-                  <Input
-                    type="date"
-                    value={form.report_date}
-                    onChange={(e) => setForm(prev => ({ ...prev, report_date: e.target.value }))}
-                    required
-                    className="w-full"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Fichier PDF {selectedReport ? '' : '*'}
-                  </label>
-                  <Input
-                    type="file"
-                    onChange={handleFileChange}
-                    accept="application/pdf"
-                    required={!selectedReport}
-                    className="w-full"
-                  />
-                  {selectedReport && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      Laissez vide pour conserver le fichier actuel
-                    </p>
-                  )}
-                </div>
-
-                <div className="flex justify-end space-x-3 pt-4 border-t">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleCancel}
-                    disabled={isSubmitting}
-                  >
-                    Annuler
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
-                    {isSubmitting ? 'En cours...' : (selectedReport ? 'Modifier' : 'Ajouter')}
-                  </Button>
-                </div>
-              </form>
-            </div>
+          <div className="mt-4 text-sm text-muted-foreground">
+            Double-cliquez sur une ligne pour modifier, ou utilisez le menu d'actions.
           </div>
+        </>
+      ) : (
+        <div className="text-center py-8 text-gray-500">
+          Aucun rapport d'activité trouvé
         </div>
       )}
     </div>

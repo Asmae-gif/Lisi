@@ -11,6 +11,7 @@ import GalleryForm from '@/components/GalleryForm';
 import ConfirmModal from '@/components/ConfirmModal';
 import api from '@/lib/api';
 import { Entity, getEntityName, galleriesableTypes } from '@/utils/entityUtils';
+import DashboardPageLayout from "@/components/layout/DashboardPageLayout";
 
 interface Column {
   key: keyof Gallery;
@@ -250,85 +251,51 @@ const Gallery: React.FC = () => {
     return matchesSearch && matchesType;
   });
 
+  // Statistiques pour les cartes
+  const statsCards = [
+    {
+      title: "Total",
+      value: galleries.length,
+      icon: Camera,
+      iconColor: "text-blue-600"
+    },
+    ...galleriesableTypes.map((type) => ({
+      title: type,
+      value: galleries.filter(g => g.galleriesable_type === type).length,
+      icon: Camera,
+      iconColor: "text-green-600"
+    }))
+  ];
+
+  // Options de filtre
+  const filterOptions = [
+    { value: "all", label: "Tous les types" },
+    ...galleriesableTypes.map((type) => ({
+      value: type,
+      label: type
+    }))
+  ];
+
   return (
-    <div className="p-6 space-y-6">
-      {/* En-tête de la page */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <Camera className="w-8 h-8 text-lisiGreen" />
-            Galeries
-              </h1>
-          <p className="text-gray-600 mt-1">
-            Gérez les galeries d'images du laboratoire
-          </p>
-        </div>
-        <Button onClick={handleAdd} className="bg-lisiGreen hover:bg-lisiGreen/80">
-          <Plus className="mr-2 h-4 w-4" />
-          Nouvelle galerie
-        </Button>
-        </div>
-
-        {/* Filtres et recherche */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Rechercher par titre ou description..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <Select value={filterType} onValueChange={setFilterType}>
-              <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="Tous les types" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous les types</SelectItem>
-              {galleriesableTypes.map((type) => (
-                  <SelectItem key={type} value={type}>{type}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Statistiques */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total</p>
-                <p className="text-2xl font-bold">{galleries.length}</p>
-              </div>
-         
-            </div>
-          </CardContent>
-        </Card>
-        {galleriesableTypes.map((type) => (
-          <Card key={type}>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">{type}</p>
-                  <p className="text-2xl font-bold">
-                    {galleries.filter(g => g.galleriesable_type === type).length}
-                  </p>
-            </div>
-          </div>
-            </CardContent>
-          </Card>
-        ))}
-        </div>
-
-        {/* Liste des galeries */}
+    <DashboardPageLayout
+      title="Galeries"
+      description="Gérez les galeries d'images du laboratoire"
+      icon={Camera}
+      iconColor="text-blue-600"
+      onAdd={handleAdd}
+      addButtonText="Nouvelle galerie"
+      showSearch={true}
+      searchPlaceholder="Rechercher par titre ou description..."
+      searchValue={searchTerm}
+      onSearchChange={setSearchTerm}
+      showFilter={true}
+      filterOptions={filterOptions}
+      filterValue={filterType}
+      onFilterChange={setFilterType}
+      statsCards={statsCards}
+      showStats={true}
+    >
+      {/* Liste des galeries */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -371,7 +338,7 @@ const Gallery: React.FC = () => {
                       }}
                     />
                     <div className="absolute top-2 right-2">
-                      <Badge variant="secondary" className="bg-white bg-opacity-90 text-lisiGreen">
+                      <Badge variant="secondary" className="bg-white bg-opacity-90 text-blue-600">
                         {gallery.galleriesable_type}
                       </Badge>
                     </div>
@@ -407,7 +374,7 @@ const Gallery: React.FC = () => {
                         </button>
                         <button
                           onClick={() => handleEdit(gallery)}
-                          className="p-2 text-lisiGreen hover:bg-lisiGreen/80 rounded-lg transition-colors"
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                           title="Modifier"
                         >
                           <Edit className="h-4 w-4" />
@@ -440,10 +407,10 @@ const Gallery: React.FC = () => {
               <h2 className="text-2xl font-bold">
                 {selectedGallery ? 'Modifier la galerie' : 'Nouvelle galerie'}
               </h2>
-        </div>
+            </div>
             <div className="p-6">
-      <GalleryForm
-        isOpen={isFormOpen}
+              <GalleryForm
+                isOpen={isFormOpen}
                 onClose={() => setIsFormOpen(false)}
                 onSubmit={handleSubmit}
                 gallery={selectedGallery}
@@ -546,7 +513,7 @@ const Gallery: React.FC = () => {
                     <div className="space-y-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700">Type d'entité</label>
-                        <Badge variant="secondary" className="bg-lisiGreen/10 text-lisiGreen">
+                        <Badge variant="secondary" className="bg-blue-100 text-blue-600">
                           {galleryToView.galleriesable_type}
                         </Badge>
                       </div>
@@ -584,7 +551,7 @@ const Gallery: React.FC = () => {
                     setIsDetailsModalOpen(false);
                     handleEdit(galleryToView);
                   }}
-                  className="px-4 py-2 bg-lisiGreen text-white rounded-lg hover:bg-lisiGreen/80 transition-colors"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Modifier
                 </button>
@@ -599,7 +566,7 @@ const Gallery: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+    </DashboardPageLayout>
   );
 };
 

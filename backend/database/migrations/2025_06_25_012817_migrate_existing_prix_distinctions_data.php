@@ -12,11 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Migrer les données existantes vers les nouvelles colonnes multilingues
-        DB::table('prix_distinctions')->whereNull('titre_fr')->update([
-            'titre_fr' => DB::raw('titre'),
-            'description_fr' => DB::raw('description')
-        ]);
+        // Pas de migration nécessaire car les colonnes multilingues existent déjà
     }
 
     /**
@@ -24,6 +20,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Pas de rollback nécessaire car on ne supprime pas les anciennes colonnes
+        // Rien à faire
     }
 };

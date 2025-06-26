@@ -40,6 +40,7 @@ use App\Http\Controllers\Api\ProjetFinanceController;
 use App\Http\Controllers\Api\ProjetIncubeController;
 use App\Http\Controllers\Api\PrixDistinctionController;
 use App\Http\Controllers\Api\ActivityReportController;
+use App\Http\Controllers\Api\ChatbotAnalyticsController;
 
 
 // Autres Controllers
@@ -314,4 +315,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/contacts', function () {
         return App\Models\Contact::latest()->get();
     })->middleware('role:admin');
+
+    // Routes pour le chatbot analytics
+    Route::post('/chatbot/analytics', [ChatbotAnalyticsController::class, 'store']);
+    Route::post('/chatbot/session-summary', [ChatbotAnalyticsController::class, 'storeSessionSummary']);
+    Route::get('/chatbot/stats', [ChatbotAnalyticsController::class, 'getStats'])->middleware('role:admin');
 });

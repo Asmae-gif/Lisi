@@ -11,11 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('partenaires', function (Blueprint $table) {
-            $table->string('nom_fr')->after('nom');
-            $table->string('nom_en')->nullable()->after('nom_fr');
-            $table->string('nom_ar')->nullable()->after('nom_en');
-        });
+        // Les colonnes existent déjà, rien à faire
     }
 
     /**
@@ -23,8 +19,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('partenaires', function (Blueprint $table) {
-            $table->dropColumn(['nom_fr', 'nom_en', 'nom_ar']);
-        });
+        // Rien à supprimer
     }
 };

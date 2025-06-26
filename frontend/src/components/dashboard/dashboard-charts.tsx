@@ -2,16 +2,9 @@ import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, R
 import { PieChart, Pie, Cell } from 'recharts';
 import { StatsCard } from "@/components/common";
 import { useState, useEffect } from 'react';
-import axiosClient from '@/services/axiosClient';
+import { dashboardService, PublicationStats, MemberStats } from '@/services/dashboardService';
 
 const COLORS = ['#437a49', '#C2A060', '#C74C4B']; // jaune, bleu, rose
-
-
-type StatsResponse = {
-  Permanents: number;
-  Associés: number;
-  Doctorants: number;
-};
 
 interface CustomTooltipProps {
   active?: boolean;
@@ -20,14 +13,6 @@ interface CustomTooltipProps {
     value: number;
   }>;
   label?: string;
-}
-
-interface MembreData {
-  id: number;
-  statut?: string;
-  nom: string;
-  prenom: string;
-  email: string;
 }
 
 const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
@@ -45,62 +30,43 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 };
 
 export function DashboardCharts() {
-  const [stats, setStats] = useState<StatsResponse>({
+  const [memberStats, setMemberStats] = useState<MemberStats>({
     Permanents: 0,
     Associés: 0,
     Doctorants: 0
   });
 
+  const [publicationsData, setPublicationsData] = useState<PublicationStats[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchMemberStats = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axiosClient.get('/api/admin/membres');
-        const membres = response.data.data?.membres || response.data || [];
+        setIsLoading(true);
         
-        // Compter les membres par statut
-        const statsData = {
-          Permanents: 0,
-          Associés: 0,
-          Doctorants: 0
-        };
+        // Récupérer les données en parallèle
+        const [memberStatsData, publicationsData] = await Promise.all([
+          dashboardService.getMemberStats(),
+          dashboardService.getPublicationsByYear()
+        ]);
 
-        membres.forEach((membre: MembreData) => {
-          const statut = membre.statut?.toLowerCase();
-          if (statut === 'permanent') {
-            statsData.Permanents++;
-          } else if (statut === 'associé' || statut === 'associe') {
-            statsData.Associés++;
-          } else if (statut === 'doctorant') {
-            statsData.Doctorants++;
-          }
-        });
-
-        setStats(statsData);
+        setMemberStats(memberStatsData);
+        setPublicationsData(publicationsData);
       } catch (error) {
-        console.error('Erreur lors de la récupération des statistiques:', error);
+        console.error('Erreur lors de la récupération des données:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchMemberStats();
+    fetchData();
   }, []);
 
   // Données pour le graphique en camembert basées sur les vraies statistiques
   const pieData = [
-    { name: 'Permanents', value: stats.Permanents },
-    { name: 'Associés', value: stats.Associés },
-    { name: 'Doctorants', value: stats.Doctorants },
-  ];
-
-  const publicationsData = [
-    { year: '2020', count: 12 },
-    { year: '2021', count: 18 },
-    { year: '2022', count: 24 },
-    { year: '2023', count: 31 },
-    { year: '2024', count: 15 },
+    { name: 'Permanents', value: memberStats.Permanents },
+    { name: 'Associés', value: memberStats.Associés },
+    { name: 'Doctorants', value: memberStats.Doctorants },
   ];
 
   if (isLoading) {
