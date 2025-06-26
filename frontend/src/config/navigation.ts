@@ -15,14 +15,13 @@ export const navigationItems = [
     label: 'resources',
     hasDropdown: true,
     dropdownItems: [
-      { key: 'projects', path: '/projects', label: 'Projets' },
-      { key: 'publications', path: '/publications', label: 'Publications' },
-      { key: 'prix-distinctions', path: '/prix-distinctions', label: 'Prix et Distinctions' },
-      { key: 'partenaires', path: '/partenaires', label: 'Partenaires' },
+      { key: 'projects', path: '/projects', label: 'projects' },
+      { key: 'prix-distinctions', path: '/prix-distinctions', label: 'prix-distinctions' },
+      { key: 'partenaires', path: '/partenaires', label: 'partners' },
       { key: 'gallery', path: '/gallerie', label: 'gallery' },
-      { key: 'equipes', path: '/equipes', label: 'equipes' },
-      { key: 'activity-reports', path: '/activity-reports', label: 'Activités' }
+      { key: 'activity-reports', path: '/activity-reports', label: 'activity-reports' }
     ]
   },
+  { key: 'publications', path: '/publications', label: 'publications' },
   { key: 'contact', path: '/contact', label: 'contact' }
 ]; 

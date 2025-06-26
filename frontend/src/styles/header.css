@@ -6,6 +6,13 @@
   transition: all 0.3s ease;
 }
 
+html[lang="fr"] .nav-link,
+html[lang="fr"] .nav-linkk,
+html[lang="fr"] .mobile-menu a {
+  letter-spacing: -0.2px; /* Ajuste la chasse des caractères */
+  word-spacing: -1px; /* Réduit l’espace entre les mots */
+}
+
 .nav-link::after {
   content: '';
   position: absolute;

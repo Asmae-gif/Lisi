@@ -25,7 +25,7 @@ class Setting extends Model
         \Log::info('Settings bruts trouvés', ['settings' => $flatSettings]);
         
         // Pages qui utilisent une structure hiérarchique (multilingue intégrée)
-        $hierarchicalPages = ['index'];
+        $hierarchicalPages = ['index', 'membres'];
         
         // Si c'est une page hiérarchique, restructurer les données
         if (in_array($page, $hierarchicalPages)) {

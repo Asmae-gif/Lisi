@@ -51,8 +51,27 @@ const Membres: React.FC = () => {
         setError(t('error_loading'));
       }
       
+      // Gérer la nouvelle structure hiérarchique des paramètres
       const settingsData = settingsResponse.data?.data || settingsResponse.data || {};
-      setSettings(settingsData);
+      
+      // Si les données sont dans une structure hiérarchique, les aplatir
+      let flattenedSettings = {};
+      const settingsDataTyped = settingsData as any;
+      if (settingsDataTyped.fr || settingsDataTyped.en || settingsDataTyped.ar) {
+        // Structure hiérarchique - aplatir
+        Object.keys(settingsDataTyped).forEach(lang => {
+          if (typeof settingsDataTyped[lang] === 'object') {
+            Object.keys(settingsDataTyped[lang]).forEach(key => {
+              flattenedSettings[`membres_${key}_${lang}`] = settingsDataTyped[lang][key];
+            });
+          }
+        });
+      } else {
+        // Structure plate - utiliser directement
+        flattenedSettings = settingsDataTyped;
+      }
+      
+      setSettings(flattenedSettings);
       
     } catch (err) {
       console.error('Erreur lors du chargement des données:', err);
@@ -188,7 +207,7 @@ const Membres: React.FC = () => {
         hero
         title={title}
         subtitle={subtitle}
-        backgroundImage={settings.membres_image}
+        backgroundImage={settings?.membres_image ? buildImageUrl(settings.membres_image) : undefined}
       >
         <></>
       </PageContent>

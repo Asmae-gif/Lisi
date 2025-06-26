@@ -44,5 +44,5 @@ export interface ApiResponse {
     publications_sous_titre_fr: 'Nos publications reflètent l’excellence de notre recherche et notre contribution au développement des connaissances scientifiques. Découvrez nos travaux dans des revues internationales, conférences et autres supports scientifiques.',
     publications_sous_titre_en: 'Our publications reflect the excellence of our research and our contribution to the advancement of scientific knowledge. Explore our work published in international journals, conferences, and other scientific media.',
     publications_sous_titre_ar: 'تعكس منشوراتنا تميز أبحاثنا ومساهمتنا في تطوير المعرفة العلمية. اكتشف أعمالنا المنشورة في المجلات الدولية والمؤتمرات وغيرها من الوسائط العلمية.',
-    publications_image: '/images/A_professional_web_header_background_image_with_di-1750593752409.png'
+    publications_image: '/images/hero.png'
   };

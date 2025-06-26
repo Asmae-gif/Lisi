@@ -44,6 +44,7 @@ export interface ContactSettings {
     contact_email: "contact@example.com",
     contact_telephone: "06 70 09 85 53 / 06 70 09 89 50 ",
     contact_location: "Marrakech, Maroc",
+    contact_image: '/images/hero.png'
   }
   
 

@@ -27,5 +27,5 @@ export const DEFAULT_PROJECT_SETTINGS: ProjectSettings = {
     projet_sous_titre_en: "Explore our innovative projects through which we strive to advance science and technolog",
     projet_titre_ar: "مشاريعنا البحثية",
     projet_sous_titre_ar: "استكشف مشاريعنا المبتكرة التي نسعى من خلالها إلى تطوير العلوم والتكنولوجيا",
-    projet_image: undefined,
+    projet_image: '/images/hero.png',
 }; 

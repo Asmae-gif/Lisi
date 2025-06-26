@@ -31,5 +31,5 @@ export const DEFAULT_GALLERY_SETTINGS: GallerySettings = {
   galerie_sous_titre_en: 'Explore our research environment, flagship projects, and highlights through this curated gallery.',
   galerie_titre_ar: 'معرض الصور',
   galerie_sous_titre_ar: 'تعرف على مرافق المختبر، ومشاريعه، ومحطاته المميزة من خلال هذه المجموعة من الصور التوثيقي',
-  galerie_image: '/images/A_professional_web_header_background_image_with_di-1750593752409.png',
+  galerie_image: '/images/hero.png',
 }; 

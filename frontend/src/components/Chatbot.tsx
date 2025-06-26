@@ -119,7 +119,7 @@ const Chatbot: React.FC = () => {
     }
 
     if (lowerMessage.includes('laboratoire') || lowerMessage.includes('lisi') || lowerMessage.includes('qui êtes-vous')) {
-      return 'Le Laboratoire LISI (Laboratoire d\'Informatique, Signaux et Systèmes) est un centre de recherche spécialisé dans l\'informatique, les signaux et les systèmes. Nous menons des projets innovants dans divers domaines technologiques.';
+      return 'Le Laboratoire LISI (Laboratoire d\'Informatique et de Systèmes Intelligents) est un laboratoire de recherche de l\'Université Cadi Ayyad de Marrakech. Nous nous spécialisons dans l\'intelligence artificielle, l\'apprentissage automatique, les systèmes intelligents, le traitement du signal, les systèmes embarqués, la cybersécurité et les technologies émergentes. Notre équipe pluridisciplinaire mène des recherches de pointe dans le domaine des systèmes intelligents et forme la prochaine génération de chercheurs et d\'ingénieurs spécialisés dans ces technologies avancées.';
     }
 
     if (lowerMessage.includes('projet') || lowerMessage.includes('recherche')) {
@@ -166,7 +166,7 @@ const Chatbot: React.FC = () => {
       action: () => {
         addMessage('Découvrir le laboratoire', 'user');
         simulateTyping((responseTime) => {
-          const response = 'Le Laboratoire LISI est un centre de recherche spécialisé dans l\'informatique, les signaux et les systèmes. Nous menons des projets innovants dans divers domaines technologiques et collaborons avec de nombreux partenaires.';
+          const response = 'Le Laboratoire LISI (Laboratoire d\'Informatique et de Systèmes Intelligents) est un laboratoire de recherche de l\'Université Cadi Ayyad de Marrakech. Nous nous spécialisons dans l\'intelligence artificielle, l\'apprentissage automatique, les systèmes intelligents, le traitement du signal, les systèmes embarqués, la cybersécurité et les technologies émergentes. Notre équipe pluridisciplinaire mène des recherches de pointe dans le domaine des systèmes intelligents et forme la prochaine génération de chercheurs et d\'ingénieurs spécialisés dans ces technologies avancées.';
           addMessage(response, 'bot');
           analytics.trackQuickAction('Découvrir le laboratoire', response, responseTime);
         });
@@ -227,7 +227,7 @@ const Chatbot: React.FC = () => {
       {/* Bouton flottant du chatbot */}
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg z-50"
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-green-600 hover:bg-green-700 shadow-lg z-50"
         size="icon"
       >
         {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
@@ -235,22 +235,32 @@ const Chatbot: React.FC = () => {
 
       {/* Interface du chatbot */}
       {isOpen && (
-        <Card className="fixed bottom-24 right-6 w-96 h-[500px] shadow-xl z-50 border-0">
-          <CardHeader className="bg-blue-600 text-white pb-3">
+        <Card className="fixed bottom-24 right-6 w-80 sm:w-96 h-[450px] sm:h-[500px] max-h-[80vh] shadow-xl z-50 border-0">
+          <CardHeader className="bg-green-600 text-white pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Bot className="w-5 h-5" />
                 <CardTitle className="text-lg">Assistant LISI</CardTitle>
               </div>
-              <Badge variant="secondary" className="bg-blue-500 text-white">
-                En ligne
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="bg-green-500 text-white">
+                  En ligne
+                </Badge>
+                <Button
+                  onClick={() => setIsOpen(false)}
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 text-white hover:bg-green-700"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </CardHeader>
           
           <CardContent className="p-0 h-full flex flex-col">
             {/* Zone des messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[350px]">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[300px] sm:max-h-[350px]">
               {messages.map((message) => (
                 <div
                   key={message.id}
@@ -259,7 +269,7 @@ const Chatbot: React.FC = () => {
                   <div
                     className={`max-w-[80%] rounded-lg px-3 py-2 ${
                       message.sender === 'user'
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-green-600 text-white'
                         : 'bg-gray-100 text-gray-900'
                     }`}
                   >
@@ -270,7 +280,7 @@ const Chatbot: React.FC = () => {
                       <div>
                         <p className="text-sm">{message.text}</p>
                         <p className={`text-xs mt-1 ${
-                          message.sender === 'user' ? 'text-blue-100' : 'text-gray-500'
+                          message.sender === 'user' ? 'text-green-100' : 'text-gray-500'
                         }`}>
                           {message.timestamp.toLocaleTimeString('fr-FR', {
                             hour: '2-digit',
@@ -342,7 +352,7 @@ const Chatbot: React.FC = () => {
                   onClick={handleSendMessage}
                   disabled={!inputValue.trim() || isTyping}
                   size="icon"
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-green-600 hover:bg-green-700"
                 >
                   <Send className="w-4 h-4" />
                 </Button>

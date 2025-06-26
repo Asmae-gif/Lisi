@@ -95,13 +95,13 @@ export default function MembresParAxePage() {
   } | null>(null)
 
   // Charger les données initiales
-  useEffect(() => {
-    loadData()
-  }, [loadData])
-
   // Optimisation avec useCallback pour les notifications
   const showNotification = useCallback((type: "success" | "error", message: string) => {
     setNotification({ type, message });
+
+  useEffect(() => {
+    loadData()
+  }, [loadData])
     setTimeout(() => setNotification(null), 5000);
   }, []);
 

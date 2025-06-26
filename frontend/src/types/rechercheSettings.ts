@@ -111,7 +111,7 @@ export const DEFAULT_RECHERCHE_SETTINGS: RechercheSettings = {
   step_4_desc_fr: "Tests et validation des hypothèses",
   step_5_title_fr: "Résultats",
   step_5_desc_fr: "Publication et valorisation des découvertes",
-  recherche_image: '/images/A_professional_web_header_background_image_with_di-1750593752409.png',
+  recherche_image: '/images/hero.png',
 
   // 🇬🇧 English
   titre_en: "Our Research Domains",

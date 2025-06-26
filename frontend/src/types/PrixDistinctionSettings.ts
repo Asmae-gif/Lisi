@@ -31,7 +31,7 @@ export const DEFAULT_PRIX_DISTINCTION_SETTINGS: PrixDistinctionSettings = {
     prix_sous_titre_fr: "Nos membres sont régulièrement récompensés pour l'excellence de leurs travaux et leurs contributions innovantes à la recherche scientifique",
     prix_sous_titre_en: 'Our members are regularly recognized for the excellence of their work and their innovative contributions to scientific research.',
     prix_sous_titre_ar: 'يتم تكريم أعضائنا بانتظام تقديراً لتميز أعمالهم ومساهماتهم المبتكرة في البحث العلمي.',
-    prix_image: '/images/Create_a_professional_web_header_background_image_-1750719227684.png'
+    prix_image: '/images/hero.png'
 };
 
 // Fonction utilitaire pour le contenu multilingue
