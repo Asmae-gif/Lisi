@@ -12,6 +12,7 @@ interface DashboardPageLayoutProps {
   iconColor?: string;
   onAdd?: () => void;
   addButtonText?: string;
+  addButtonClassName?: string;
   showSearch?: boolean;
   searchPlaceholder?: string;
   searchValue?: string;
@@ -37,6 +38,7 @@ export default function DashboardPageLayout({
   iconColor = "text-blue-600",
   onAdd,
   addButtonText = "Ajouter",
+  addButtonClassName,
   showSearch = true,
   searchPlaceholder = "Rechercher...",
   searchValue = "",
@@ -63,7 +65,7 @@ export default function DashboardPageLayout({
           </p>
         </div>
         {onAdd && (
-          <Button onClick={onAdd} className="bg-blue-600 hover:bg-blue-700">
+          <Button onClick={onAdd} className={addButtonClassName || "bg-blue-600 hover:bg-blue-700"}>
             <Plus className="mr-2 h-4 w-4" />
             {addButtonText}
           </Button>

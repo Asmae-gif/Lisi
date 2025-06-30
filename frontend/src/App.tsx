@@ -53,6 +53,7 @@ import SettingsPartenaires from "./pages/Parametres/SettingsPartenaires";
 import AdminActivityReports from './pages/dashboard/AdminActivityReports';
 import PublicActivityReports from './pages/ActivityReports';
 import ChatbotAnalytics from './pages/dashboard/ChatbotAnalytics';
+import MotDirecteur from '@/pages/dashboard/MotDirecteur';
     
 
 const queryClient = new QueryClient();
@@ -133,7 +134,7 @@ const AppContent = () => {
           <Route path="prix-distinctions" element={<ProtectedRoute><PrixDistinctionsDashboard /></ProtectedRoute>} />
           <Route path="activity-reports" element={<ProtectedRoute><AdminActivityReports /></ProtectedRoute>} />
           <Route path="chatbot-analytics" element={<ProtectedRoute><ChatbotAnalytics /></ProtectedRoute>} />
-         
+          <Route path="mot-directeur" element={<ProtectedRoute><MotDirecteur /></ProtectedRoute>} />
         </Route>
 
         {/* ❌ Page non trouvée */}

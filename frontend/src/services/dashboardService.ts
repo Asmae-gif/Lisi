@@ -136,9 +136,9 @@ export const dashboardService = {
         const statut = membre.statut?.toLowerCase();
         if (statut === 'permanent') {
           stats.Permanents++;
-        } else if (statut === 'associé' || statut === 'associe') {
+        } else if (statut === 'associés') {
           stats.Associés++;
-        } else if (statut === 'doctorant') {
+        } else if (statut === 'doctorants') {
           stats.Doctorants++;
         }
       });

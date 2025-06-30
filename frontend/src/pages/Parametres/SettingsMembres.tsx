@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import axiosClient from "@/services/axiosClient"
 import { MembreSettings, ApiResponse,Section, DEFAULT_MEMBRES_SETTINGS } from '@/types/MembresSettings'
 import SettingsForm from '@/components/common/SettingsForm'
-import { buildImageUrl } from '@/utils/imageUtils'
+import { buildImageUrl, buildImageUrlWithDefaults } from '@/utils/imageUtils'
 
 /**
  * Composant de paramètres pour la page Membres
@@ -128,7 +128,7 @@ export default function SettingsMembres() {
         Object.entries(defaultValues).forEach(([key, val]) => {
           if (key.endsWith('_image') && val) {
             console.log('Image trouvée:', key, val)
-            const imageUrl = buildImageUrl(String(val))
+            const imageUrl = buildImageUrlWithDefaults(String(val))
             if (imageUrl) {
               setPreview(prev => ({ ...prev, [key]: imageUrl }))
             }
@@ -168,7 +168,7 @@ export default function SettingsMembres() {
         })
         // Garder l'image existante si on supprime le fichier
         if (values[key as keyof MembreSettings]) {
-          const imageUrl = buildImageUrl(String(values[key as keyof MembreSettings]))
+          const imageUrl = buildImageUrlWithDefaults(String(values[key as keyof MembreSettings]))
           if (imageUrl) {
             setPreview(p => ({ ...p, [key]: imageUrl }))
           }
@@ -225,7 +225,7 @@ export default function SettingsMembres() {
           // Mettre à jour les previews d'images avec les URLs correctes
           Object.entries(response.data.data).forEach(([key, val]) => {
             if (key.endsWith('_image') && val) {
-              const imageUrl = buildImageUrl(String(val))
+              const imageUrl = buildImageUrlWithDefaults(String(val))
               if (imageUrl) {
                 setPreview(prev => ({ ...prev, [key]: imageUrl }))
               }

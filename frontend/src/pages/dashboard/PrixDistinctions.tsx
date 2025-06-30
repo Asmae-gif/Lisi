@@ -8,29 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import api from "@/lib/api";
+import DashboardPageLayout from "@/components/layout/DashboardPageLayout";
 import PrixDistinctionForm from "@/components/PrixDistinctionForm";
-
-interface PrixDistinction {
-  id: number;
-  titre_fr: string;
-  titre_en: string;
-  titre_ar: string;
-  description_fr: string;
-  description_en: string;
-  description_ar: string;
-  organisme: string;
-  date_obtention: string;
-  image_url?: string;
-  lien_externe?: string;
-  membres?: Membre[];
-}
-
-interface Membre {
-  id: number;
-  nom: string;
-  prenom: string;
-  role?: string;
-}
+import { PrixDistinction, PrixDistinctionFormData, PrixDistinctionMembre } from "@/types/prixDistinction";
 
 interface Column {
   key: keyof PrixDistinction;
@@ -41,20 +21,6 @@ interface Column {
 interface ApiResponse<T> {
   data: T;
   message: string;
-}
-
-interface PrixDistinctionFormData {
-  titre_fr: string;
-  titre_en: string;
-  titre_ar: string;
-  description_fr: string;
-  description_en: string;
-  description_ar: string;
-  organisme: string;
-  date_obtention: string;
-  image_url?: string;
-  lien_externe?: string;
-  membres?: number[];
 }
 
 export default function PrixDistinctions() {
@@ -284,8 +250,10 @@ export default function PrixDistinctions() {
       key: 'titre_fr', 
       label: 'Titre du prix',
       render: (value: string) => (
-        <div className="font-medium text-gray-900 max-w-xs truncate" title={String(value || '')}>
-          {String(value || '')}
+        <div className="font-medium text-gray-900 w-32">
+          <div className="truncate" title={String(value || '')}>
+            {String(value || '')}
+          </div>
         </div>
       )
     },
@@ -293,25 +261,33 @@ export default function PrixDistinctions() {
       key: 'organisme', 
       label: 'Organisme',
       render: (value: string) => (
-        <div className="text-gray-900">
-          {String(value || 'N/A')}
+        <div className="text-gray-900 w-28">
+          <div className="truncate" title={String(value || 'N/A')}>
+            {String(value || 'N/A')}
+          </div>
         </div>
       )
     },
     { 
       key: 'membres', 
       label: 'Membres',
-      render: (membres?: Membre[]) => (
-        <div className="flex flex-wrap gap-1">
+      render: (membres?: PrixDistinctionMembre[]) => (
+        <div className="w-36">
           {membres && membres.length > 0 ? (
-            membres.map(membre => (
-              <Badge key={membre.id} variant="outline" className="text-xs">
-                {membre.prenom} {membre.nom}
-                {membre.role && ` (${membre.role})`}
-              </Badge>
-            ))
+            <div className="flex flex-wrap gap-1">
+              {membres.slice(0, 1).map(membre => (
+                <Badge key={membre.id} variant="outline" className="text-xs">
+                  {membre.prenom} {membre.nom}
+                </Badge>
+              ))}
+              {membres.length > 1 && (
+                <Badge variant="outline" className="text-xs">
+                  +{membres.length - 1}
+                </Badge>
+              )}
+            </div>
           ) : (
-            <span className="text-gray-400">Aucun membre</span>
+            <span className="text-gray-400 text-sm">Aucun membre</span>
           )}
         </div>
       )
@@ -321,9 +297,13 @@ export default function PrixDistinctions() {
       label: 'Date d\'obtention',
       render: (value: string) => {
         try {
-          return new Date(String(value || '')).toLocaleDateString('fr-FR');
+          return (
+            <div className="w-24 text-sm">
+              {new Date(String(value || '')).toLocaleDateString('fr-FR')}
+            </div>
+          );
         } catch (error) {
-          return <span className="text-gray-400">-</span>;
+          return <span className="text-gray-400 text-sm">-</span>;
         }
       }
     },
@@ -331,19 +311,21 @@ export default function PrixDistinctions() {
       key: 'image_url', 
       label: 'Image',
       render: (value: string) => {
-        if (!value) return <span className="text-gray-400">-</span>;
+        if (!value) return <span className="text-gray-400 text-sm">-</span>;
         
         return (
-          <div className="flex items-center gap-2">
-            <Image className="w-4 h-4 text-blue-600" />
-            <a 
-              href={String(value)} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="text-blue-600 hover:underline text-sm"
-            >
-              Voir image
-            </a>
+          <div className="w-16">
+            <div className="flex items-center gap-1">
+              <Image className="w-4 h-4 text-blue-600 flex-shrink-0" />
+              <a 
+                href={String(value)} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-blue-600 hover:underline text-sm truncate"
+              >
+                Voir
+              </a>
+            </div>
           </div>
         );
       }
@@ -352,19 +334,21 @@ export default function PrixDistinctions() {
       key: 'lien_externe', 
       label: 'Lien externe',
       render: (value: string) => {
-        if (!value) return <span className="text-gray-400">-</span>;
+        if (!value) return <span className="text-gray-400 text-sm">-</span>;
         
         return (
-          <div className="flex items-center gap-2">
-            <ExternalLink className="w-4 h-4 text-green-600" />
-            <a 
-              href={String(value)} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="text-green-600 hover:underline text-sm"
-            >
-              Lien externe
-            </a>
+          <div className="w-16">
+            <div className="flex items-center gap-1">
+              <ExternalLink className="w-4 h-4 text-green-600 flex-shrink-0" />
+              <a 
+                href={String(value)} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-green-600 hover:underline text-sm truncate"
+              >
+                Lien
+              </a>
+            </div>
           </div>
         );
       }
@@ -381,118 +365,57 @@ export default function PrixDistinctions() {
   ];
 
   return (
-    <div className="p-6 space-y-6">
-      {/* En-tête de la page */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <Award className="w-8 h-8 text-yellow-600" />
-            Prix et Distinctions
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Gérez les prix et distinctions obtenus par les membres du laboratoire
-          </p>
-        </div>
-        <Button onClick={handleAdd} className="bg-yellow-600 hover:bg-yellow-700">
-          <Plus className="mr-2 h-4 w-4" />
-          Nouveau prix
-        </Button>
-      </div>
-
-      {/* Filtres et recherche */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Rechercher par titre, description ou organisme..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <div className="sm:w-48">
-              <Select value={filterOrganisme} onValueChange={setFilterOrganisme}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Tous les organismes" />
-                </SelectTrigger>
-                <SelectContent>
-                  {organismeFilterOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Statistiques */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total prix</p>
-                <p className="text-2xl font-bold">{prixDistinctions.length}</p>
-              </div>
-              <Award className="w-8 h-8 text-yellow-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Organismes</p>
-                <p className="text-2xl font-bold">
-                  {new Set(prixDistinctions.map(p => p.organisme).filter(Boolean)).size}
-                </p>
-              </div>
-              <Award className="w-8 h-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Avec image</p>
-                <p className="text-2xl font-bold">
-                  {prixDistinctions.filter(p => p && p.image_url).length}
-                </p>
-              </div>
-              <Image className="w-8 h-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Cette année</p>
-                <p className="text-2xl font-bold">
-                  {prixDistinctions.filter(p => {
-                    if (!p || !p.date_obtention) return false;
-                    try {
-                      return new Date(p.date_obtention).getFullYear() === new Date().getFullYear();
-                    } catch {
-                      return false;
-                    }
-                  }).length}
-                </p>
-              </div>
-              <Calendar className="w-8 h-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
+    <DashboardPageLayout
+      title="Prix et Distinctions"
+      description="Gérez les prix et distinctions obtenus par les membres du laboratoire"
+      icon={Award}
+      iconColor="text-yellow-600"
+      onAdd={handleAdd}
+      addButtonText="Nouveau prix"
+      addButtonClassName="bg-yellow-600 hover:bg-yellow-700"
+      showSearch={true}
+      searchPlaceholder="Rechercher par titre, description ou organisme..."
+      searchValue={searchTerm}
+      onSearchChange={setSearchTerm}
+      showFilter={true}
+      filterOptions={organismeFilterOptions}
+      filterValue={filterOrganisme}
+      onFilterChange={setFilterOrganisme}
+      statsCards={[
+        {
+          title: "Total prix",
+          value: prixDistinctions.length,
+          icon: Award,
+          iconColor: "text-yellow-600"
+        },
+        {
+          title: "Organismes",
+          value: new Set(prixDistinctions.map(p => p.organisme).filter(Boolean)).size,
+          icon: Award,
+          iconColor: "text-blue-600"
+        },
+        {
+          title: "Avec image",
+          value: prixDistinctions.filter(p => p && p.image_url).length,
+          icon: Image,
+          iconColor: "text-green-600"
+        },
+        {
+          title: "Cette année",
+          value: prixDistinctions.filter(p => {
+            if (!p || !p.date_obtention) return false;
+            try {
+              return new Date(p.date_obtention).getFullYear() === new Date().getFullYear();
+            } catch {
+              return false;
+            }
+          }).length,
+          icon: Calendar,
+          iconColor: "text-purple-600"
+        }
+      ]}
+      showStats={true}
+    >
       {/* Tableau des prix */}
       <Card>
         <CardHeader>
@@ -516,6 +439,7 @@ export default function PrixDistinctions() {
               isLoading={false}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              onView={handleEdit}
             />
           )}
         </CardContent>
@@ -547,6 +471,6 @@ export default function PrixDistinctions() {
           </div>
         </div>
       )}
-    </div>
+    </DashboardPageLayout>
   );
 } 

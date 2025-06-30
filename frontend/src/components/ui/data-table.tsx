@@ -101,13 +101,13 @@ export function DataTable<T extends { id: number }>({
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
+    <div className="rounded-md border overflow-x-auto">
+      <Table className="w-full table-fixed">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead key={header.id} className="whitespace-nowrap px-4 py-3 text-left">
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -127,7 +127,7 @@ export function DataTable<T extends { id: number }>({
                 data-state={row.getIsSelected() && "selected"}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell key={cell.id} className="whitespace-nowrap px-4 py-3 text-left">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

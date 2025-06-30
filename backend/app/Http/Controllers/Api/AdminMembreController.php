@@ -118,9 +118,8 @@ class AdminMembreController extends Controller
                 $photoPath = basename($request->file('photo')->store('membres/photos', 'public'));
             }
 
-            // 3. Créer le membre
-            $membre = Membre::create([
-                'user_id' => $userId, // null si pas d'utilisateur créé
+            // 3. Créer le membre - Gérer le cas où user_id peut être null
+            $membreData = [
                 'prenom' => $validated['prenom'],
                 'nom' => $validated['nom'],
                 'email' => $validated['email'],
@@ -129,7 +128,14 @@ class AdminMembreController extends Controller
                 'biographie' => $validated['biographie'] ?? null,
                 'photo' => $photoPath,
                 'slug' => Str::slug($validated['prenom'] . '-' . $validated['nom']) . '-' . uniqid()
-            ]);
+            ];
+
+            // Ajouter user_id seulement s'il existe
+            if ($userId) {
+                $membreData['user_id'] = $userId;
+            }
+
+            $membre = Membre::create($membreData);
 
             // 4. Associer les axes si fournis
             if (isset($validated['axes'])) {

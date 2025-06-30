@@ -10,8 +10,7 @@ import {
   FileText, 
   Image, 
   Globe,
-  Database,
-  Shield
+  Database
 } from "lucide-react";
 
 const parametresPages = [
@@ -77,13 +76,6 @@ const parametresPages = [
     description: 'Configuration des titres et descriptions de la section partenaires',
     icon: Globe,
     color: 'bg-indigo-500'
-  },
-  { 
-    path: '/dashboard/settings-securite', 
-    name: 'Paramètres de sécurité',
-    description: 'Configuration des paramètres de sécurité et permissions',
-    icon: Shield,
-    color: 'bg-yellow-500'
   },
   { 
     path: '/dashboard/settings-activity-reports', 

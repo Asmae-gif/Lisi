@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from 'react-i18next';
+import { isValidImageUrl, handleImageError } from '@/utils/imageUtils';
 
 interface Partenaire {
   id: number;
@@ -60,8 +61,22 @@ export function PartenaireForm({ partenaire, onSubmit, onClose, isSubmitting }: 
         try {
             new URL(formData.lien);
         } catch {
-            alert('Veuillez entrer une URL valide (ex: https://example.com)');
+            alert('Veuillez entrer une URL valide pour le site web (ex: https://example.com)');
             return;
+        }
+        
+        // Vérifier que le logo est une URL valide si fourni
+        if (formData.logo.trim()) {
+            try {
+                new URL(formData.logo);
+                if (!isValidImageUrl(formData.logo)) {
+                    alert('L\'URL fournie ne semble pas être une image valide. Veuillez vérifier que l\'URL pointe vers une image (jpg, png, gif, svg, etc.)');
+                    return;
+                }
+            } catch {
+                alert('Veuillez entrer une URL valide pour le logo (ex: https://example.com/logo.png)');
+                return;
+            }
         }
         
         onSubmit(formData);
@@ -141,6 +156,22 @@ export function PartenaireForm({ partenaire, onSubmit, onClose, isSubmitting }: 
                                 onChange={handleChange}
                                 placeholder="https://example.com/logo.png"
                             />
+                            {formData.logo && (
+                                <div className="mt-2">
+                                    <Label className="text-sm text-gray-600">Aperçu du logo :</Label>
+                                    <div className="mt-1 h-20 bg-gray-50 border rounded-lg flex items-center justify-center">
+                                        <img 
+                                            src={formData.logo} 
+                                            alt="Aperçu du logo"
+                                            className="max-h-full max-w-full object-contain"
+                                            onError={handleImageError}
+                                        />
+                                        <div className="text-gray-400 text-sm" style={{display: 'none'}}>
+                                            Impossible de charger l'image
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <div>

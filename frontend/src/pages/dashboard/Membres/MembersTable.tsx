@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useMembres } from "@/hooks/useMembres"
 import IconMapper from '@/components/common/IconMapper'
 import { Membre, User, MembreFormData } from "@/types/membre"
@@ -37,6 +38,13 @@ interface StatsCardProps {
 const MemberRow = lazy(() => import("./MemberRow"))
 
 export default function Membres() {
+
+  // Options de statut pour les membres
+  const STATUT_OPTIONS = [
+    { value: "Permanent", label: "Permanent" },
+    { value: "Associés", label: "Associés" },
+    { value: "Doctorants", label: "Doctorants" }
+  ];
 
   //const { toast } = useToast()
   const {
@@ -474,12 +482,21 @@ const TableSkeleton = () => (
             </div>
             <div>
                 <Label htmlFor="statut">Statut</Label>
-                <Input
-                id="statut"
+                <Select
                   value={newMembre.statut}
-                  onChange={(e) => setNewMembre({ ...newMembre, statut: e.target.value  })}
-                />
-                  
+                  onValueChange={(value) => setNewMembre({ ...newMembre, statut: value })}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Sélectionnez un statut" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUT_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             {/*
             <div>

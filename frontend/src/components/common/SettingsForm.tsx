@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2, AlertCircle, Loader2, X, MapPin, ExternalLink } from "lucide-react";
-import { buildImageUrl, handleImageError, DEFAULT_IMAGE_FALLBACK } from '@/utils/imageUtils';
+import { buildImageUrlWithDefaults, handleImageError, DEFAULT_IMAGE_FALLBACK } from '@/utils/imageUtils';
 
 /**
  * Composant de formulaire de paramètres réutilisable
@@ -80,7 +80,7 @@ const SettingsForm = React.memo(({
         );
       
       case 'file': {
-        const imageUrl = buildImageUrl(values[field.key] as string);
+        const imageUrl = buildImageUrlWithDefaults(values[field.key] as string);
         const previewUrl = preview[field.key];
         const hasImage = imageUrl || previewUrl;
         

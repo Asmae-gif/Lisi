@@ -335,7 +335,7 @@ export default function Partenaires() {
               }}
             />
             <div className="h-12 w-12 bg-gray-100 rounded-lg border flex items-center justify-center text-gray-400 text-xs" style={{display: 'none'}}>
-              Logo
+              Erreur
             </div>
           </div>
         );

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Http;
 
 // Models
 use App\Models\Membre;
@@ -320,4 +321,29 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/chatbot/analytics', [ChatbotAnalyticsController::class, 'store']);
     Route::post('/chatbot/session-summary', [ChatbotAnalyticsController::class, 'storeSessionSummary']);
     Route::get('/chatbot/stats', [ChatbotAnalyticsController::class, 'getStats'])->middleware('role:admin');
+
+    // Route pour servir les images externes via proxy
+    Route::get('/proxy-image', function (Request $request) {
+        $url = $request->get('url');
+        if (!$url) {
+            return response()->json(['error' => 'URL parameter is required'], 400);
+        }
+        
+        try {
+            $response = Http::timeout(10)->get($url);
+            if ($response->successful()) {
+                return response($response->body())
+                    ->header('Content-Type', $response->header('Content-Type'))
+                    ->header('Cache-Control', 'public, max-age=3600');
+            }
+        } catch (\Exception $e) {
+            // En cas d'erreur, retourner une image de fallback
+            $fallbackImage = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==');
+            return response($fallbackImage)
+                ->header('Content-Type', 'image/png')
+                ->header('Cache-Control', 'public, max-age=3600');
+        }
+        
+        return response()->json(['error' => 'Failed to fetch image'], 500);
+    });
 });

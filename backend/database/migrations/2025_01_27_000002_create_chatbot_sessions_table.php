@@ -18,8 +18,8 @@ return new class extends Migration
             $table->integer('total_messages');
             $table->string('page_url');
             $table->text('user_agent');
-            $table->timestamp('start_time');
-            $table->timestamp('end_time');
+            $table->timestamp('start_time')->useCurrent();
+            $table->timestamp('end_time')->nullable();
             $table->timestamps();
 
             $table->index('session_id');

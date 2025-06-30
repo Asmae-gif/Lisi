@@ -6,7 +6,7 @@ import { galleryApiService, Gallery as GalleryType } from '../services/galleryAp
 import { toast } from '@/hooks/use-toast';
 import { useGalerieSettings } from '@/hooks/useGalerieSettings';
 import { useTranslation } from 'react-i18next';
-import { buildImageUrl } from '@/utils/imageUtils';
+import { buildImageUrl, buildImageUrlWithDefaults } from '@/utils/imageUtils';
 import LoadingSkeleton from '@/components/common/LoadingSkeleton';
 import PageContent from '@/components/common/PageContent';
 
@@ -202,7 +202,7 @@ const Gallery = () => {
           hero
           title={title}
           subtitle={subtitle}
-          backgroundImage={settings.galerie_image ? buildImageUrl(settings.galerie_image) : undefined}
+          backgroundImage={settings.galerie_image ? buildImageUrlWithDefaults(settings.galerie_image) : undefined}
         >
             <></>
         </PageContent>
@@ -265,7 +265,6 @@ const Gallery = () => {
                       </div>
                       <div className="absolute bottom-0 left-0 p-4 text-white">
                         <h3 className="text-lg font-bold">{getLocalizedImageTitle(image)}</h3>
-                        <p className="text-sm opacity-90">{getLocalizedImageDescription(image)}</p>
                       </div>
                     </div>
                   </div>

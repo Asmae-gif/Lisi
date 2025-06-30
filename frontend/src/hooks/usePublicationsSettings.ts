@@ -13,6 +13,11 @@ export const usePublicationsSettings = () => {
         setLoading(true);
         setError(null);
         
+        // Temporairement, utiliser seulement les valeurs par défaut
+        setSettings(DEFAULT_PUBLICATIONS_SETTINGS);
+        setLoading(false);
+        return;
+        
         const response = await axiosClient.get('/api/pages/publications/settings', {
           headers: { 'Accept': 'application/json' }
         });

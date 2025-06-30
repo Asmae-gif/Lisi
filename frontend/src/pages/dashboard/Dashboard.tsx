@@ -4,6 +4,7 @@ import { StatsCard } from "@/components/common";
 import { getUsers, getMembres } from "@/services/userService";
 import { dashboardService, RecentActivity } from "@/services/dashboardService";
 import RecentActivities from "@/components/dashboard/recent-activities";
+import { MembersByStatus } from "@/components/dashboard/members-by-status";
 import { Users, BookOpen, FolderKanban } from "lucide-react";
 
 // Ajout du typage pour la réponse de l'API

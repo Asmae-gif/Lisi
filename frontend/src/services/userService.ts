@@ -139,31 +139,54 @@ export const deleteMembre = async (membreId: number): Promise<boolean> => {
  */
 export const saveMembre = async (data: MembreFormData, membreId?: number): Promise<Membre | null> => {
   try {
+    console.log('Données à envoyer:', data);
+    
     const formData = new FormData();
     
     // Ajout des champs au FormData
     Object.entries(data).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
+      if (value !== null && value !== undefined && value !== '') {
         formData.append(key, value.toString());
+        console.log(`Ajout du champ ${key}:`, value);
       }
     });
 
     // Champs supplémentaires pour la création
     if (!membreId) {
-      formData.append('password', 'temp_password_' + Date.now());
       formData.append('create_user', 'false');
+      formData.append('password', 'temp_password_' + Date.now());
+      console.log('Ajout des champs de création');
     }
 
-    const response = membreId
-      ? await axiosClient.post(`/api/admin/membres/${membreId}`, formData, {
-          params: { _method: "PUT" },
-        })
-      : await axiosClient.post("/api/admin/membres", formData);
+    // Log du FormData pour debug
+    for (let [key, value] of formData.entries()) {
+      console.log(`FormData ${key}:`, value);
+    }
 
+    const url = membreId ? `/api/admin/membres/${membreId}` : "/api/admin/membres";
+    const method = membreId ? 'PUT' : 'POST';
+    
+    console.log(`Envoi ${method} vers:`, url);
+
+    const response = membreId
+      ? await axiosClient.post(url, formData, {
+          params: { _method: "PUT" },
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        })
+      : await axiosClient.post(url, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        });
+
+    console.log('Réponse du serveur:', response.data);
     return response.data.data ? convertMembre(response.data.data) : null;
   } catch (err) {
     const error = err as { response?: { data?: { message?: string } } };
     console.error("Erreur lors de l'enregistrement :", error);
+    console.error("Détails de l'erreur:", error.response?.data);
     throw new Error(error.response?.data?.message || "Impossible de sauvegarder le membre");
   }
 };

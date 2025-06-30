@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useIndexSettingsAPI } from '@/hooks/useIndexSettingsAPI';
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
-import { buildImageUrl } from '@/utils/imageUtils';
+import { buildImageUrl, buildImageUrlWithDefaults } from '@/utils/imageUtils';
 
 function useScrollToHash() {
   const { hash } = useLocation();
@@ -57,7 +57,7 @@ const DirectorMessage = () => {
           <div className="relative">
             <div className="relative">
                <img 
-                    src={buildImageUrl(settings.mot_directeur_image)}
+                    src={buildImageUrlWithDefaults(settings.mot_directeur_image)}
                     alt={t('mot_directeur_image')}
                     className="w-56 h-56 rounded-full mx-auto mb-6 object-cover shadow-lg"
                   />

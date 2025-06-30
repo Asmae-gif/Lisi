@@ -5,7 +5,7 @@ import Footer from '@/components/Footer';
 import { useTranslation } from 'react-i18next';
 import { PartenaireSettings } from '@/types/PartenaireSettings';
 import { usePartenaireSettings } from '@/hooks/usePartenaireSettings';
-import { buildImageUrl } from '@/utils/imageUtils';
+import { buildImageUrl, handleImageError, getSafeImageUrl } from '@/utils/imageUtils';
 
 interface Partenaire {
   id: number;
@@ -224,25 +224,12 @@ export default function Partenaires() {
               <div key={partenaire.id} className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 group">
                 {/* Logo du partenaire */}
                 <div className="h-48 bg-gray-50 flex items-center justify-center p-6 border-b border-gray-100">
-                  {partenaire.logo ? (
-                    <img 
-                      src={partenaire.logo.startsWith('http') ? partenaire.logo : buildImageUrl(partenaire.logo)} 
-                      alt={getLocalizedTitle(partenaire)}
-                      className="max-w-full max-h-full object-contain"
-                      onError={(e) => {
-                        const target = e.currentTarget as HTMLImageElement;
-                        target.style.display = 'none';
-                        const fallback = target.nextElementSibling as HTMLElement;
-                        if (fallback) fallback.style.display = 'flex';
-                      }}
-                    />
-                  ) : null}
-                  <div 
-                    className="w-full h-full flex items-center justify-center text-gray-400 text-4xl font-bold"
-                    style={{ display: partenaire.logo ? 'none' : 'flex' }}
-                  >
-                    {getLocalizedTitle(partenaire).charAt(0).toUpperCase()}
-                  </div>
+                  <img 
+                    src={getSafeImageUrl(partenaire.logo, getLocalizedTitle(partenaire))}
+                    alt={getLocalizedTitle(partenaire)}
+                    className="max-w-full max-h-full object-contain"
+                    onError={(e) => handleImageError(e, undefined, getLocalizedTitle(partenaire))}
+                  />
                 </div>
                 
                 {/* Informations du partenaire */}

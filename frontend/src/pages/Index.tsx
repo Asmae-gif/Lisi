@@ -10,7 +10,7 @@ import DirectorMessage from '@/components/home/DirectorMessage';
 import KeyFigures from '@/components/home/KeyFigures';
 import AxesRecherche from '@/components/home/Axes_recherche';
 import { useTranslation } from 'react-i18next';
-import { buildImageUrl } from '@/utils/imageUtils';
+import { buildImageUrlWithDefaults } from '@/utils/imageUtils';
 import { useLocation } from 'react-router-dom';
 import publicationApi from '@/services/publicationApi';
 
@@ -270,7 +270,7 @@ const Index = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-3xl blur-3xl"></div>
                 <div className="relative bg-card rounded-3xl p-8 shadow-2xl border">
                   <img 
-                    src={buildImageUrl(settings.hero_image_side)}
+                    src={buildImageUrlWithDefaults(settings.hero_image_side)}
                     alt={t('hero_image_side')}
                     className="rounded-2xl w-full h-80 object-cover"
                   />
@@ -310,7 +310,7 @@ const Index = () => {
               <div className="relative ">
                 
               <img 
-                src={buildImageUrl(settings.mission_image)}
+                src={buildImageUrlWithDefaults(settings.mission_image)}
                   alt={t('alt_mission_image')}
                 className="relative rounded-2xl shadow-2xl w-full h-85 object-contain border"
                   />

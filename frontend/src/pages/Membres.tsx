@@ -7,7 +7,7 @@ import { ChevronDown, Mail, ExternalLink, Search, Users } from "lucide-react"
 import LoadingSkeleton from '@/components/common/LoadingSkeleton';
 import { Input } from "@/components/ui/input"
 import { membresApi } from '@/services/api';
-import { buildImageUrl } from '@/utils/imageUtils';
+import { buildImageUrlWithDefaults } from '@/utils/imageUtils';
 import { useTranslation } from 'react-i18next';
 import PageContent from '@/components/common/PageContent';
 import api from '@/lib/api';
@@ -150,7 +150,7 @@ const Membres: React.FC = () => {
         title: t('permanent_members'),
         members: sortedMembers.filter(m => {
           const statut = m.statut?.toLowerCase() || '';
-          return statut.includes('permanent') || statut.includes('enseignant') || statut.includes('chercheur');
+          return statut === 'permanent';
         })
       },
       {
@@ -158,7 +158,7 @@ const Membres: React.FC = () => {
         title: t('associate_members'),
         members: sortedMembers.filter(m => {
           const statut = m.statut?.toLowerCase() || '';
-          return statut.includes('associé') || statut.includes('associe') || statut.includes('collaborateur');
+          return statut === 'associés';
         })
       },
       {
@@ -166,7 +166,7 @@ const Membres: React.FC = () => {
         title: t('phd_students'),
         members: sortedMembers.filter(m => {
           const statut = m.statut?.toLowerCase() || '';
-          return statut.includes('doctorant') || statut.includes('thèse') || statut.includes('these');
+          return statut === 'doctorants';
         })
       },
       {
@@ -174,7 +174,7 @@ const Membres: React.FC = () => {
         title: t('other_members'),
         members: sortedMembers.filter(m => {
           const statut = m.statut?.toLowerCase() || '';
-          return statut === '';
+          return statut !== 'permanent' && statut !== 'associés' && statut !== 'doctorants' && statut !== '';
         })
       },
     ];
@@ -207,7 +207,7 @@ const Membres: React.FC = () => {
         hero
         title={title}
         subtitle={subtitle}
-        backgroundImage={settings?.membres_image ? buildImageUrl(settings.membres_image) : undefined}
+        backgroundImage={settings?.membres_image ? buildImageUrlWithDefaults(settings.membres_image) : undefined}
       >
         <></>
       </PageContent>

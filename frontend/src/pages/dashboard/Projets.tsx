@@ -195,8 +195,10 @@ const Projets: React.FC = () => {
             key: 'name_fr', 
             label: 'Nom du projet',
             render: (value: string) => (
-                <div className="font-medium text-gray-900 max-w-xs truncate" title={value}>
-                    {value}
+                <div className="font-medium text-gray-900 min-w-0">
+                    <div className="truncate max-w-48" title={value}>
+                        {value}
+                    </div>
                 </div>
             )
         },
@@ -238,46 +240,19 @@ const Projets: React.FC = () => {
         { 
             key: 'date_debut', 
             label: 'Date début',
-            render: (value: string) => new Date(value).toLocaleDateString('fr-FR')
+            render: (value: string) => (
+                <span className="text-sm">
+                    {new Date(value).toLocaleDateString('fr-FR')}
+                </span>
+            )
         },
         { 
             key: 'date_fin', 
             label: 'Date de fin',
-            render: (value: string) => value ? new Date(value).toLocaleDateString('fr-FR') : '-'
-        },
-        {
-            key: 'id',
-            label: 'Actions',
-            render: (value: number, project: Project) => (
-                <div className="flex items-center gap-2">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleViewDetails(project)}
-                        className="text-blue-600 hover:text-blue-800"
-                        title="Voir détails"
-                    >
-                        <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(project)}
-                        className="text-green-600 hover:text-green-800"
-                        title="Modifier"
-                    >
-                        <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(project.id)}
-                        className="text-red-600 hover:text-red-800"
-                        title="Supprimer"
-                    >
-                        <Trash2 className="h-4 w-4" />
-                    </Button>
-                </div>
+            render: (value: string) => (
+                <span className="text-sm">
+                    {value ? new Date(value).toLocaleDateString('fr-FR') : '-'}
+                </span>
             )
         }
     ];
@@ -384,6 +359,7 @@ const Projets: React.FC = () => {
                         isLoading={isLoading}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                        onView={handleViewDetails}
                     />
                 </CardContent>
             </Card>
