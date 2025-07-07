@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, FileText, Settings, Contact, Image, Building2, FolderKanban, Award, User } from 'lucide-react';
+import { Home, Users, FileText, Settings, Contact, Image, Building2, FolderKanban, Award } from 'lucide-react';
 import Header from './Header';
 
 export function Sidebar() {
@@ -15,7 +15,6 @@ export function Sidebar() {
     { path: '/dashboard/publications', icon: FileText, label: 'Publications' },
     { path: '/dashboard/prix-distinctions', icon: Award, label: 'Prix et Distinctions' },
     { path: '/dashboard/partenaires', icon: Building2, label: 'Partenaires' },
-    { path: '/dashboard/mot-directeur', icon: User, label: 'Mot du Directeur' },
     { path: '/dashboard/contact', icon: Contact, label: 'Contact' },
     { path: '/dashboard/gallery', icon: Image, label: 'Galerie' },
     { path: '/dashboard/activity-reports', icon: FileText, label: 'Activités' },

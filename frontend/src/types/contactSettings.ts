@@ -41,9 +41,8 @@ export interface ContactSettings {
     contact_sous_titre_ar: "نحن على استعداد للإجابة على أسئلتكم ونناقش التعاون واستكشاف الفرص البحثية الجديدة.",
     contact_titre2_ar: "معلومات الاتصال",
     contact_adresse_ar: "شارع عبد الكريم الخطابي، ص. ب 511 - 40000 – مراكش",
-    contact_email: "contact@example.com",
     contact_telephone: "06 70 09 85 53 / 06 70 09 89 50 ",
-    contact_location: "Marrakech, Maroc",
+    contact_location: "Faculté des Sciences Semlalia, Marrakech, Maroc",
     contact_image: '/images/hero.png'
   }
   
