@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import axiosClient from "@/services/axiosClient"
 import { MembreSettings, ApiResponse,Section, DEFAULT_MEMBRES_SETTINGS } from '@/types/MembresSettings'
 import SettingsForm from '@/components/common/SettingsForm'
-import { buildImageUrl, buildImageUrlWithDefaults } from '@/utils/imageUtils'
+import { buildImageUrlWithDefaults } from '@/utils/imageUtils'
 
 /**
  * Composant de paramètres pour la page Membres
@@ -18,12 +18,12 @@ export default function SettingsMembres() {
       fields: [
         { 
           key: "membres_titre_fr", 
-          label: "Titre Principal (Français)", 
+          label: "Titre Principal ", 
           type: "text"
         },
         { 
           key: "membres_sous_titre_fr", 
-          label: "Sous-titre (Français)", 
+          label: "Texte d'introduction", 
           type: "text"
         },
       ],
@@ -33,12 +33,12 @@ export default function SettingsMembres() {
       fields: [
         { 
           key: "membres_titre_en", 
-          label: "Main Title (English)", 
+          label: "Titre Principal ", 
           type: "text"
         },
         { 
           key: "membres_sous_titre_en", 
-          label: "Subtitle (English)", 
+          label: "Texte d'introduction",  
           type: "text"
         },
       ],
@@ -48,12 +48,12 @@ export default function SettingsMembres() {
       fields: [
         { 
           key: "membres_titre_ar", 
-          label: "العنوان الرئيسي (العربية)", 
+          label: "Titre Principal ", 
           type: "text"
         },
         { 
           key: "membres_sous_titre_ar", 
-          label: "العنوان الفرعي (العربية)", 
+          label: "Texte d'introduction", 
           type: "text" 
         },
       ],
@@ -70,121 +70,88 @@ export default function SettingsMembres() {
     },
   ], [])
 
-  // Initialiser avec les valeurs par défaut dès le départ
   const [values, setValues] = useState<MembreSettings>(() => {
     return { ...DEFAULT_MEMBRES_SETTINGS }
   })
   const [files, setFiles] = useState<Record<string, File>>({})
   const [preview, setPreview] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
-  const [initialized, setInitialized] = useState(false)
   const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null)
 
   // Optimisation avec useCallback pour le chargement des paramètres
   const loadSettings = useCallback(async () => {
-    try {
-      setLoading(true)
+    setLoading(true)
       setMessage(null)
-      
+    try {
+      // S'assurer d'avoir un token CSRF
       await axiosClient.get('/sanctum/csrf-cookie')
       
-      const response = await axiosClient.get<ApiResponse>('/api/pages/membres/settings', {
+      // Charger les données
+      const response = await axiosClient.get<ApiResponse>('/api/pages/membres/settings', {  
         headers: { 'Accept': 'application/json' }
       })
-
-      console.log('Données reçues:', response.data)
-
       const settingsData = response.data.data || response.data
-
-      if (settingsData && typeof settingsData === 'object') {
-        console.log('Données à utiliser:', settingsData)
-        
-        // Gérer la nouvelle structure hiérarchique des paramètres
-        let flattenedSettings = {};
-        const settingsDataTyped = settingsData as any;
-        if (settingsDataTyped.fr || settingsDataTyped.en || settingsDataTyped.ar) {
-          // Structure hiérarchique - aplatir
-          Object.keys(settingsDataTyped).forEach(lang => {
-            if (typeof settingsDataTyped[lang] === 'object') {
-              Object.keys(settingsDataTyped[lang]).forEach(key => {
-                flattenedSettings[`membres_${key}_${lang}`] = settingsDataTyped[lang][key];
-              });
-            }
-          });
-        } else {
-          // Structure plate - utiliser directement
-          flattenedSettings = settingsDataTyped;
-        }
-        
-        // Utiliser les valeurs par défaut partagées
-        const defaultValues: MembreSettings = {
-          ...DEFAULT_MEMBRES_SETTINGS,
-          ...flattenedSettings
-        }
-        
-        setValues(defaultValues)
-        
-        // Mettre à jour les previews d'images avec les URLs correctes
-        Object.entries(defaultValues).forEach(([key, val]) => {
-          if (key.endsWith('_image') && val) {
-            console.log('Image trouvée:', key, val)
-            const imageUrl = buildImageUrlWithDefaults(String(val))
-            if (imageUrl) {
-              setPreview(prev => ({ ...prev, [key]: imageUrl }))
-            }
-          }
-        })
-      } else {
-        throw new Error('Format de données invalide reçu du serveur')
+      console.log('Données reçues depuis la base de données:', settingsData)
+      if (settingsData && typeof settingsData === 'object') { 
+         
+      const defaultValues: MembreSettings = {
+        ...DEFAULT_MEMBRES_SETTINGS,
+        ...settingsData
       }
-    } catch (err: unknown) {
-      console.error('Erreur lors du chargement:', err)
-      const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des données';
-      setMessage({ 
-        type: 'error', 
-        text: `Erreur lors du chargement : ${errorMessage}`
-      })
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+      setValues(defaultValues)
+ // Mettre à jour les previews d'images
+ Object.entries(settingsData).forEach(([key, val]) => {
+  if (key.endsWith('.image') && val) {
+    setPreview(prev => ({ ...prev, [key]: String(val) }))
+  }
+})
+} else {
+setMessage({ 
+  type: 'error', 
+  text: 'Format de données invalide reçu du serveur' 
+})
+}
+} catch (err: unknown) {
+const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des données';
+setMessage({ 
+type: 'error', 
+text: `Erreur lors du chargement : ${errorMessage}`
+})
+} finally {
+setLoading(false)
+}
+}, [])
 
-  useEffect(() => {
-    loadSettings()
-  }, [loadSettings])
+useEffect(() => {
+loadSettings()
+}, [loadSettings])
 
-  // Optimisation avec useCallback pour la gestion des changements
-  const handleChange = useCallback((key: string, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (e.target.type === 'file') {
-      const file = (e.target as HTMLInputElement).files?.[0]
-      if (file) {
-        setFiles(f => ({ ...f, [key]: file }))
-        setPreview(p => ({ ...p, [key]: URL.createObjectURL(file) }))
-      } else {
-        setFiles(f => {
-          const newFiles = { ...f }
-          delete newFiles[key]
-          return newFiles
-        })
-        // Garder l'image existante si on supprime le fichier
-        if (values[key as keyof MembreSettings]) {
-          const imageUrl = buildImageUrlWithDefaults(String(values[key as keyof MembreSettings]))
-          if (imageUrl) {
-            setPreview(p => ({ ...p, [key]: imageUrl }))
-          }
-        }
-      }
+ // Optimisation avec useCallback pour la gestion des changements
+ const handleChange = useCallback((key: string, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  if (e.target.type === 'file') {
+    const file = (e.target as HTMLInputElement).files?.[0]
+    if (file) {
+      setFiles(f => ({ ...f, [key]: file }))
+      setPreview(p => ({ ...p, [key]: URL.createObjectURL(file) }))
     } else {
-      const value = e.target.value || ''
-      setValues(v => ({ ...v, [key]: value }))
+      setFiles(f => {
+        const newFiles = { ...f }
+        delete newFiles[key]
+        return newFiles
+      })
     }
-  }, [values])
+  } else {
+    const value = e.target.value || ''
+    setValues(v => ({ ...v, [key]: value }))
+  }
+}, [])
 
-  // Optimisation avec useCallback pour la soumission
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setMessage(null)
+// Optimisation avec useCallback pour la soumission
+const handleSubmit = useCallback(async (e: React.FormEvent) => {
+  e.preventDefault()
+  setLoading(true)
+  setMessage(null)
+
 
     try {
       await axiosClient.get('/api/sanctum/csrf-cookie')
@@ -195,8 +162,7 @@ export default function SettingsMembres() {
       }
       
       formData.append('page', 'membres')
-      
-      // Ajouter tous les champs de configuration
+    
       Object.entries(values).forEach(([key, value]) => {
         if (value !== undefined && key !== 'id') {
           formData.append(key, String(value))
@@ -219,31 +185,26 @@ export default function SettingsMembres() {
         }
       )
       
-      if (response.data?.success || response.data?.message === 'Settings updated successfully') {
+      if (response.data && (response.data.success || response.data.message === 'Settings updated successfully')) {
         if (response.data.data) {
-          setValues(response.data.data)
-          // Mettre à jour les previews d'images avec les URLs correctes
+          setValues({ ...DEFAULT_MEMBRES_SETTINGS, ...response.data.data })
           Object.entries(response.data.data).forEach(([key, val]) => {
-            if (key.endsWith('_image') && val) {
-              const imageUrl = buildImageUrlWithDefaults(String(val))
-              if (imageUrl) {
-                setPreview(prev => ({ ...prev, [key]: imageUrl }))
-              }
+            if (key.endsWith('.image') && val) {
+              setPreview(prev => ({ ...prev, [key]: String(val) }))
             }
           })
         }
         
-        setMessage({ type: 'success', text: 'Paramètres enregistrés avec succès !' })
+        setMessage({ type: 'success', text: 'Enregistré !' })
         setFiles({})
       } else {
         throw new Error(response.data?.message || 'Erreur lors de la sauvegarde')
       }
     } catch (err: unknown) {
-      console.error('Erreur détaillée:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des données';
+      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la sauvegarde.'
       setMessage({ 
         type: 'error', 
-        text: `Erreur lors du chargement : ${errorMessage}`
+        text: `Erreur lors de la sauvegarde : ${errorMessage}`
       })
     } finally {
       setLoading(false)

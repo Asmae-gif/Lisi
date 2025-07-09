@@ -104,7 +104,7 @@ export const DEFAULT_RECHERCHE_SETTINGS: RechercheSettings = {
   step_1_title_fr: "Problématique",
   step_1_desc_fr: "Identification des défis scientifiques",
   step_2_title_fr: "Objectifs",
-  step_2_desc_fr: "Définition claire des buts à atteindre",
+  step_2_desc_fr: "Définition claire des objectifs visés",
   step_3_title_fr: "Approche",
   step_3_desc_fr: "Développement de méthodologies adaptées",
   step_4_title_fr: "Expérimentation",
@@ -130,7 +130,7 @@ export const DEFAULT_RECHERCHE_SETTINGS: RechercheSettings = {
   step_4_title_en: "Experimentation",
   step_4_desc_en: "Testing and validating hypotheses",
   step_5_title_en: "Results",
-  step_5_desc_en: "Publishing and valorizing discoveries",
+  step_5_desc_en: "Publishing and promoting  discoveries",
 
   // 🇸🇦 Arabe
     "titre_ar": "مجالات بحثنا",
@@ -149,7 +149,7 @@ export const DEFAULT_RECHERCHE_SETTINGS: RechercheSettings = {
     "step_4_title_ar": "التجريب",
     "step_4_desc_ar": "اختبار الفرضيات والتحقق من صحتها",
     "step_5_title_ar": "النتائج",
-    "step_5_desc_ar": "نشر النتائج وتثمين المخرجات البحثية"
+    "step_5_desc_ar": "نشر النتائج وتعزيز نتائج البحث"
   
 }; 
 

@@ -41,13 +41,16 @@ export interface Section {
 }
 
 // Valeurs par défaut pour les paramètres des membres
-export const DEFAULT_MEMBRES_SETTINGS: MembreSettings = {
+export const DEFAULT_MEMBRES_SETTINGS: MembreSettings = { 
   page: 'membres',
   membres_titre_fr: 'Nos Membres',
-  membres_sous_titre_fr: 'Découvrez l\'équipe de chercheurs, d\'enseignants et de doctorants qui composent notre laboratoire',
+  membres_sous_titre_fr: 'Découvrez les membres permanents, les membres associés et les doctorants qui contribuent aux activités scientifiques et pédagogiques de notre laboratoire.',
+  
   membres_titre_en: 'Our Members',
-  membres_sous_titre_en: 'Discover the team of researchers, teachers and PhD students who make up our laboratory',
+  membres_sous_titre_en: 'Discover the permanent members, associate members, and doctoral students who contribute to the scientific and educational activities of our laboratory.',
+  
   membres_titre_ar: 'أعضاءنا',
-  membres_sous_titre_ar: 'اكتشف فريق الباحثين والمعلمين وطلاب الدكتوراه الذين يشكلون مختبرنا',
+  membres_sous_titre_ar: 'اكتشف الأعضاء الدائمين والأعضاء المنتسبين وطلبة الدكتوراه الذين يساهمون في الأنشطة العلمية والبيداغوجية لمختبرنا.',
+  
   membres_image: '/images/hero.png'
-} 
+}

@@ -1,5 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation } from 'react-i18next';
+import { useRTL } from '@/hooks/useRTL';
 
 /**
  * Composant de layout de page réutilisable
@@ -28,6 +30,8 @@ const PageLayout: React.FC<PageLayoutProps> = React.memo(({
   backgroundImage,
   backgroundGradient = "bg-gradient-to-br from-blue-50 to-indigo-100"
 }) => {
+  const { isRTL, direction, getTextAlignClass } = useRTL();
+
   const backgroundStyle = backgroundImage 
     ? {
         backgroundImage: `url(${backgroundImage})`,
@@ -40,14 +44,15 @@ const PageLayout: React.FC<PageLayoutProps> = React.memo(({
     <section 
       className={`py-16 ${backgroundGradient} ${headerClassName}`}
       style={backgroundStyle}
+      dir={direction}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+        <div className={`text-center ${getTextAlignClass()}`}>
+          <h1 className={`text-4xl md:text-5xl font-bold text-gray-900 mb-6 ${getTextAlignClass()}`} dir={direction}>
             {title}
           </h1>
           {subtitle && (
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className={`text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed ${getTextAlignClass()}`} dir={direction}>
               {subtitle}
             </p>
           )}
@@ -57,22 +62,22 @@ const PageLayout: React.FC<PageLayoutProps> = React.memo(({
   );
 
   const content = showCard ? (
-    <Card className={contentClassName}>
+    <Card className={contentClassName} dir={direction}>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className={getTextAlignClass()}>{title}</CardTitle>
       </CardHeader>
       <CardContent>
         {children}
       </CardContent>
     </Card>
   ) : (
-    <div className={contentClassName}>
+    <div className={contentClassName} dir={direction}>
       {children}
     </div>
   );
 
   return (
-    <div className={`min-h-screen bg-gray-50 ${className}`}>
+    <div className={`min-h-screen bg-gray-50 ${className} ${isRTL ? 'rtl' : 'ltr'}`} dir={direction}>
       {headerSection}
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto">

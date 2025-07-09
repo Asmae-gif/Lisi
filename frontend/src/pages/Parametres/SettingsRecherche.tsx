@@ -134,12 +134,11 @@ const sections : Section[] = useMemo(() => [
   },
 ], [])
 
-
    // Initialiser avec les valeurs par défaut dès le départ
    const [values, setValues] = useState<RechercheSettings>(() => {
-    console.log('Initialisation avec les valeurs par défaut:', DEFAULT_RECHERCHE_SETTINGS)
     return { ...DEFAULT_RECHERCHE_SETTINGS }
   })
+
   const [files,  setFiles]  = useState<Record<string, File>>({})
   const [preview, setPreview]= useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
@@ -159,41 +158,29 @@ const sections : Section[] = useMemo(() => [
         headers: { 'Accept': 'application/json' }
       })
 
-      console.log('Données reçues:', response.data)
-
       // Vérifier si les données sont dans un sous-objet data
       const settingsData = response.data.data || response.data
 
       if (settingsData && typeof settingsData === 'object') {
-        // Log des données pour déboguer
-        console.log('Données à utiliser:', settingsData)
-
-        // Utiliser les valeurs par défaut partagées
         const defaultValues: RechercheSettings = {
           ...DEFAULT_RECHERCHE_SETTINGS,
           ...settingsData
-        }
-        
+        }        
         setValues(defaultValues)
-        
-    
-        
+            
         // Mettre à jour les previews d'images
         Object.entries(settingsData).forEach(([key, val]) => {
           if (key.endsWith('.image') && val) {
-            console.log('Image trouvée:', key, val)
             setPreview(prev => ({ ...prev, [key]: String(val) }))
           }
         })
       } else {
-        console.error('Format de données invalide:', settingsData)
         setMessage({ 
           type: 'error', 
           text: 'Format de données invalide reçu du serveur' 
         })
       }
     } catch (err: unknown) {
-      console.error('Erreur lors du chargement:', err)
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des données';
       setMessage({ 
         type: 'error', 
@@ -215,9 +202,7 @@ const sections : Section[] = useMemo(() => [
       if (file) {
         setFiles(f => ({ ...f, [key]: file }))
         setPreview(p => ({ ...p, [key]: URL.createObjectURL(file) }))
-        // Ne pas mettre à jour values pour les fichiers
       } else {
-        // Supprimer le fichier des files si aucun n'est sélectionné
         setFiles(f => {
           const newFiles = { ...f }
           delete newFiles[key]
@@ -225,7 +210,6 @@ const sections : Section[] = useMemo(() => [
         })
       }
     } else {
-      // S'assurer que la valeur est une chaîne
       const value = e.target.value || ''
       setValues(v => ({ ...v, [key]: value }))
     }
@@ -240,16 +224,10 @@ const sections : Section[] = useMemo(() => [
     try {
       await axiosClient.get('/sanctum/csrf-cookie')
       const formData = new FormData()
-      
-      // Ajouter l'ID s'il existe pour éviter la création d'un nouveau record
       if (values.id) {
         formData.append('id', values.id.toString())
       }
-      
-      // Ajouter le type de page pour identifier le bon record
       formData.append('page', 'recherche')
-      
-      // Ajouter tous les champs de configuration
       Object.entries(values).forEach(([key, value]) => {
         if (value !== undefined && key !== 'id') {
           formData.append(key, String(value))
@@ -267,16 +245,14 @@ const sections : Section[] = useMemo(() => [
         { 
           headers: { 
             'Accept': 'application/json',
-            'Content-Type': undefined, // Supprimer le Content-Type pour FormData
+            'Content-Type': undefined, 
           }
         }
       )
       
       if (response.data && (response.data.success || response.data.message === 'Settings updated successfully')) {
-        // Mettre à jour avec les données retournées par le serveur
         if (response.data.data) {
           setValues({ ...DEFAULT_RECHERCHE_SETTINGS, ...response.data.data })
-          // Mettre à jour les previews d'images
           Object.entries(response.data.data).forEach(([key, val]) => {
             if (key.endsWith('.image') && val) {
               setPreview(prev => ({ ...prev, [key]: String(val) }))
@@ -290,7 +266,6 @@ const sections : Section[] = useMemo(() => [
         throw new Error(response.data?.message || 'Erreur lors de la sauvegarde')
       }
     } catch (err: unknown) {
-      console.error('Erreur détaillée:', err)
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la sauvegarde.'
       setMessage({ 
         type: 'error', 

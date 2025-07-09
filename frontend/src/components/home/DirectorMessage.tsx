@@ -79,7 +79,7 @@ const DirectorMessage = () => {
 
             <div
   className={`${
-    i18n.language === 'ar' ? 'border-r-4 pr-6 text-right' : 'border-l-4 pl-6 text-left'
+    i18n.language === 'ar' ? 'border-r-4 pr-10 text-right' : 'border-l-4 pl-6 text-left'
   } border-green-600`}
   dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
 >

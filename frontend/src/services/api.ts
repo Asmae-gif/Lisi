@@ -172,8 +172,6 @@ export const membresApi = {
         researchgate: membreData.researchgate || '',
         google_scholar: membreData.google_scholar || '',
         photo: membreData.photo || '',
-        // axes: axes, // Format attendu par le backend - temporairement désactivé
-        //is_comite: membreData.is_comite || false
       };
 
       // N'ajouter l'email que s'il est fourni et différent
@@ -247,11 +245,10 @@ export const contactAPI = {
   
   // Récupérer tous les messages (admin)
   getMessages: async (page = 1, perPage = 10) => {
-    console.log('=== API getMessages ===');
-    console.log('URL:', `/api/admin/contact/messages?page=${page}&per_page=${perPage}`);
+   
     try {
       const response = await axiosClient.get(`/api/admin/contact/messages?page=${page}&per_page=${perPage}`);
-      console.log('API Response:', response);
+    
       return response;
     } catch (error) {
       console.error('API Error:', error);
@@ -268,7 +265,6 @@ export const contactAPI = {
     axiosClient.delete(`/api/admin/contact/messages/${id}`),
 };
 
-// Export des fonctions legacy pour compatibilité
 export const getAxes = axesApi.getAxes;
 export const getAxe = axesApi.getById;
 export const getMembresAxe = axesApi.getMembres;

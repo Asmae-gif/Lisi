@@ -3,6 +3,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import LoadingSkeleton from '@/components/common/LoadingSkeleton';
 import { useTranslation } from 'react-i18next';
+import { useRTL } from '@/hooks/useRTL';
 
 interface PublicLayoutProps {
   children: React.ReactNode;
@@ -30,6 +31,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({
   heroImage
 }) => {
   const { t } = useTranslation();
+  const { isRTL, direction, getTextAlignClass } = useRTL();
 
   // Affichage de l'état de chargement
   if (loading) {
@@ -77,7 +79,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={`min-h-screen bg-background ${isRTL ? 'rtl' : 'ltr'}`} dir={direction}>
       <Header />
       <main>
         {/* Hero Section optionnelle */}
@@ -86,10 +88,10 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <div className="animate-fade-in">
-                  <h1 className="text-4xl font-bold text-gray-900 mb-6">
+                  <h1 className={`text-4xl font-bold text-gray-900 mb-6 ${getTextAlignClass()}`} dir={direction}>
                     <span className="block">{heroTitle || pageTitle}</span>
                   </h1>
-                  <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                  <p className={`text-xl text-gray-600 mb-8 leading-relaxed ${getTextAlignClass()}`} dir={direction}>
                     {heroSubtitle || pageDescription}
                   </p>
                 </div>
@@ -111,7 +113,9 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({
         )}
 
         {/* Contenu principal */}
+        <div dir={direction}>
         {children}
+        </div>
       </main>
       <Footer />
     </div>

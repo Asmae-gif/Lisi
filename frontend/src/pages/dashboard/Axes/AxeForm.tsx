@@ -15,14 +15,19 @@ import {
 } from "@/components/ui/dialog"
 import { Axe, AxeFormData, createEmptyAxeFormData } from "@/types/axe"
 import { AxiosError } from "axios"
-import { Brain, Shield, Network, Database, Smartphone } from "lucide-react"
+import { Brain, Shield, Network, Database, Smartphone,SatelliteDish,Eye,Mic, MessageCircle,Bot } from "lucide-react"
 
 const ICON_OPTIONS = [
   { value: "Brain", label: "Intelligence Artificielle", icon: Brain },
   { value: "Shield", label: "Cybersécurité", icon: Shield },
-  { value: "Network", label: "Systèmes", icon: Network },
-  { value: "Database", label: "Big Data", icon: Database },
-  { value: "Smartphone", label: "IoT", icon: Smartphone },
+  { value: "Network", label: "Systèmes Réseaux", icon: Network },
+  { value: "Database", label: "Big Data & Systèmes d'Information", icon: Database },
+  { value: "Smartphone", label: "IoT & Objets Connectés", icon: Smartphone },
+  { value: "SatelliteDish", label: "Télécommunications & Hyperfréquences", icon: SatelliteDish },
+  { value: "Eye", label: "Vision par Ordinateur", icon: Eye },
+  { value: "Mic", label: "Traitement de la Parole", icon: Mic },
+  { value: "MessageCircle", label: "Communication & NLP", icon: MessageCircle },
+  { value: "Bot", label: "Systèmes Intelligents & Robotique", icon: Bot },
 ];
 
 interface AxeFormProps {
@@ -183,19 +188,7 @@ export const AxeForm = ({ isOpen, onClose, editingAxe, onSubmit }: AxeFormProps)
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Champs communs */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="slug">Slug *</Label>
-              <Input
-                id="slug"
-                value={formData.slug}
-                onChange={(e) => handleInputChange("slug", e.target.value)}
-                placeholder="slug-de-l-axe"
-                className={errors.slug ? "border-red-500" : ""}
-              />
-              {errors.slug && <p className="text-sm text-red-500">{errors.slug[0]}</p>}
-            </div>
-
+        
             <div className="space-y-2">
               <Label>Icône *</Label>
               <div className="flex gap-3 flex-wrap">
@@ -213,7 +206,7 @@ export const AxeForm = ({ isOpen, onClose, editingAxe, onSubmit }: AxeFormProps)
               </div>
               {errors.icon && <p className="text-sm text-red-500">{errors.icon[0]}</p>}
             </div>
-          </div>
+         
 
           {/* Onglets multilingues */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

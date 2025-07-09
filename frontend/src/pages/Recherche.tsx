@@ -2,8 +2,8 @@
 import React, { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import { axesApi } from '@/services/api';
 import axiosClient from "@/services/axiosClient";
-import { Axe } from '@/types/axe';
-import { RechercheSettings, DEFAULT_RECHERCHE_SETTINGS, mergeSettingsWithDefaults } from '@/types/rechercheSettings';
+import { Axe, getAxeContent } from '@/types/axe';
+import { RechercheSettings, DEFAULT_RECHERCHE_SETTINGS, mergeSettingsWithDefaults,getMultilingualContent } from '@/types/rechercheSettings';
 import { Card, CardHeader, CardTitle, CardContent} from '@/components/ui/card';
 import { buildImageUrl } from '@/utils/imageUtils';
 import Header from '@/components/Header';
@@ -13,8 +13,6 @@ import { Link } from "react-router-dom";
 import TabNavigation from '@/components/common/TabNavigation';
 import AxeCard from '@/components/common/AxeCard';
 import { useTranslation } from 'react-i18next';
-import { getMultilingualContent } from '@/types/rechercheSettings';
-import { getAxeContent } from '@/types/axe';
 
 
 /**
@@ -36,12 +34,10 @@ const Recherche= () => {
     return result;
   };
 
-
   // Optimisation avec useCallback pour le chargement des données
   const loadData = useCallback(async () => {
     try {
-      setLoading(true);
-  
+      setLoading(true); 
       const [settingsRes, axesRes] = await Promise.all([
         axiosClient.get('/api/pages/recherche/settings', {
           headers: { 'Accept': 'application/json' }
@@ -88,7 +84,7 @@ const Recherche= () => {
         <AxeCard 
           key={axe.id} 
           axe={axe} 
-          variant="detailed"
+          variant="compact"
           onClick={() => {
             setActive(axe.slug);
             // Défilement vers la section des onglets
@@ -111,91 +107,118 @@ const Recherche= () => {
   // Optimisation avec useMemo pour les onglets de contenu détaillé
   const tabItems = useMemo(() => {
     return axes.map(a => {
-
       return {
         value: a.slug,
         label: getAxeContent(a, 'title', i18n.language).split(' ')[0],
         content: (
           <div className="space-y-8 animate-in fade-in-50 duration-300">
             <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">{getAxeContent(a, 'title', i18n.language)}</h3>              
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                {getAxeContent(a, 'title', i18n.language)}
+              </h3>
             </div>
-
+      
+            {/* Problématique */}
             <Card>
-              <CardHeader className="flex items-center justify-start gap-3 mb-6">
-    
-                <CardTitle className="text-lg">{t('cards.problematique')}</CardTitle>
+  <CardHeader className="mb-6">
+    <CardTitle className="text-lg text-center">
+      {t('cards.problematique')}
+    </CardTitle>
+  </CardHeader>
+  <CardContent>
+    <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">
+      {getAxeContent(a, 'problematique', i18n.language)}
+    </p>
+  </CardContent>
+</Card>      
+            {/* Objectif */}
+            <Card>
+              <CardHeader className="mb-6">
+              <CardTitle className="text-lg text-center">
+                  {t('cards.objectif')}
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">{getAxeContent(a, 'problematique', i18n.language)}</p>
+                <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">
+                  {getAxeContent(a, 'objectif', i18n.language)}
+                </p>
               </CardContent>
             </Card>
-
+      
+            {/* Approche */}
             <Card>
-              <CardHeader className="flex items-center gap-3 mb-6">
-            
-                <CardTitle className="text-lg">{t('cards.objectif')}</CardTitle>
+              <CardHeader className="mb-6">
+              <CardTitle className="text-lg text-center">
+                  {t('cards.approche')}
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">{getAxeContent(a, 'objectif', i18n.language)}</p>
+                <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">
+                  {getAxeContent(a, 'approche', i18n.language)}
+                </p>
               </CardContent>
             </Card>
-
+      
+            {/* Résultats attendus */}
             <Card>
-              <CardHeader className="flex items-center gap-3 mb-6">
-           
-                <CardTitle className="text-lg">{t('cards.approche')}</CardTitle>
+              <CardHeader className="mb-6">
+              <CardTitle className="text-lg text-center">
+                  {t('cards.resultats_attendus')}
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">{getAxeContent(a, 'approche', i18n.language)}</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex items-center gap-3 mb-6">
-                
-                <CardTitle className="text-lg">{t('cards.resultats_attendus')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">{getAxeContent(a, 'resultats_attendus', i18n.language)}</p>
+                <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">
+                  {getAxeContent(a, 'resultats_attendus', i18n.language)}
+                </p>
               </CardContent>
             </Card>
           </div>
         )
-      };
+      };      
     });
   }, [axes, t, i18n.language]);
 
   // Optimisation avec useMemo pour les étapes du processus
   const processSteps = useMemo(() => {
-    return [
-      { step: "1", title: "Problématique", desc: "Identification des défis scientifiques" },
-      { step: "2", title: "Objectifs", desc: "Définition claire des buts à atteindre" },
-      { step: "3", title: "Approche", desc: "Développement de méthodologies adaptées" },
-      { step: "4", title: "Expérimentation", desc: "Tests et validation des hypothèses" },
-      { step: "5", title: "Résultats", desc: "Publication et valorisation des découvertes" }
-    ].map((item, index) => {
-      // Utiliser les données des settings si disponibles
-      const stepNumber = item.step
-      const stepTitle = getContent(`step_${stepNumber}_title`, `process_steps.step${stepNumber}.title`)
-      const stepDesc = getContent(`step_${stepNumber}_desc`, `process_steps.step${stepNumber}.description`)
-      
+    const stepCount = 5;
+    return Array.from({ length: 5 }).map((_, index) => {
+      const stepNumber = (index + 1).toString();
+  
+      const stepTitle = getContent(
+        `step_${stepNumber}_title`,
+        `process_steps.step${stepNumber}.title`
+      );
+      const stepDesc = getContent(
+        `step_${stepNumber}_desc`,
+        `process_steps.step${stepNumber}.description`
+      );
+        // Position horizontale en pourcentage
+    const positionPercent = (index / (stepCount - 1)) * 100;
+
       return (
-        <div key={index} className="text-center">
+        <div key={stepNumber} className="text-center  h-60 px-2"
+        >
           <div className="w-16 h-16 bg-[#3ea666] text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
             {stepNumber}
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">{stepTitle}</h3>
           <p className="text-gray-600 text-sm">{stepDesc}</p>
-          {index < 4 && (
+          {index < 5 && (
             <div className="hidden md:block mt-4">
               <div className="w-full h-0.5 bg-gray-300 relative">
-                <div className="absolute right-0 top-0 w-2 h-2 bg-blue-600 rounded-full transform translate-x-1 -translate-y-0.75"></div>
+                <div className="absolute right-0 top-0 w-2 h-2 bg-green-600 rounded-full transform translate-x-1 -translate-y-0.75"
+                style={{
+                  left: i18n.language === 'ar' ? undefined : `${positionPercent}%`,
+                  right: i18n.language === 'ar' ? `${positionPercent}%` : undefined,
+                  transform: 'translateX(-50%)',
+                  position: 'absolute',
+                }}
+              ></div>
               </div>
             </div>
           )}
         </div>
-      )
+      );
     });
   }, [settings, t, getContent]);
 

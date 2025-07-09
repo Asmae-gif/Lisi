@@ -1,39 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { Plus, Brain, Search, Filter } from "lucide-react";
+import { Brain, Filter } from "lucide-react";
 import { DataTable } from "@/components/ui/data-table";
 import { useToast } from "@/components/ui/use-toast";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import api from "@/lib/api";
 import { AxeForm } from "./AxeForm";
 import { AxeDetailsModal } from "./AxeDetailsModal";
 import DashboardPageLayout from "@/components/layout/DashboardPageLayout";
-
-interface Axe {
-  id: number;
-  slug: string;
-  title_fr: string;
-  title_en: string;
-  title_ar: string;
-  icon: string;
-  problematique_fr: string;
-  problematique_en: string;
-  problematique_ar: string;
-  objectif_fr: string;
-  objectif_en: string;
-  objectif_ar: string;
-  approche_fr: string;
-  approche_en: string;
-  approche_ar: string;
-  resultats_attendus_fr: string;
-  resultats_attendus_en: string;
-  resultats_attendus_ar: string;
-  created_at: string;
-  updated_at: string;
-}
+import { Axe } from '@/types/axe';
 
 interface Column {
   key: keyof Axe;
@@ -208,7 +183,12 @@ export default function AxesDashboard() {
           'Shield': 'Cybersécurité',
           'Network': 'Systèmes',
           'Database': 'Big Data',
-          'Smartphone': 'IoT'
+          'Smartphone': 'IoT',
+          'SatelliteDish': 'Télécommunications',
+          'Eye': 'Vision',
+          'Mic': 'Traitement de la Parole',
+          'MessageCircle': 'Communication',
+          'Bot': 'Systèmes Intelligents'
         };
         return (
           <Badge variant="outline">
@@ -231,7 +211,12 @@ export default function AxesDashboard() {
     { value: "Shield", label: "Cybersécurité" },
     { value: "Network", label: "Systèmes" },
     { value: "Database", label: "Big Data" },
-    { value: "Smartphone", label: "IoT" }
+    { value: "Smartphone", label: "IoT" },
+    { value: "SatelliteDish", label: "Télécommunications" },
+    { value: "Eye", label: "Vision" },
+    { value: "Mic", label: "Traitement de la Parole" },
+    { value: "MessageCircle", label: "Communication" },
+    { value: "Bot", label: "Systèmes Intelligents" }
   ];
 
   return (
@@ -239,7 +224,7 @@ export default function AxesDashboard() {
       title="Axes de Recherche"
       description="Gérez les axes de recherche du laboratoire"
       icon={Brain}
-      iconColor="text-blue-600"
+      iconColor="text-green-600"
       onAdd={handleAdd}
       addButtonText="Nouvel axe"
       showSearch={true}

@@ -6,6 +6,7 @@ import { getLogoConfig } from '@/config/logos';
 import { navigationItems, languages } from '@/config/navigation';
 import LanguageSelector from '@/components/ui/LanguageSelector';
 import Logo from '@/components/ui/Logo';
+import { useRTL } from '@/hooks/useRTL';
 import '@/styles/header.css';
 
 // Types
@@ -25,6 +26,7 @@ interface NavigationItem {
 
 const Header: React.FC = () => {
   const { t, i18n } = useTranslation('header');
+  const { isRTL, direction, getTextAlignClass, getFlexDirectionClass, getMarginClass } = useRTL();
 
   // États
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -41,16 +43,6 @@ const Header: React.FC = () => {
   useEffect(() => {
     setCurrentLanguage(i18n.language || 'fr');
   }, [i18n.language]);
-
-  useEffect(() => {
-    if (currentLanguage === 'ar') {
-      document.documentElement.dir = 'rtl';
-      document.documentElement.lang = 'ar';
-    } else {
-      document.documentElement.dir = 'ltr';
-      document.documentElement.lang = currentLanguage;
-    }
-  }, [currentLanguage]);
 
   useEffect(() => {
     let ticking = false;
@@ -294,7 +286,7 @@ const Header: React.FC = () => {
       <TopBar />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-2">
+      <div className={`flex justify-between items-center py-2 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
           <Logo currentLanguage={currentLanguage} getLogoConfig={getLogoConfig} onError={handleLogoError} />
           <DesktopNavigation />
           <LoginButton />

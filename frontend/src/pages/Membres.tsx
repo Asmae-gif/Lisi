@@ -1,236 +1,223 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react"
 import type { Membre, MemberCategory } from '@/types/membre';
+import { useMembresSettings } from '@/hooks/useMembresSettings';
 import { useNavigate } from "react-router-dom"
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { ChevronDown, Mail, ExternalLink, Search, Users } from "lucide-react"
+import { ChevronDown, Mail, ExternalLink, Users } from "lucide-react"
 import LoadingSkeleton from '@/components/common/LoadingSkeleton';
 import { Input } from "@/components/ui/input"
+import { Search } from "lucide-react"
 import { membresApi } from '@/services/api';
-import { buildImageUrlWithDefaults } from '@/utils/imageUtils';
+import { buildImageUrl } from '@/utils/imageUtils';
 import { useTranslation } from 'react-i18next';
-import PageContent from '@/components/common/PageContent';
-import api from '@/lib/api';
 
-interface MembresSettings {
-  membres_titre_fr?: string;
-  membres_sous_titre_fr?: string;
-  membres_titre_en?: string;
-  membres_sous_titre_en?: string;
-  membres_titre_ar?: string;
-  membres_sous_titre_ar?: string;
-  membres_image?: string;
-}
 
 const Membres: React.FC = () => {
   const [openCategories, setOpenCategories] = useState<string[]>([]);
   const [selectedMember, setSelectedMember] = useState<Membre | null>(null);
   const [membres, setMembres] = useState<Membre[]>([]);
-  const [settings, setSettings] = useState<MembresSettings>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sortField, setSortField] = useState<keyof Membre>('nom');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const navigate = useNavigate();
+  const { settings, loading: settingsLoading, error: settingsError } = useMembresSettings();
   const [searchQuery, setSearchQuery] = useState('');
   const { i18n, t } = useTranslation('membres');
 
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      
-      // Charger les membres et les settings en parallèle
-      const [membresResponse, settingsResponse] = await Promise.all([
-        membresApi.getAll(),
-        api.get('/pages/membres/settings')
-      ]);
-      
-      if (membresResponse.success && membresResponse.data) {
-        setMembres(membresResponse.data);
-      } else {
-        setError(t('error_loading'));
-      }
-      
-      // Gérer la nouvelle structure hiérarchique des paramètres
-      const settingsData = settingsResponse.data?.data || settingsResponse.data || {};
-      
-      // Si les données sont dans une structure hiérarchique, les aplatir
-      let flattenedSettings = {};
-      const settingsDataTyped = settingsData as any;
-      if (settingsDataTyped.fr || settingsDataTyped.en || settingsDataTyped.ar) {
-        // Structure hiérarchique - aplatir
-        Object.keys(settingsDataTyped).forEach(lang => {
-          if (typeof settingsDataTyped[lang] === 'object') {
-            Object.keys(settingsDataTyped[lang]).forEach(key => {
-              flattenedSettings[`membres_${key}_${lang}`] = settingsDataTyped[lang][key];
-            });
-          }
-        });
-      } else {
-        // Structure plate - utiliser directement
-        flattenedSettings = settingsDataTyped;
-      }
-      
-      setSettings(flattenedSettings);
-      
-    } catch (err) {
-      console.error('Erreur lors du chargement des données:', err);
-      setError('Impossible de charger les données');
-    } finally {
-      setLoading(false);
-    }
-  }, [t]);
+ // Fonction pour obtenir le titre et sous-titre selon la langue actuelle
+ const getLocalizedContent = useCallback(() => {
+  const currentLang = i18n.language;
+  let title = '';
+  let subtitle = '';
 
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  switch (currentLang) {
+    case 'en':
+      title = settings.membres_titre_en || settings.membres_titre_fr || 'Our Members';
+      subtitle = settings.membres_sous_titre_en || settings.membres_sous_titre_fr || 'Discover the team of researchers, teachers and PhD students who make up our laboratory';
+      break;
+    case 'ar':
+      title = settings.membres_titre_ar || settings.membres_titre_fr || 'أعضاءنا';
+      subtitle = settings.membres_sous_titre_ar || settings.membres_sous_titre_fr || 'اكتشف فريق الباحثين والمعلمين وطلاب الدكتوراه الذين يشكلون مختبرنا';
+      break;
+    default: // fr
+      title = settings.membres_titre_fr || 'Nos Membres';
+      subtitle = settings.membres_sous_titre_fr || 'Découvrez l\'équipe de chercheurs, d\'enseignants et de doctorants qui composent notre laboratoire';
+      break;
+  }
 
-  // Récupérer les textes selon la langue actuelle
-  const currentLanguage = i18n.language || 'fr';
-  const getLocalizedText = (key: string, fallback: string) => {
-    const settingKey = `membres_${key}_${currentLanguage}`;
-    return settings[settingKey as keyof MembresSettings] || fallback;
-  };
+  return { title, subtitle };
+}, [settings, i18n.language]);
 
-  const title = getLocalizedText('titre', 'Nos Membres');
-  const subtitle = getLocalizedText('sous_titre', 'Découvrez l\'équipe de chercheurs, d\'enseignants et de doctorants qui composent notre laboratoire');
+const { title, subtitle } = getLocalizedContent();
 
-  const handleSort = (field: keyof Membre) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+const handleSort = (field: keyof Membre) => {
+  if (sortField === field) {
+    setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+  } else {
+    setSortField(field);
+    setSortDirection('asc');
+  }
+};
+
+
+
+const filteredMembersData = useMemo(() => {
+  if (!searchQuery.trim()) {
+    return membres;
+  }
+  const query = searchQuery.toLowerCase();
+  return membres.filter(membre => 
+    (membre.prenom?.toLowerCase().includes(query) || 
+     membre.nom?.toLowerCase().includes(query))
+  );
+}, [membres, searchQuery]);
+
+const sortedMembers = useMemo(() => {
+  return [...filteredMembersData].sort((a, b) => {
+    const aValue = a[sortField] || '';
+    const bValue = b[sortField] || '';
+    
+    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+}, [filteredMembersData, sortField, sortDirection]);
+
+const toggleCategory = (categoryId: string) => {
+  setOpenCategories(prev => 
+    prev.includes(categoryId) 
+      ? prev.filter(id => id !== categoryId)
+      : [...prev, categoryId]
+  );
+  setSelectedMember(null);
+};
+
+const handleMemberClick = (member: Membre) => {
+  setSelectedMember(selectedMember?.id === member.id ? null : member);
+};
+
+const loadMembres = useCallback(async () => {
+  try {
+    setLoading(true);
+    const response = await membresApi.getAll();
+    if (response.success && response.data) {
+      setMembres(response.data);
     } else {
-      setSortField(field);
-      setSortDirection('asc');
+      setError(t('error_loading'));
     }
-  };
-
-  const filteredMembersData = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return membres;
-    }
-    const query = searchQuery.toLowerCase();
-    return membres.filter(membre => 
-      (membre.prenom?.toLowerCase().includes(query) || 
-       membre.nom?.toLowerCase().includes(query))
-    );
-  }, [membres, searchQuery]);
-
-  const sortedMembers = useMemo(() => {
-    return [...filteredMembersData].sort((a, b) => {
-      const aValue = a[sortField] || '';
-      const bValue = b[sortField] || '';
-      
-      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-      return 0;
-    });
-  }, [filteredMembersData, sortField, sortDirection]);
-
-  const toggleCategory = (categoryId: string) => {
-    setOpenCategories(prev => 
-      prev.includes(categoryId) 
-        ? prev.filter(id => id !== categoryId)
-        : [...prev, categoryId]
-    );
-    setSelectedMember(null);
-  };
-
-  const handleMemberClick = (member: Membre) => {
-    setSelectedMember(selectedMember?.id === member.id ? null : member);
-  };
-
-  const handleMembreClick = useCallback((membreId: number) => {
-    navigate(`/membres/${membreId}`);
-  }, [navigate]);
-
-  const membersByCategory = useMemo(() => {
-    const categories: MemberCategory[] = [
-      {
-        id: 'permanent',
-        title: t('permanent_members'),
-        members: sortedMembers.filter(m => {
-          const statut = m.statut?.toLowerCase() || '';
-          return statut === 'permanent';
-        })
-      },
-      {
-        id: 'associe',
-        title: t('associate_members'),
-        members: sortedMembers.filter(m => {
-          const statut = m.statut?.toLowerCase() || '';
-          return statut === 'associés';
-        })
-      },
-      {
-        id: 'doctorant',
-        title: t('phd_students'),
-        members: sortedMembers.filter(m => {
-          const statut = m.statut?.toLowerCase() || '';
-          return statut === 'doctorants';
-        })
-      },
-      {
-        id: 'autre',
-        title: t('other_members'),
-        members: sortedMembers.filter(m => {
-          const statut = m.statut?.toLowerCase() || '';
-          return statut !== 'permanent' && statut !== 'associés' && statut !== 'doctorants' && statut !== '';
-        })
-      },
-    ];
-
-    return categories.filter(category => category.members.length > 0);
-  }, [sortedMembers, t]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSkeleton type="grid" rows={1} />
-      </div>
-    );
+  } catch (err) {
+    console.error('Erreur lors du chargement des membres:', err);
+    setError(t('error_loading'));
+  } finally {
+    setLoading(false);
   }
+}, [t]);
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-600">{error}</p>
-      </div>
-    );
-  }
+useEffect(() => {
+  loadMembres();
+}, [loadMembres]);
+
+const handleMembreClick = useCallback((membreId: number) => {
+  navigate(`/membres/${membreId}`);
+}, [navigate]);
+
+const membersByCategory = useMemo(() => {
+  const categories: MemberCategory[] = [
+    {
+      id: 'permanent',
+      title: t('permanent_members'),
+      members: sortedMembers.filter(m => {
+        const statut = m.statut?.toLowerCase() || '';
+        return statut.includes('permanent') || statut.includes('enseignant') || statut.includes('chercheur');
+      })
+    },
+    {
+      id: 'associe',
+      title: t('associate_members'),
+      members: sortedMembers.filter(m => {
+        const statut = m.statut?.toLowerCase() || '';
+        return statut.includes('associé') || statut.includes('associe') || statut.includes('collaborateur');
+      })
+    },
+    {
+      id: 'doctorant',
+      title: t('phd_students'),
+      members: sortedMembers.filter(m => {
+        const statut = m.statut?.toLowerCase() || '';
+        return statut.includes('doctorant') || statut.includes('thèse') || statut.includes('these');
+      })
+    },
+    {
+      id: 'autre',
+      title: t('other_members'),
+      members: sortedMembers.filter(m => {
+        const statut = m.statut?.toLowerCase() || '';
+        return statut === '';
+      })
+    },
+  ];
+
+  return categories.filter(category => category.members.length > 0);
+}, [sortedMembers, t]);
+
+if (loading || settingsLoading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <LoadingSkeleton type="grid" rows={1} />
+    </div>
+  );
+}
+
+if (error || settingsError) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="text-red-600">{error || settingsError}</p>
+    </div>
+  );
+}
 
   return (
     <div className="min-h-screen bg-white">
       <Header />
       
       {/* Hero Section */}
-      <PageContent
-        hero
-        title={title}
-        subtitle={subtitle}
-        backgroundImage={settings?.membres_image ? buildImageUrlWithDefaults(settings.membres_image) : undefined}
+      
+      <section 
+        className="bg-gradient-to-br from-green-50 to-indigo-100 py-16"
+        style={settings.membres_image ? {
+          backgroundImage: `url(${buildImageUrl(settings.membres_image)})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        } : undefined}
       >
-        <></>
-      </PageContent>
-
-      {/* Search Section */}
-      <section className="py-8 px-4 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-            <Search className="w-6 h-6 text-green-600" />
-            {t('search_member', 'Rechercher un membre')}
-          </h2>
-          <div className="relative border border-green-500 rounded-md">
-            <Input
-              type="text"
-              placeholder={t('search_placeholder', 'Rechercher par nom ou prénom...')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pr-10 pl-3 py-2 w-full"
-            />
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500 w-4 h-4" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              <span className="block">{title}</span>
+            </h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              {subtitle}
+            </p>
           </div>
         </div>
       </section>
+
+      {/* Search Section */}
+      <div className="max-w-6xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-8">{t('search_member')}</h1>
+        <div className="relative border border-green-500 rounded-md">
+          <Input
+            type="text"
+            placeholder={t('search_placeholder')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pr-10 pl-3 py-2 w-full"
+          />
+          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500 w-4 h-4" />
+        </div>
+      </div>
 
       {/* Members by Category */}
       <section className="py-12 px-4 bg-white">
