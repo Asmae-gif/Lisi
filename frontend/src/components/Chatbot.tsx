@@ -20,7 +20,7 @@ import {
   Mail,
   MapPin
 } from 'lucide-react';
-import { getChatbotAnalytics, cleanupChatbotAnalytics } from './ChatbotAnalytics';
+
 
 interface Message {
   id: string;
@@ -50,7 +50,7 @@ const Chatbot: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const analytics = getChatbotAnalytics();
+  
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -99,7 +99,7 @@ const Chatbot: React.FC = () => {
       addMessage(response, 'bot');
       
       // Tracer l'interaction
-      analytics.trackMessage(userMessage, response, responseTime);
+      
     });
   };
 
@@ -168,7 +168,7 @@ const Chatbot: React.FC = () => {
         simulateTyping((responseTime) => {
           const response = 'Le Laboratoire LISI (Laboratoire d\'Informatique et de Systèmes Intelligents) est un laboratoire de recherche de l\'Université Cadi Ayyad de Marrakech. Nous nous spécialisons dans l\'intelligence artificielle, l\'apprentissage automatique, les systèmes intelligents, le traitement du signal, les systèmes embarqués, la cybersécurité et les technologies émergentes. Notre équipe pluridisciplinaire mène des recherches de pointe dans le domaine des systèmes intelligents et forme la prochaine génération de chercheurs et d\'ingénieurs spécialisés dans ces technologies avancées.';
           addMessage(response, 'bot');
-          analytics.trackQuickAction('Découvrir le laboratoire', response, responseTime);
+          
         });
       }
     },
@@ -181,7 +181,7 @@ const Chatbot: React.FC = () => {
         simulateTyping((responseTime) => {
           const response = 'Nous menons des projets dans différents domaines : finance, recherche, développement, formation et incubation. Chaque projet contribue à l\'avancement de la technologie et de la science.';
           addMessage(response, 'bot');
-          analytics.trackQuickAction('Nos projets', response, responseTime);
+         
         });
       }
     },
@@ -194,7 +194,7 @@ const Chatbot: React.FC = () => {
         simulateTyping((responseTime) => {
           const response = 'Notre équipe est composée de chercheurs, enseignants-chercheurs, doctorants et ingénieurs passionnés par l\'innovation et la recherche. Nous travaillons ensemble pour faire avancer la science.';
           addMessage(response, 'bot');
-          analytics.trackQuickAction('Notre équipe', response, responseTime);
+          
         });
       }
     },
@@ -207,7 +207,7 @@ const Chatbot: React.FC = () => {
         simulateTyping((responseTime) => {
           const response = 'Vous pouvez nous contacter via notre formulaire de contact, par téléphone ou par email. Nous serons ravis de répondre à vos questions et de discuter de collaborations potentielles.';
           addMessage(response, 'bot');
-          analytics.trackQuickAction('Nous contacter', response, responseTime);
+          
         });
       }
     }
@@ -217,7 +217,7 @@ const Chatbot: React.FC = () => {
   useEffect(() => {
     return () => {
       if (!isOpen) {
-        cleanupChatbotAnalytics();
+       
       }
     };
   }, [isOpen]);
