@@ -110,8 +110,8 @@ export default function MembresParAxePage() {
     setLoading(true)
     try {
       const [axesRes, membresRes, axeMembresRes] = await Promise.all([
-        axiosClient.get("/api/axes"),
-        axiosClient.get("/api/membres"),
+        axiosClient.get("/api/admin/axes"),
+        axiosClient.get("/api/admin/membres"),
         axiosClient.get("/api/admin/axe-membre")
       ])
 

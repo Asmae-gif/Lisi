@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Http;
 // Models
 use App\Models\Membre;
 use App\Models\Publication;
-use App\Models\Projet;
 use App\Models\Project;
 
 // Auth Controllers
@@ -27,7 +26,6 @@ use App\Http\Controllers\Api\MembreController;
 use App\Http\Controllers\Api\AdminMembreController;
 use App\Http\Controllers\Api\AdminUserController;
 use App\Http\Controllers\Api\PublicationController;
-use App\Http\Controllers\Api\ProjetController;
 use App\Http\Controllers\Api\ThemeRechercheController;
 use App\Http\Controllers\Api\AxeController;
 use App\Http\Controllers\Api\AxeMembreController;
@@ -196,8 +194,8 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware(['auth:sanctum', 'role:admin', 'throttle:120,1'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
 
-    // Projets admin (toutes les méthodes REST)
-    Route::apiResource('projets', ProjetController::class);
+    // Projets admin (toutes les méthodes REST) - TABLE projects
+    Route::apiResource('projects', ProjectController::class);
 
     Route::resource('membres', AdminMembreController::class);
     Route::post('membres/{membre}/toggle-comite', [AdminMembreController::class, 'toggleComite']);
@@ -208,7 +206,6 @@ Route::middleware(['auth:sanctum', 'role:admin', 'throttle:120,1'])->prefix('adm
     Route::delete('axes/{axe}/membres/{membre}', [AxeController::class, 'removeMembre']);
     Route::put('axes/{axe}/membres/{membre}/position', [AxeController::class, 'updateMembrePosition']);
 
-    Route::apiResource('projects', ProjectController::class);
     Route::apiResource('projet-finances', ProjetFinanceController::class);
     Route::get('projects/{projectId}/finances', [ProjetFinanceController::class, 'byProject']);
     Route::apiResource('projet-incubes', ProjetIncubeController::class);

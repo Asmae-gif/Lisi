@@ -64,7 +64,7 @@ const Projets: React.FC = () => {
     const fetchProjects = async () => {
         try {
             setIsLoading(true);
-            const response = await api.get<ApiResponse<Project[]>>('/projects');
+            const response = await api.get<ApiResponse<Project[]>>('/admin/projects');
             const projectsData = response.data.data || response.data;
             if (Array.isArray(projectsData)) {
                 setProjects(projectsData);
@@ -102,7 +102,7 @@ const Projets: React.FC = () => {
         if (!confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) return;
 
         try {
-            await api.delete(`/projects/${id}`);
+            await api.delete(`/admin/projects/${id}`);
             toast({
                 title: "Succès",
                 description: "Projet supprimé avec succès",

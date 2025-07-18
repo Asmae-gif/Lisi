@@ -63,7 +63,7 @@ const PrixDistinctionForm: React.FC<PrixDistinctionFormProps> = ({ prix, onSave,
 
     const fetchMembres = async () => {
         try {
-            const response = await api.get('/api/membres');
+            const response = await api.get('/api/admin/membres');
             setMembres(response.data);
         } catch (error) {
             console.error('Erreur lors du chargement des membres:', error);
@@ -87,9 +87,9 @@ const PrixDistinctionForm: React.FC<PrixDistinctionFormProps> = ({ prix, onSave,
         try {
             let response;
             if (isEditing && prix?.id) {
-                response = await api.put(`/api/prix-distinctions/${prix.id}`, formData);
+                response = await api.put(`/api/admin/prix-distinctions/${prix.id}`, formData);
             } else {
-                response = await api.post('/api/prix-distinctions', formData);
+                response = await api.post('/api/admin/prix-distinctions', formData);
             }
             if (response.data.success) {
                 alert(isEditing ? 'Prix/distinction mis à jour avec succès' : 'Prix/distinction créé avec succès');

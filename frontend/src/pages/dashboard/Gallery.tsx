@@ -64,11 +64,11 @@ const Gallery: React.FC = () => {
       
       // Charger les projets
       try {
-        const projetsResponse = await api.get('/projets');
-        entitiesData['projet'] = projetsResponse.data.data || projetsResponse.data || [];
+        const projectsResponse = await api.get('/admin/projects');
+        entitiesData['project'] = projectsResponse.data.data || projectsResponse.data || [];
       } catch (error) {
-        console.warn('Impossible de charger les projets:', error);
-        entitiesData['projet'] = [];
+        console.warn('Impossible de charger les projects:', error);
+        entitiesData['project'] = [];
       }
 
       // Charger les partenaires

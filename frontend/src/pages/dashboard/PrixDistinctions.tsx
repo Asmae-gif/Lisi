@@ -51,7 +51,7 @@ export default function PrixDistinctions() {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await api.get<ApiResponse<PrixDistinction[]>>('/prix-distinctions');
+      const response = await api.get<ApiResponse<PrixDistinction[]>>('/admin/prix-distinctions');
       const prixData = response.data.data || response.data;
       if (Array.isArray(prixData)) {
         setPrixDistinctions(prixData);
@@ -87,7 +87,7 @@ export default function PrixDistinctions() {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce prix/distinction ?')) return;
 
     try {
-      await api.delete(`/prix-distinctions/${id}`);
+      await api.delete(`/admin/prix-distinctions/${id}`);
       toast({
         title: "Succès",
         description: "Prix/distinction supprimé avec succès",
@@ -110,7 +110,7 @@ export default function PrixDistinctions() {
       setIsSubmitting(true);
 
       if (selectedPrix) {
-        await api.put(`/prix-distinctions/${selectedPrix.id}`, data);
+        await api.put(`/admin/prix-distinctions/${selectedPrix.id}`, data);
         toast({
           title: "Succès",
           description: "Prix/distinction modifié avec succès",

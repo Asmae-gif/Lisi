@@ -89,7 +89,7 @@ export default function Publications() {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await api.get<ApiResponse<Publication[]>>('/publications');
+      const response = await api.get<ApiResponse<Publication[]>>('/admin/publications');
       const publicationsData = response.data.data || response.data;
       if (Array.isArray(publicationsData)) {
         setPublications(publicationsData);
@@ -125,7 +125,7 @@ export default function Publications() {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cette publication ?')) return;
 
     try {
-      await api.delete(`/publications/${id}`);
+      await api.delete(`/admin/publications/${id}`);
       toast({
         title: "Succès",
         description: "Publication supprimée avec succès",
@@ -148,13 +148,13 @@ export default function Publications() {
       setIsSubmitting(true);
 
       if (selectedPublication) {
-        await api.put(`/publications/${selectedPublication.id}`, data);
+        await api.put(`/admin/publications/${selectedPublication.id}`, data);
         toast({
           title: "Succès",
           description: "Publication modifiée avec succès",
         });
       } else {
-        await api.post('/publications', data);
+        await api.post('/admin/publications', data);
         toast({
           title: "Succès",
           description: "Publication ajoutée avec succès",

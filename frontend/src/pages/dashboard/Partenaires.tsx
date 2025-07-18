@@ -66,7 +66,7 @@ export default function Partenaires() {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await api.get<ApiResponse<Partenaire[]>>('/partenaires');
+      const response = await api.get<ApiResponse<Partenaire[]>>('/admin/partenaires');
       const partenairesData = response.data.data || response.data;
       if (Array.isArray(partenairesData)) {
         setPartenaires(partenairesData);
@@ -107,7 +107,7 @@ export default function Partenaires() {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce partenaire ?')) return;
 
     try {
-      await api.delete(`/partenaires/${id}`);
+      await api.delete(`/admin/partenaires/${id}`);
       toast({
         title: "Succès",
         description: "Partenaire supprimé avec succès",
@@ -131,7 +131,7 @@ export default function Partenaires() {
       console.log('Données envoyées:', data);
     
       if (selectedPartenaire) {
-        const response = await api.put(`/partenaires/${selectedPartenaire.id}`, data);
+        const response = await api.put(`/admin/partenaires/${selectedPartenaire.id}`, data);
         console.log('Réponse de modification:', response);
         const updatedPartenaire = response.data.data || response.data;
     
@@ -144,7 +144,7 @@ export default function Partenaires() {
           description: "Partenaire modifié avec succès",
         });
       } else {
-        const response = await api.post('/partenaires', data);
+        const response = await api.post('/admin/partenaires', data);
         console.log('Réponse de création:', response);
         const newPartenaire = response.data.data || response.data;
     

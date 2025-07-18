@@ -67,7 +67,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId, onSuccess, onCance
         
         try {
             setLoading(true);
-            const response = await api.get(`/projects/${projectId}`);
+            const response = await api.get(`/admin/projects/${projectId}`);
             setFormData({
                 name_fr: response.data.name_fr || '',
                 name_en: response.data.name_en || '',
@@ -113,9 +113,9 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId, onSuccess, onCance
             };
 
             if (projectId) {
-                await api.put(`/projects/${projectId}`, dataToSend);
+                await api.put(`/admin/projects/${projectId}`, dataToSend);
             } else {
-                await api.post('/projects', dataToSend);
+                await api.post('/admin/projects', dataToSend);
             }
             onSuccess();
         } catch (err: unknown) {
