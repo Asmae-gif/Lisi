@@ -78,10 +78,6 @@ class AdminUserController extends Controller
                 'data' => $user
             ]);
         } catch (\Exception $e) {
-            \Log::error('Erreur lors de l\'approbation', [
-                'error' => $e->getMessage(),
-                'user_id' => $user->id
-            ]);
             DB::rollBack();
             return response()->json([
                 'status' => 'error',
@@ -117,10 +113,6 @@ class AdminUserController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            \Log::error('Erreur lors du rejet et de la suppression', [
-                'error' => $e->getMessage(),
-                'user_id' => $user->id
-            ]);
             DB::rollBack();
             return response()->json([
                 'status' => 'error',
@@ -163,10 +155,6 @@ class AdminUserController extends Controller
                 'data' => $user
             ]);
         } catch (\Exception $e) {
-            \Log::error('Erreur lors du blocage', [
-                'error' => $e->getMessage(),
-                'user_id' => $user->id
-            ]);
             DB::rollBack();
             return response()->json([
                 'status' => 'error',
@@ -209,10 +197,6 @@ class AdminUserController extends Controller
                 'data' => $user
             ]);
         } catch (\Exception $e) {
-            \Log::error('Erreur lors du déblocage', [
-                'error' => $e->getMessage(),
-                'user_id' => $user->id
-            ]);
             DB::rollBack();
             return response()->json([
                 'status' => 'error',
