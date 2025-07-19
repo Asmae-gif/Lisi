@@ -21,15 +21,15 @@ class MembreFactory extends Factory
             'nom' => $this->faker->lastName(),
             'prenom' => $this->faker->firstName(),
             'statut' => $this->faker->randomElement(['enseignant', 'doctorant', 'chercheur', 'post-doc']),
-            'grade' => $this->faker->randomElement([
+            /*'grade' => $this->faker->randomElement([
                 'Professeur', 
                 'Maître de conférences', 
                 'Doctorant', 
                 'Post-doctorant'
-            ]),
+            ]),*/
             'biographie' => $this->faker->paragraph(),
-            'photo' => null, // ou tu peux simuler une image: 'photo' => 'photos/default.jpg'
-            'slug' => Str::slug($this->faker->unique()->name()),
+            //'photo' => null, // ou tu peux simuler une image: 'photo' => 'photos/default.jpg'
+            //'slug' => Str::slug($this->faker->unique()->name()),
             'linkedin' => $this->faker->url(),
             'researchgate' => $this->faker->url(),
             'google_scholar' => $this->faker->url(),

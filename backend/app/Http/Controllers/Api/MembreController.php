@@ -39,7 +39,7 @@ class MembreController extends Controller
                     'statut' => $membre->statut,
                     'email' => $membre->user ? $membre->user->email : $membre->email,
                     'biographie' => $membre->biographie,
-                    'grade' => $membre->grade,
+                    //'grade' => $membre->grade,
                     'linkedin' => $membre->linkedin,
                     'researchgate' => $membre->researchgate,
                     'google_scholar' => $membre->google_scholar,

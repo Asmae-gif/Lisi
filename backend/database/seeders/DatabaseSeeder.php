@@ -45,7 +45,6 @@ $admin->save();
                 'nom' => 'Test',
                 'prenom' => 'Enseignant',
                 'statut' => 'enseignant',
-                'slug' => Str::slug('Enseignant Test') . '-' . uniqid(),
             ]);
         }
 

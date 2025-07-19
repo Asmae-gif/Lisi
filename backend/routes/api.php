@@ -246,6 +246,13 @@ Route::middleware(['auth:sanctum', 'role:admin', 'throttle:120,1'])->prefix('adm
         Route::delete('/{id}', [GallerieController::class, 'destroy']);
     });
 
+    // Routes protégées pour les rapports d'activité (admin uniquement)
+Route::middleware('auth:sanctum')->prefix('activity-reports')->group(function () {
+    Route::post('/', [ActivityReportController::class, 'store']);
+    Route::put('/{activityReport}', [ActivityReportController::class, 'update']);
+    Route::delete('/{activityReport}', [ActivityReportController::class, 'destroy']);
+});
+
     Route::middleware('can:manage-settings')->prefix('pages/{page}/settings')->group(function () {
         Route::get('/', [SettingsController::class, 'index']);
     });

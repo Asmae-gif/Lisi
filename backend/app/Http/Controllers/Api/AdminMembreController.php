@@ -30,16 +30,21 @@ class AdminMembreController extends Controller
                     'prenom' => $membre->prenom,
                     'email' => $membre->email_complet,
                     'statut' => $membre->statut,
-                    'grade' => $membre->grade,
-                    'photo' => $membre->photo,
-                    'is_comite' => $membre->is_comite,
-                    'axes' => $membre->axes->map(function ($axe) {
+                    //'grade' => $membre->grade,
+                    'biographie'=> $membre->biographie,
+                    'linkedin'=> $membre->linkedin,
+                    'researchgate'=> $membre-> researchgate,
+                    'google_scholar'=> $membre-> google_scholar,
+
+                    //'photo' => $membre->photo,
+                    //'is_comite' => $membre->is_comite,
+                    /*'axes' => $membre->axes->map(function ($axe) {
                         return [
                             'id' => $axe->id,
                             'nom' => $axe->nom,
                             'position' => $axe->pivot->position
                         ];
-                    }),
+                    }),*/
                     'user' => $membre->user ? [
                         'id' => $membre->user->id,
                         'is_approved' => $membre->user->is_approved,
@@ -71,12 +76,15 @@ class AdminMembreController extends Controller
             'prenom' => 'required|string|max:255',
             'nom' => 'required|string|max:255',
             'statut' => 'required|string|max:255',
-            'grade' => 'nullable|string|max:255',
+            //'grade' => 'nullable|string|max:255',
             'biographie' => 'nullable|string',
-            'photo' => 'nullable|image|max:2048',
-            'axes' => 'nullable|array',
-            'axes.*.id' => 'required|exists:axes,id',
-            'axes.*.position' => 'nullable|string',
+            'linkedin'=> 'nullable|string',
+            'researchgate'  => 'nullable|url|max:255',
+            'google_scholar'=> 'nullable|url|max:255',
+            //'photo' => 'nullable|image|max:2048',
+            //'axes' => 'nullable|array',
+            //'axes.*.id' => 'required|exists:axes,id',
+            //'axes.*.position' => 'nullable|string',
             'create_user' => 'nullable|string'
         ];
 
@@ -124,10 +132,13 @@ class AdminMembreController extends Controller
                 'nom' => $validated['nom'],
                 'email' => $validated['email'],
                 'statut' => $validated['statut'],
-                'grade' => $validated['grade'] ?? null,
+                //'grade' => $validated['grade'] ?? null,
                 'biographie' => $validated['biographie'] ?? null,
-                'photo' => $photoPath,
-                'slug' => Str::slug($validated['prenom'] . '-' . $validated['nom']) . '-' . uniqid()
+                'linkedin'=> $validated['linkedin'] ?? null,
+                'researchgate'=> $validated['researchgate'] ?? null,
+                'google_scholar'=> $validated['google_scholar'] ?? null,
+                //'photo' => $photoPath,
+                //'slug' => Str::slug($validated['prenom'] . '-' . $validated['nom']) . '-' . uniqid()
             ];
 
             // Ajouter user_id seulement s'il existe
@@ -183,12 +194,13 @@ class AdminMembreController extends Controller
             DB::beginTransaction();
 
             // 1. Mettre à jour l'utilisateur si email modifié
-            if (isset($validated['email'])) {
+            if (isset($validated['email']) && $membre->user) {
                 $membre->user->update([
                     'email' => $validated['email'],
                     'name' => ($validated['prenom'] ?? $membre->prenom) . ' ' . ($validated['nom'] ?? $membre->nom)
                 ]);
             }
+
 
             // 2. Gérer la photo si fournie
             if ($request->hasFile('photo')) {
@@ -318,16 +330,16 @@ class AdminMembreController extends Controller
                     'id' => $user->membre->id,
                     'nom' => $user->membre->nom,
                     'prenom' => $user->membre->prenom,
-                    'photo' => $user->membre->photo,
-                    'photo_url' => $user->membre->photo_url,
+                    //'photo' => $user->membre->photo,
+                    //'photo_url' => $user->membre->photo_url,
                     'biographie' => $user->membre->biographie,
-                    'position' => $user->membre->position,
-                    'is_comite' => $user->membre->is_comite,
-                    'grade' => $user->membre->grade,
+                    //'position' => $user->membre->position,
+                    //'is_comite' => $user->membre->is_comite,
+                    //'grade' => $user->membre->grade,
                     'linkedin' => $user->membre->linkedin,
                     'researchgate' => $user->membre->researchgate,
                     'google_scholar' => $user->membre->google_scholar,
-                    'axes' => $user->membre->axes ?? [],
+                    //'axes' => $user->membre->axes ?? [],
                 ] : null,
                 'roles' => $user->roles->pluck('name'),
             ];

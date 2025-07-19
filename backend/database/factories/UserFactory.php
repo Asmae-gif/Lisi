@@ -65,7 +65,7 @@ class UserFactory extends Factory
                     'prenom' => explode(' ', $user->name)[0],
                     'statut' => $user->statut,
                     'email' => $user->email,
-                    'slug' => Str::slug($user->name) . '-' . uniqid(),
+                    //'slug' => Str::slug($user->name) . '-' . uniqid(),
                 ]);
             }
         });

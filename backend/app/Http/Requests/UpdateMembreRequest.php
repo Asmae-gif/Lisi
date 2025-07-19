@@ -46,15 +46,15 @@ class UpdateMembreRequest extends FormRequest
             'statut'        => 'sometimes|required|string|max:255',
             'email'         => 'sometimes|required|email|max:255|unique:users,email,' . $userId,
             'biographie'    => 'nullable|string|max:1000',
-            'photo'         => 'nullable|image|max:2048',  
-            'slug'          => 'sometimes|required|string|max:255|unique:membres,slug,' . $membreId,
-            'grade'         => 'nullable|string|max:255',
+            //'photo'         => 'nullable|image|max:2048',  
+            //'slug'          => 'sometimes|required|string|max:255|unique:membres,slug,' . $membreId,
+            //'grade'         => 'nullable|string|max:255',
             'linkedin'      => 'nullable|url|max:255',
             'researchgate'  => 'nullable|url|max:255',
             'google_scholar'=> 'nullable|url|max:255',
-            'axes'          => 'nullable|array',
-            'axes.*.id'     => 'required_with:axes|exists:axes,id',
-            'axes.*.position'=> 'nullable|string|max:255',
+            //'axes'          => 'nullable|array',
+            //'axes.*.id'     => 'required_with:axes|exists:axes,id',
+            //'axes.*.position'=> 'nullable|string|max:255',
         ];
     }
 }

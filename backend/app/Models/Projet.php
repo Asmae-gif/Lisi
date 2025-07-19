@@ -31,4 +31,9 @@ class Projet extends Model
     {
         return $this->hasMany(ProjetIncube::class);
     }
+
+    public function galleries()
+    {
+        return $this->morphMany(Galleries::class, 'galleriesable');
+    }
 }

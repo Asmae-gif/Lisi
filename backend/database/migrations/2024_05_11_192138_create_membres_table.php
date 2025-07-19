@@ -19,14 +19,14 @@ return new class extends Migration
                 $table->string('statut')->nullable();
                 $table->string('email')->nullable();
                 $table->text('biographie')->nullable();
-                $table->string('photo')->nullable();
-                $table->string('slug')->unique();
-                $table->string('google_id')->nullable()->unique();
+                //$table->string('photo')->nullable();
+                //$table->string('slug')->unique()->nullable();
+                //$table->string('google_id')->nullable()->unique();
                 $table->string('linkedin')->nullable(); 
                 $table->string('researchgate')->nullable();
                 $table->string('google_scholar')->nullable();
-                $table->string('grade')->nullable();
-                $table->boolean('is_comite')->default(false);
+                //$table->string('grade')->nullable();
+                //$table->boolean('is_comite')->default(false);
 
                 $table->timestamps();
         });

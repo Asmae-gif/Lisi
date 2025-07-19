@@ -19,13 +19,13 @@ class Membre extends Model
         'photo',
         'statut',
         'biographie',
-        'slug',
+        //'slug',
         'google_id',
         'linkedin',
         'researchgate',
         'google_scholar',
-        'grade',
-        'is_comite',
+        //'grade',
+        //'is_comite',
     ];
     protected $appends = ['photo_url', 'email_complet'];
 

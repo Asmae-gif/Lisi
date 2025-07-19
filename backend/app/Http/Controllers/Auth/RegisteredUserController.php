@@ -45,7 +45,7 @@ class RegisteredUserController extends Controller
             'nom'           => $request->nom,
             'email_complet' => $request->email,
             'statut'        => $request->statut,
-            'slug'          => Str::slug($request->prenom . '-' . $request->nom) . '-' . uniqid(),
+            //'slug'          => Str::slug($request->prenom . '-' . $request->nom) . '-' . uniqid(),
         ]);
 
         // 5) Event Registered (pour envoi d’email si besoin)
