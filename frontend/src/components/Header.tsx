@@ -192,53 +192,44 @@ const Header: React.FC = () => {
           <Link to="/recherche" className="text-gray-700 hover:text-[#3ea666] py-3 font-medium text-base">
             {t('research')}
           </Link>
-          
-          <MobileDropdownMenu
-            isOpen={isMembresOpen}
-            setIsOpen={setIsMembresOpen}
-            label={t('Membres')}
-            items={[
-              { path: '/equipe', label: 'team' },
-              { path: '/comite-de-gestion', label: 'management_committee' }
-            ]}
-          />
+
+          <Link to="/Membres" className="text-gray-700 hover:text-[#3ea666] py-3 font-medium text-base">
+            {t('Membres')}
+          </Link>
           
           <MobileDropdownMenu
             isOpen={isRessourcesOpen}
             setIsOpen={setIsRessourcesOpen}
             label={t('resources')}
             items={[
-              { path: '/formations', label: 'training' },
-              { path: '/partenariats', label: 'partners' },
-              { path: '/gallerie', label: 'gallery' }
+              { path: '/projets', label: t('projects') },
+              {path: '/prix-distinctions', label: 'prix-distinctions' },               
+              { path: '/partenariats', label:t('partners') },
+              { path: '/gallerie', label: t('gallery') },
+              {path: '/activity-reports', label: t('activity-reports' )}
+
             ]}
           />
           
           <Link to="/publications" className="text-gray-700 hover:text-[#3ea666] py-3 font-medium text-base">
             {t('publications')}
           </Link>
-          
-          <Link to="/projets" className="text-gray-700 hover:text-[#3ea666] py-3 font-medium text-base">
-            {t('projects')}
-          </Link>
 
           <div className="pt-2 border-t border-gray-200"> 
   <Link
     to="/contact"
-    className="bg-[#3ea666] text-white px-3 py-1.5 rounded hover:bg-[#3ea666]/90 transition-colors text-center block font-normal text-xs shadow-sm"
+    className="text-gray-700 hover:text-[#3ea666] py-3 font-medium text-base"
   >
     {t('contact')}
   </Link>
   
   <Link
     to="/auth/login"
-    className="bg-gray-700 text-white px-3 py-1.5 rounded hover:bg-gray-800 transition-colors text-center block font-normal text-xs mt-1.5 shadow-sm"
+    className="bg-[#3ea666] text-white px-3 py-1.5 rounded hover:bg-[#3ea666]/90 transition-colors text-center block font-normal text-xs mt-1.5 shadow-sm"
   >
     {t('login')}
   </Link>
 </div>
-
-
         </div>
       </div>
     )
@@ -285,8 +276,8 @@ const Header: React.FC = () => {
     }`}>
       <TopBar />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className={`flex justify-between items-center py-2 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+      <div className="max-w-7xl mx-auto px-4 px-4 sm:px-6 lg:px-8">
+      <div className="flex justify-between items-center py-2 ">
           <Logo currentLanguage={currentLanguage} getLogoConfig={getLogoConfig} onError={handleLogoError} />
           <DesktopNavigation />
           <LoginButton />

@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { Plus, Camera, Search, Filter, Edit, Trash2, Calendar, Eye, X } from "lucide-react";
+import {  Camera, Search, Filter, Edit, Trash2, Calendar, Eye, X } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { galleryApiService, type Gallery, type CreateGalleryData } from '@/services/galleryApi';
@@ -56,62 +53,72 @@ const Gallery: React.FC = () => {
       setIsLoading(false);
     }
   };
-
+  
   // Charger les entités pour chaque type
   const fetchEntities = async () => {
     try {
       const entitiesData: Record<string, Entity[]> = {};
-      
-      // Charger les projets
+  
+      // Projets
       try {
-        const projectsResponse = await api.get('/admin/projects');
-        entitiesData['project'] = projectsResponse.data.data || projectsResponse.data || [];
+        const projectsResponse = await api.get('/projects');
+        console.log('[projet] Données reçues:', projectsResponse.data);
+        entitiesData['projet'] = projectsResponse.data.data || projectsResponse.data || [];
       } catch (error) {
-        console.warn('Impossible de charger les projects:', error);
-        entitiesData['project'] = [];
+        console.warn('[projet] Erreur de chargement:', error);
+        entitiesData['projet'] = [];
       }
-
-      // Charger les partenaires
+  
+      // Partenariats
       try {
         const partenairesResponse = await api.get('/partenaires');
+        console.log('[Partenariats] Données reçues:', partenairesResponse.data);
         entitiesData['Partenariats'] = partenairesResponse.data.data || partenairesResponse.data || [];
       } catch (error) {
-        console.warn('Impossible de charger les partenaires:', error);
+        console.warn('[Partenariats] Erreur de chargement:', error);
         entitiesData['Partenariats'] = [];
       }
-
-      // Charger les axes
+  
+      // Axes de recherche
       try {
         const axesResponse = await api.get('/axes');
+        console.log('[Axes de recherche] Données reçues:', axesResponse.data);
         entitiesData['Axes de recherche'] = axesResponse.data.data || axesResponse.data || [];
       } catch (error) {
-        console.warn('Impossible de charger les axes:', error);
+        console.warn('[Axes de recherche] Erreur de chargement:', error);
         entitiesData['Axes de recherche'] = [];
       }
-
-      // Charger les publications
+  
+      // Publications
       try {
         const publicationsResponse = await api.get('/publications');
+        console.log('[Publications] Données reçues:', publicationsResponse.data);
         entitiesData['Publications'] = publicationsResponse.data.data || publicationsResponse.data || [];
       } catch (error) {
-        console.warn('Impossible de charger les publications:', error);
+        console.warn('[Publications] Erreur de chargement:', error);
         entitiesData['Publications'] = [];
       }
-
-      // Charger les prix de distinction
+  
+      // Prix de distinction
       try {
         const prixDistinctionsResponse = await api.get('/prix-distinctions');
+        console.log('[Prix de distinction] Données reçues:', prixDistinctionsResponse.data);
         entitiesData['Prix de distinction'] = prixDistinctionsResponse.data.data || prixDistinctionsResponse.data || [];
       } catch (error) {
-        console.warn('Impossible de charger les prix de distinction:', error);
+        console.warn('[Prix de distinction] Erreur de chargement:', error);
         entitiesData['Prix de distinction'] = [];
       }
-
+  
+      console.log('[Résumé des entités] Final:', entitiesData);
       setEntities(entitiesData);
+      console.log('Clés disponibles dans entities:', Object.keys(entitiesData));
+console.log('Valeur de galleriesable_type:', galleries.map(g => g.galleriesable_type));
+
     } catch (error) {
-      console.error('Erreur lors du chargement des entités:', error);
+      console.error('[Global] Erreur lors du chargement des entités:', error);
     }
   };
+  
 
   useEffect(() => {
     fetchGalleries();

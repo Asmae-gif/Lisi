@@ -16,7 +16,7 @@ import ProfileMembre from "./pages/ProfileMembre";
 import { AuthProvider } from './components/contexts/AuthContext';
 import Dashboard from './pages/dashboard/Dashboard'
 import MembersTable from './pages/dashboard/Membres/MembersTable'
-import EquipesTable from './pages/dashboard/EquipesTable'
+import EquipesTable from './archive/EquipesTable.tsx'
 import AxesDashboard from './pages/dashboard/Axes/AxesDashboard'
 import ProtectedRoute from './components/dashboard/ProtectedRoute';
 import SettingsRecherche from "@/pages/Parametres/SettingsRecherche";

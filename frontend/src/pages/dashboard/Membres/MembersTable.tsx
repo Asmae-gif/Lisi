@@ -1,18 +1,19 @@
-import React, { useState, Suspense, lazy } from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { UserCheck, UserX, Plus } from "lucide-react"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import MemberActions from '../../../archive/MemberActions'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useMembres } from "@/hooks/useMembres"
-import IconMapper from '@/components/common/IconMapper'
-import { Membre, User, MembreFormData } from "@/types/membre"
+import React, { useState, Suspense, lazy } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { UserCheck, UserX, Plus } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import MemberActions from '../../../archive/MemberActions';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useMembres } from "@/hooks/useMembres";
+import IconMapper from '@/components/common/IconMapper';
+import { Membre, User, MembreFormData } from "@/types/membre";
+import { Textarea } from "@/components/ui/textarea";
 
 // Interfaces pour les props des composants
 interface MobileMemberCardProps {
@@ -35,66 +36,96 @@ interface StatsCardProps {
 }
 
 // Lazy load components
-const MemberRow = lazy(() => import("./MemberRow"))
+const MemberRow = lazy(() => import("./MemberRow"));
 
 export default function Membres() {
-
   // Options de statut pour les membres
   const STATUT_OPTIONS = [
     { value: "Permanent", label: "Permanent" },
-    { value: "Associés", label: "Associés" },
-    { value: "Doctorants", label: "Doctorants" }
+    { value: "Associés", label: "Associé" },
+    { value: "Doctorants", label: "Doctorant" }
   ];
 
-  //const { toast } = useToast()
-  const {
-    searchTerm,
-    setSearchTerm,
-    users,
-    membres,
-    isLoadingMembres,
-    isLoadingUsers,
-    selectedMembre,
-    setSelectedMembre,
-    showCreateMembre,
-    setShowCreateMembre,
-    newMembre,
-    setNewMembre,
-    stats,
-    handleApproveUser,
-    handleBlockUser,
-    handleDeleteMembre,
-    handleSubmitMembre,
-    handleToggleComite,
-    handleRejectUser,
-    handleUnblockUser
-  } = useMembres() as {
-    searchTerm: string;
-    setSearchTerm: (term: string) => void;
-    users: User[];
-    membres: Membre[];
-    isLoadingMembres: boolean;
-    isLoadingUsers: boolean;
-    selectedMembre: Membre | null;
-    setSelectedMembre: React.Dispatch<React.SetStateAction<Membre | null>>;
-    showCreateMembre: boolean;
-    setShowCreateMembre: (show: boolean) => void;
-    newMembre: Partial<MembreFormData>;
-    setNewMembre: React.Dispatch<React.SetStateAction<Partial<MembreFormData>>>;
-    stats: {
-      totalMembres: number;
-      pendingApproval: number;
-      blockedUsers: number;
-    };
-    handleApproveUser: (id: number) => void;
-    handleBlockUser: (id: number) => void;
-    handleDeleteMembre: (id: number) => void;
-    handleSubmitMembre: (membre: Partial<MembreFormData>) => void;
-    handleToggleComite: (id: number, isComite: boolean) => Promise<void>;
-    handleRejectUser: (id: number) => void;
-    handleUnblockUser: (id: number) => void;
+ //const { toast } = useToast()
+ const {
+  searchTerm,
+  setSearchTerm,
+  users,
+  membres,
+  isLoadingMembres,
+  isLoadingUsers,
+  selectedMembre,
+  setSelectedMembre,
+  showCreateMembre,
+  setShowCreateMembre,
+  newMembre,
+  setNewMembre,
+  stats,
+  handleApproveUser,
+  handleBlockUser,
+  handleDeleteMembre,
+  handleSubmitMembre,
+  handleToggleComite,
+  handleRejectUser,
+  handleUnblockUser
+} = useMembres() as {
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
+  users: User[];
+  membres: Membre[];
+  isLoadingMembres: boolean;
+  isLoadingUsers: boolean;
+  selectedMembre: Membre | null;
+  setSelectedMembre: React.Dispatch<React.SetStateAction<Membre | null>>;
+  showCreateMembre: boolean;
+  setShowCreateMembre: (show: boolean) => void;
+  newMembre: Partial<MembreFormData>;
+  setNewMembre: React.Dispatch<React.SetStateAction<Partial<MembreFormData>>>;
+  stats: {
+    totalMembres: number;
+    pendingApproval: number;
+    blockedUsers: number;
   };
-  const [activeTab, setActiveTab] = useState("membres")
+  handleApproveUser: (id: number) => void;
+  handleBlockUser: (id: number) => void;
+  handleDeleteMembre: (id: number) => void;
+  handleSubmitMembre: (membre: Partial<MembreFormData>) => void;
+  handleToggleComite: (id: number, isComite: boolean) => Promise<void>;
+  handleRejectUser: (id: number) => void;
+  handleUnblockUser: (id: number) => void;
+};
+
+  const [activeTab, setActiveTab] = useState("membres");
+
+  const handleAdd = () => {
+    setSelectedMembre(null);
+    setNewMembre({
+      nom: '',
+      prenom: '',
+      email: '',
+      statut: '',
+      biographie: '',
+      linkedin: '',
+      researchgate: '',
+      google_scholar: '',
+    });
+    setShowCreateMembre(true);
+  };
+
+  const handleEdit = (membre: Membre) => {
+    setSelectedMembre(membre);
+    setNewMembre({
+      nom: membre.nom,
+      prenom: membre.prenom,
+      email: membre.email,
+      statut: membre.statut,
+      biographie: membre.biographie || '',
+      linkedin: membre.linkedin || '',
+      researchgate: membre.researchgate || '',
+      google_scholar: membre.google_scholar || '',
+    });
+    setShowCreateMembre(true);
+  };
 
   const StatsCard: React.FC<StatsCardProps> = ({
     title,
@@ -106,7 +137,7 @@ export default function Membres() {
       default: "border-muted text-muted-foreground",
       success: "border-green-100 text-green-600 bg-green-50",
       danger: "border-red-100 text-red-600 bg-red-50",
-    }
+    };
     return (
       <Card className={`${variants[variant]} transition-all hover:shadow-md`}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -117,26 +148,26 @@ export default function Membres() {
           <div className="text-lg sm:text-2xl font-bold">{value}</div>
         </CardContent>
       </Card>
-    )
-  }
+    );
+  };
 
   // Loading components
-const TableSkeleton = () => (
-  <div className="space-y-3">
-    {[...Array(5)].map((_, i) => (
-      <div key={i} className="flex space-x-4 animate-pulse">
-        <div className="h-10 bg-gray-200 rounded w-1/4"></div>
-        <div className="h-10 bg-gray-200 rounded w-1/4"></div>
-        <div className="h-10 bg-gray-200 rounded w-1/4"></div>
-        <div className="h-10 bg-gray-200 rounded w-1/4"></div>
-      </div>
-    ))}
-  </div>
-)
-  
+  const TableSkeleton = () => (
+    <div className="space-y-3">
+      {[...Array(5)].map((_, i) => (
+        <div key={i} className="flex space-x-4 animate-pulse">
+          <div className="h-10 bg-gray-200 rounded w-1/4"></div>
+          <div className="h-10 bg-gray-200 rounded w-1/4"></div>
+          <div className="h-10 bg-gray-200 rounded w-1/4"></div>
+          <div className="h-10 bg-gray-200 rounded w-1/4"></div>
+        </div>
+      ))}
+    </div>
+  );
+
   const MobileMemberCard = ({
     membre,
-    linkedUser,
+    linkedUser ,
     onEdit,
     onDelete,
     onApprove,
@@ -161,7 +192,7 @@ const TableSkeleton = () => (
           </div>
           <MemberActions
             membre={membre}
-            linkedUser={linkedUser}
+            linkedUser ={linkedUser }
             onEdit={onEdit}
             onDelete={onDelete}
             onApprove={onApprove}
@@ -173,7 +204,7 @@ const TableSkeleton = () => (
         </div>
       </CardContent>
     </Card>
-  )
+  );
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50/50">
@@ -234,8 +265,7 @@ const TableSkeleton = () => (
                             </div>
                             <Button 
                               onClick={() => {
-                                setSelectedMembre(null)
-                                setShowCreateMembre(true)
+                                handleAdd();
                               }}
                               className="w-full sm:w-auto"
                             >
@@ -259,9 +289,6 @@ const TableSkeleton = () => (
                                 <TableHeader className="sticky top-0 bg-white z-10">
                                   <TableRow>
                                     <TableHead className="w-[300px]">Membre</TableHead>
-                                    {/* <TableHead className="w-[150px]">Grade</TableHead> */}
-                                    {/* <TableHead className="w-[100px]">Statut</TableHead> */}
-                                    {/* <TableHead className="w-[150px]">Compte</TableHead> */}
                                     <TableHead className="w-[100px]">Actions</TableHead>
                                   </TableRow>
                                 </TableHeader>
@@ -274,37 +301,23 @@ const TableSkeleton = () => (
                                     </TableRow>
                                   ) : membres.length > 0 ? (
                                     membres.map((membre) => {
-                                      const linkedUser = users.find((u) => u.id === membre.user?.id)
+                                      const linkedUser  = users.find((u) => u.id === membre.user?.id);
                                       return (
                                         <MemberRow
                                           key={membre.id}
                                           membre={membre}
-                                          linkedUser={linkedUser}
+                                          linkedUser ={linkedUser }
                                           onEdit={(editedMembre: Membre) => {
-                                            setSelectedMembre(editedMembre);
-                                            setNewMembre({
-                                              nom: editedMembre.nom,
-                                              prenom: editedMembre.prenom,
-                                              email: editedMembre.email,
-                                              grade: editedMembre.grade || "",
-                                              statut: editedMembre.statut,
-                                              biographie: editedMembre.biographie || "",
-                                              linkedin: editedMembre.linkedin || "",
-                                              researchgate: editedMembre.researchgate || "",
-                                              google_scholar: editedMembre.google_scholar || "",
-                                              is_comite: editedMembre.is_comite,
-                                              axe_ids: editedMembre.axe_ids,
-                                            });
-                                            setShowCreateMembre(true);
+                                            handleEdit(editedMembre);
                                           }}
                                           onDelete={handleDeleteMembre}
-                                          onApprove={handleApproveUser}
-                                          onBlock={handleBlockUser}
+                                          onApprove={handleApproveUser }
+                                          onBlock={handleBlockUser }
                                           onToggleComite={handleToggleComite}
-                                          onUnblock={handleUnblockUser}
-                                          onReject={handleRejectUser}
+                                          onUnblock={handleUnblockUser }
+                                          onReject={handleRejectUser }
                                         />
-                                      )
+                                      );
                                     })
                                   ) : (
                                     <TableRow>
@@ -323,35 +336,21 @@ const TableSkeleton = () => (
                                 <TableSkeleton />
                               ) : membres.length > 0 ? (
                                 membres.map((membre: Membre) => {
-                                  const linkedUser = users.find((u) => u.id === membre.user?.id);
+                                  const linkedUser  = users.find((u) => u.id === membre.user?.id);
                                   return (
                                     <MobileMemberCard
                                       key={membre.id}
                                       membre={membre}
-                                      linkedUser={linkedUser}
+                                      linkedUser ={linkedUser }
                                       onEdit={(editedMembre: Membre) => {
-                                        setSelectedMembre(editedMembre);
-                                        setNewMembre({
-                                          nom: editedMembre.nom,
-                                          prenom: editedMembre.prenom,
-                                          email: editedMembre.email,
-                                          grade: editedMembre.grade || "",
-                                          statut: editedMembre.statut,
-                                          biographie: editedMembre.biographie || "",
-                                          linkedin: editedMembre.linkedin || "",
-                                          researchgate: editedMembre.researchgate || "",
-                                          google_scholar: editedMembre.google_scholar || "",
-                                          is_comite: editedMembre.is_comite,
-                                          axe_ids: editedMembre.axe_ids,
-                                        });
-                                        setShowCreateMembre(true);
+                                        handleEdit(editedMembre);
                                       }}
                                       onDelete={handleDeleteMembre}
-                                      onApprove={handleApproveUser}
-                                      onBlock={handleBlockUser}
+                                      onApprove={handleApproveUser }
+                                      onBlock={handleBlockUser }
                                       onToggleComite={handleToggleComite}
-                                      onUnblock={handleUnblockUser}
-                                      onReject={handleRejectUser}
+                                      onUnblock={handleUnblockUser }
+                                      onReject={handleRejectUser }
                                     />
                                   );
                                 })
@@ -407,9 +406,8 @@ const TableSkeleton = () => (
                                   <div className="flex flex-col sm:flex-row gap-2">
                                     <Button
                                       size="sm"
-                                      onClick={() => handleApproveUser(user.id)}
+                                      onClick={() => handleApproveUser (user.id)}
                                       className="w-full sm:w-auto"
-                                      
                                     >
                                       <UserCheck className="w-4 h-4 mr-2" />
                                       Approuver
@@ -417,7 +415,7 @@ const TableSkeleton = () => (
                                     <Button
                                       size="sm"
                                       variant="destructive"
-                                      onClick={() => handleRejectUser(user.id)}
+                                      onClick={() => handleRejectUser (user.id)}
                                       className="w-full sm:w-auto"
                                     >
                                       <UserX className="w-4 h-4 mr-2" />
@@ -498,15 +496,15 @@ const TableSkeleton = () => (
                   </SelectContent>
                 </Select>
               </div>
-            {/*
+           {/*
             <div>
               <Label htmlFor="grade">Grade</Label>
               <Input
                 value={newMembre.grade}
                 onChange={(e) => setNewMembre({ ...newMembre, grade: e.target.value })}
               />
-               
             </div>
+            */}
               <div className="sm:col-span-2">
               <Label htmlFor="biographie">Biographie</Label>
               <Textarea
@@ -542,8 +540,7 @@ const TableSkeleton = () => (
                 onChange={(e) => setNewMembre({ ...newMembre, google_scholar: e.target.value })}
                 placeholder="https://scholar.google.com/citations?user=…"
               />
-            </div>
-          */}
+            </div>   
           
           </div>
           <div className="flex flex-col sm:flex-row justify-end gap-2 mt-6">
@@ -560,7 +557,7 @@ const TableSkeleton = () => (
             <Button
               onClick={() => handleSubmitMembre(newMembre)}
               disabled={
-                !newMembre.nom || !newMembre.prenom || !newMembre.email || !newMembre.statut
+                !newMembre.nom || !newMembre.prenom || !newMembre.email || !newMembre.statut 
               }
               className="w-full sm:w-auto"
             >

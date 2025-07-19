@@ -6,12 +6,15 @@
   "phd_students": "PhD Students",
   "other_members": "Other Members",
   "undefined_status": "Undefined Status",
+  "members_by_category": "Members by Category",
+  "total_members": "{{count}} members in total",
+"member_count": "{{count}} members",
   "name": "Name",
   "first_name": "First Name",
   "email": "Email",
   "biography": "Biography",
-  "external_links": "External Links",
-  "no_members_found": "No members found.",
+  "external_links": "External Links", 
+  "no_members_found": "No member found",
   "loading": "Loading...",
   "error_loading": "Error loading members"
 } 

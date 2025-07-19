@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import axiosClient from "@/services/axiosClient"
 import { MembreSettings, ApiResponse,Section, DEFAULT_MEMBRES_SETTINGS } from '@/types/MembresSettings'
 import SettingsForm from '@/components/common/SettingsForm'
-import { buildImageUrlWithDefaults } from '@/utils/imageUtils'
+
 
 /**
  * Composant de paramètres pour la page Membres
@@ -90,7 +90,7 @@ export default function SettingsMembres() {
       const response = await axiosClient.get<ApiResponse>('/api/pages/membres/settings', {  
         headers: { 'Accept': 'application/json' }
       })
-      const settingsData = response.data.data || response.data
+      const settingsData = response.data.data
       console.log('Données reçues depuis la base de données:', settingsData)
       if (settingsData && typeof settingsData === 'object') { 
          

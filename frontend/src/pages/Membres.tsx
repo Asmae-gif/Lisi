@@ -1,223 +1,228 @@
+// Importations de modules React et types
 import React, { useState, useEffect, useCallback, useMemo } from "react"
 import type { Membre, MemberCategory } from '@/types/membre';
-import { useMembresSettings } from '@/hooks/useMembresSettings';
+import {MembreSettings , DEFAULT_MEMBRES_SETTINGS,mergeSettingsWithDefaults,getMultilingualContent} from '@/types/MembresSettings';
 import { useNavigate } from "react-router-dom"
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { ChevronDown, Mail, ExternalLink, Users } from "lucide-react"
+import { ChevronDown, Mail, ExternalLink, Search, Users } from "lucide-react"
 import LoadingSkeleton from '@/components/common/LoadingSkeleton';
 import { Input } from "@/components/ui/input"
-import { Search } from "lucide-react"
 import { membresApi } from '@/services/api';
 import { buildImageUrl } from '@/utils/imageUtils';
 import { useTranslation } from 'react-i18next';
-
+import api from '@/lib/api';
 
 const Membres: React.FC = () => {
+  // États internes
   const [openCategories, setOpenCategories] = useState<string[]>([]);
   const [selectedMember, setSelectedMember] = useState<Membre | null>(null);
   const [membres, setMembres] = useState<Membre[]>([]);
+  const [settings, setSettings] = useState<MembreSettings>(DEFAULT_MEMBRES_SETTINGS);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sortField, setSortField] = useState<keyof Membre>('nom');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const navigate = useNavigate();
-  const { settings, loading: settingsLoading, error: settingsError } = useMembresSettings();
   const [searchQuery, setSearchQuery] = useState('');
   const { i18n, t } = useTranslation('membres');
 
- // Fonction pour obtenir le titre et sous-titre selon la langue actuelle
- const getLocalizedContent = useCallback(() => {
-  const currentLang = i18n.language;
-  let title = '';
-  let subtitle = '';
-
-  switch (currentLang) {
-    case 'en':
-      title = settings.membres_titre_en || settings.membres_titre_fr || 'Our Members';
-      subtitle = settings.membres_sous_titre_en || settings.membres_sous_titre_fr || 'Discover the team of researchers, teachers and PhD students who make up our laboratory';
-      break;
-    case 'ar':
-      title = settings.membres_titre_ar || settings.membres_titre_fr || 'أعضاءنا';
-      subtitle = settings.membres_sous_titre_ar || settings.membres_sous_titre_fr || 'اكتشف فريق الباحثين والمعلمين وطلاب الدكتوراه الذين يشكلون مختبرنا';
-      break;
-    default: // fr
-      title = settings.membres_titre_fr || 'Nos Membres';
-      subtitle = settings.membres_sous_titre_fr || 'Découvrez l\'équipe de chercheurs, d\'enseignants et de doctorants qui composent notre laboratoire';
-      break;
-  }
-
-  return { title, subtitle };
-}, [settings, i18n.language]);
-
-const { title, subtitle } = getLocalizedContent();
-
-const handleSort = (field: keyof Membre) => {
-  if (sortField === field) {
-    setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-  } else {
-    setSortField(field);
-    setSortDirection('asc');
-  }
-};
-
-
-
-const filteredMembersData = useMemo(() => {
-  if (!searchQuery.trim()) {
-    return membres;
-  }
-  const query = searchQuery.toLowerCase();
-  return membres.filter(membre => 
-    (membre.prenom?.toLowerCase().includes(query) || 
-     membre.nom?.toLowerCase().includes(query))
-  );
-}, [membres, searchQuery]);
-
-const sortedMembers = useMemo(() => {
-  return [...filteredMembersData].sort((a, b) => {
-    const aValue = a[sortField] || '';
-    const bValue = b[sortField] || '';
+    // Fonction utilitaire pour récupérer le contenu dans la langue actuelle
+    const getContent = (baseKey: string, fallbackKey: string): string => {
+      const result = getMultilingualContent(settings, baseKey, i18n.language, fallbackKey) || t(fallbackKey);
+      return result;
+    };
+    //  Charge les données des membres et des paramètres depuis l’API
+    const loadData = useCallback(async () => {
+      try {
+        setLoading(true);
     
-    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-    return 0;
-  });
-}, [filteredMembersData, sortField, sortDirection]);
+        const [membresResponse, settingsResponse] = await Promise.all([
+          membresApi.getAll(),
+          api.get('/pages/membres/settings')
+        ]);
+    
+        // Fusionne les paramètres de la BDD avec les valeurs par défaut
+        const settingsData = settingsResponse.data?.data || settingsResponse.data || {};
+        const mergedSettings = mergeSettingsWithDefaults(settingsData);
+        setSettings(mergedSettings); 
+    
+        if (membresResponse.data) {
+          setMembres(membresResponse.data);
+        }
+    
+      } catch (err) {
+        console.error('Erreur lors du chargement des données:', err);
+        setError('Impossible de charger les données');
+      } finally {
+        setLoading(false);
+      }
+    }, []);
+    
 
-const toggleCategory = (categoryId: string) => {
-  setOpenCategories(prev => 
-    prev.includes(categoryId) 
-      ? prev.filter(id => id !== categoryId)
-      : [...prev, categoryId]
-  );
-  setSelectedMember(null);
-};
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
-const handleMemberClick = (member: Membre) => {
-  setSelectedMember(selectedMember?.id === member.id ? null : member);
-};
-
-const loadMembres = useCallback(async () => {
-  try {
-    setLoading(true);
-    const response = await membresApi.getAll();
-    if (response.success && response.data) {
-      setMembres(response.data);
+  // Gère le tri des colonnes du tableau
+  const handleSort = (field: keyof Membre) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
-      setError(t('error_loading'));
+      setSortField(field);
+      setSortDirection('asc');
     }
-  } catch (err) {
-    console.error('Erreur lors du chargement des membres:', err);
-    setError(t('error_loading'));
-  } finally {
-    setLoading(false);
+  };
+
+   //  Filtrage des membres selon la recherche utilisateur
+  const filteredMembersData = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return membres;
+    }
+    const query = searchQuery.toLowerCase();
+    return membres.filter(membre => 
+      (membre.prenom?.toLowerCase().includes(query) || 
+       membre.nom?.toLowerCase().includes(query))
+    );
+  }, [membres, searchQuery]);
+
+  
+  // Trie les membres filtrés selon le champ actif
+  const sortedMembers = useMemo(() => {
+    return [...filteredMembersData].sort((a, b) => {
+      const aValue = a[sortField] || '';
+      const bValue = b[sortField] || '';
+      
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [filteredMembersData, sortField, sortDirection]);
+
+    //Toggle d'affichage des membres par catégorie
+  const toggleCategory = (categoryId: string) => {
+    setOpenCategories(prev => 
+      prev.includes(categoryId) 
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    );
+    setSelectedMember(null);
+  };
+
+  // Sélection ou désélection d’un membre (pour afficher son détail)
+  const handleMemberClick = (member: Membre) => {
+    setSelectedMember(selectedMember?.id === member.id ? null : member);
+  };
+
+  // Redirige vers la page d’un membre
+  const handleMembreClick = useCallback((membreId: number) => {
+    navigate(`/membres/${membreId}`);
+  }, [navigate]);
+
+   //Trie les membres par catégories
+  const membersByCategory = useMemo(() => {
+    const categories: MemberCategory[] = [
+      {
+        id: 'permanent',
+        title: t('permanent_members'),
+        members: sortedMembers.filter(m => {
+          const statut = m.statut?.toLowerCase() || '';
+          return statut.includes('permanent') || statut.includes('enseignant') || statut.includes('chercheur');
+        })
+      },
+      {
+        id: 'associe',
+        title: t('associate_members'),
+        members: sortedMembers.filter(m => {
+          const statut = m.statut?.toLowerCase() || '';
+          return statut.includes('associé') || statut.includes('associe') || statut.includes('collaborateur');
+        })
+      },
+      {
+        id: 'doctorant',
+        title: t('phd_students'),
+        members: sortedMembers.filter(m => {
+          const statut = m.statut?.toLowerCase() || '';
+          return statut.includes('doctorant') || statut.includes('thèse') || statut.includes('these');
+        })
+      },
+      {
+        id: 'autre',
+        title: t('other_members'),
+        members: sortedMembers.filter(m => {
+          const statut = m.statut?.toLowerCase() || '';
+          return statut === '';
+        })
+      },
+    ];
+
+    return categories.filter(category => category.members.length > 0);
+  }, [sortedMembers, t]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSkeleton type="grid" rows={1} />
+      </div>
+    );
   }
-}, [t]);
 
-useEffect(() => {
-  loadMembres();
-}, [loadMembres]);
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
+  }
 
-const handleMembreClick = useCallback((membreId: number) => {
-  navigate(`/membres/${membreId}`);
-}, [navigate]);
-
-const membersByCategory = useMemo(() => {
-  const categories: MemberCategory[] = [
-    {
-      id: 'permanent',
-      title: t('permanent_members'),
-      members: sortedMembers.filter(m => {
-        const statut = m.statut?.toLowerCase() || '';
-        return statut.includes('permanent') || statut.includes('enseignant') || statut.includes('chercheur');
-      })
-    },
-    {
-      id: 'associe',
-      title: t('associate_members'),
-      members: sortedMembers.filter(m => {
-        const statut = m.statut?.toLowerCase() || '';
-        return statut.includes('associé') || statut.includes('associe') || statut.includes('collaborateur');
-      })
-    },
-    {
-      id: 'doctorant',
-      title: t('phd_students'),
-      members: sortedMembers.filter(m => {
-        const statut = m.statut?.toLowerCase() || '';
-        return statut.includes('doctorant') || statut.includes('thèse') || statut.includes('these');
-      })
-    },
-    {
-      id: 'autre',
-      title: t('other_members'),
-      members: sortedMembers.filter(m => {
-        const statut = m.statut?.toLowerCase() || '';
-        return statut === '';
-      })
-    },
-  ];
-
-  return categories.filter(category => category.members.length > 0);
-}, [sortedMembers, t]);
-
-if (loading || settingsLoading) {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <LoadingSkeleton type="grid" rows={1} />
-    </div>
-  );
-}
-
-if (error || settingsError) {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p className="text-red-600">{error || settingsError}</p>
-    </div>
-  );
-}
-
+  // Rendu principal de la page
   return (
     <div className="min-h-screen bg-white">
       <Header />
       
       {/* Hero Section */}
-      
       <section 
-        className="bg-gradient-to-br from-green-50 to-indigo-100 py-16"
-        style={settings.membres_image ? {
-          backgroundImage: `url(${buildImageUrl(settings.membres_image)})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        } : undefined}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              <span className="block">{title}</span>
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              {subtitle}
-            </p>
+  className="bg-gradient-to-br from-green-50 to-indigo-100 py-16"
+  style={settings.membres_image ? {
+    backgroundImage: `url(${buildImageUrl(settings.membres_image)})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+  } : undefined}
+>
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="text-center">
+      <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+        <span className="block">
+        {getContent('membres_titre', 'hero.title')}
+        </span>
+      </h1>
+      <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+        { getContent('membres_sous_titre', 'hero.subtitle')}
+      </p>
+    </div>
+  </div>
+</section>
+
+      {/* Search Section */}
+      <section className="py-8 px-4 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            <Search className="w-6 h-6 text-green-600" />
+            {t('search_member', 'Rechercher un membre')}
+          </h2>
+          <div className="relative border border-green-500 rounded-md">
+            <Input
+              type="text"
+              placeholder={t('search_placeholder', 'Rechercher par nom ou prénom...')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pr-10 pl-3 py-2 w-full"
+            />
+            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500 w-4 h-4" />
           </div>
         </div>
       </section>
-
-      {/* Search Section */}
-      <div className="max-w-6xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-8">{t('search_member')}</h1>
-        <div className="relative border border-green-500 rounded-md">
-          <Input
-            type="text"
-            placeholder={t('search_placeholder')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pr-10 pl-3 py-2 w-full"
-          />
-          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500 w-4 h-4" />
-        </div>
-      </div>
 
       {/* Members by Category */}
       <section className="py-12 px-4 bg-white">
@@ -225,10 +230,10 @@ if (error || settingsError) {
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
               <Users className="w-8 h-8 text-green-600" />
-              Membres par catégorie
+              {t('members_by_category')}
             </h2>
             <div className="text-sm text-gray-500">
-              {membres.length} membre{membres.length > 1 ? 's' : ''} au total
+             {t('total_members', { count: membres.length })}
             </div>
           </div>
 
@@ -244,8 +249,8 @@ if (error || settingsError) {
                       <h3 className="font-semibold text-lg text-gray-900">
                         {category.title}
                       </h3>
-                      <span className="text-gray-600">
-                        {category.members.length} membre{category.members.length > 1 ? 's' : ''}
+                      <span className="text-gray-600 ">
+                        {t('member_count', { count: category.members.length })}
                       </span>
                     </div>
                     <ChevronDown 
@@ -263,6 +268,7 @@ if (error || settingsError) {
                             <tr>
                               <th
                                 scope="col"
+                                aria-sort={sortField === "nom" ? (sortDirection === "asc" ? "ascending" : "descending") : "none"}
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                                 onClick={() => handleSort("nom")}
                               >
@@ -270,7 +276,7 @@ if (error || settingsError) {
                                   {t('name', 'Nom')}
                                   {sortField === "nom" && (
                                     <ChevronDown 
-                                      className={`w-4 h-4 ml-1 transition-transform duration-200 ${
+                                      className={`w-4 h-4 ml-1 ltr:ml-1 rtl:mr-1 transition-transform duration-200 ${
                                         sortDirection === "asc" ? '' : 'rotate-180'
                                       }`} 
                                     />
@@ -286,7 +292,7 @@ if (error || settingsError) {
                                   {t('first_name', 'Prénom')}
                                   {sortField === "prenom" && (
                                     <ChevronDown 
-                                      className={`w-4 h-4 ml-1 transition-transform duration-200 ${
+                                      className={`w-4 h-4 ml-1 ltr:ml-1 rtl:mr-1 transition-transform duration-200 ${
                                         sortDirection === "asc" ? '' : 'rotate-180'
                                       }`} 
                                     />
@@ -302,7 +308,7 @@ if (error || settingsError) {
                                   {t('email', 'Email')}
                                   {sortField === "email" && (
                                     <ChevronDown 
-                                      className={`w-4 h-4 ml-1 transition-transform duration-200 ${
+                                      className={`w-4 h-4 ml-1 ltr:ml-1 rtl:mr-1 transition-transform duration-200 ${
                                         sortDirection === "asc" ? '' : 'rotate-180'
                                       }`} 
                                     />
@@ -314,6 +320,7 @@ if (error || settingsError) {
                           <tbody className="bg-white divide-y divide-gray-200">
                             {category.members.map((member) => (
                               <React.Fragment key={member.id}>
+                                {/* Ligne principale du membre */}
                                 <tr 
                                   className="hover:bg-gray-50 cursor-pointer"
                                   onClick={() => handleMemberClick(member)}
@@ -328,6 +335,8 @@ if (error || settingsError) {
                                     {member.email}
                                   </td>
                                 </tr>
+
+                                {/* Détails du membre s'il est sélectionné */}
                                 {selectedMember?.id === member.id && (
                                   <tr>
                                     <td colSpan={3} className="px-6 py-4">
@@ -335,13 +344,16 @@ if (error || settingsError) {
                                         <h5 className="font-semibold text-gray-900 mb-4 text-lg">
                                           {member.prenom} {member.nom}
                                         </h5>
-                                        
+                                         {/* Email et biographie */}
                                         <div className="mb-6">
-                                          <div className="flex items-center text-gray-600 mb-4">
-                                            <Mail className="w-4 h-4 mr-2" />
-                                            <span>{member.email }</span>
-                                          </div>
-                                          
+                                        <div
+                                          className="flex items-center text-gray-600 mb-4 gap-2"
+                                          dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
+                                        >
+                                          <Mail className="w-4 h-4" />
+                                          <span>{member.email}</span>
+                                        </div>
+                                        {/* Affichage conditionnel de la biographie */}
                                           {member.biographie && (
                                             <div className="mb-4">
                                               <h6 className="font-medium text-gray-900 mb-2">{t('biography', 'Biographie')}</h6>
@@ -351,46 +363,47 @@ if (error || settingsError) {
                                             </div>
                                           )}
                                         </div>
-                                        
-                                        <div>
-                                          <h6 className="font-medium text-gray-900 mb-3">{t('external_links', 'Liens externes')}</h6>
-                                          <div className="flex flex-wrap gap-2">
-                                            {member.linkedin && (
-                                              <a
-                                                href={member.linkedin}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-flex items-center px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
-                                              >
-                                                <ExternalLink className="w-4 h-4 mr-2" />
-                                                LinkedIn
-                                              </a>
-                                            )}
-                                            {member.researchgate && (
-                                              <a
-                                                href={member.researchgate}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-flex items-center px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
-                                              >
-                                                <ExternalLink className="w-4 h-4 mr-2" />
-                                                ResearchGate
-                                              </a>
-                                            )}
-                                            {member.google_scholar && (
-                                              <a
-                                                href={member.google_scholar}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-flex items-center px-3 py-2 text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
-                                              >
-                                                <ExternalLink className="w-4 h-4 mr-2" />
-                                                Google Scholar
-                                              </a>
-                                            )}
+                                        {(member.linkedin || member.researchgate || member.google_scholar) && (
+                                          <div className="mt-4">
+                                            <h6 className="font-medium text-gray-900 mb-3">{t('external_links')}</h6>
+                                            <div className="flex flex-wrap gap-2">
+                                              {member.linkedin && (
+                                                <a
+                                                  href={member.linkedin}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="inline-flex items-center px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
+                                                >
+                                                  <ExternalLink className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
+                                                  LinkedIn
+                                                </a>
+                                              )}
+                                              {member.researchgate && (
+                                                <a
+                                                  href={member.researchgate}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="inline-flex items-center px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
+                                                >
+                                                  <ExternalLink className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
+                                                  ResearchGate
+                                                </a>
+                                              )}
+                                              {member.google_scholar && (
+                                                <a
+                                                  href={member.google_scholar}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="inline-flex items-center px-3 py-2 text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
+                                                >
+                                                  <ExternalLink className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
+                                                  Google Scholar
+                                                </a>
+                                              )}
+                                            </div>
                                           </div>
-                                        </div>
-                                      </div>
+                                        )}
+                                      </div>        
                                     </td>
                                   </tr>
                                 )}
@@ -408,19 +421,14 @@ if (error || settingsError) {
             <div className="text-center py-12">
               <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Aucun membre disponible
+                {t('no_members_found')}
               </h3>
-              <p className="text-gray-500">
-                {searchQuery ? 'Aucun membre ne correspond à votre recherche.' : 'Aucun membre n\'est encore disponible.'}
-              </p>
             </div>
           )}
         </div>
       </section>
-
       <Footer />
     </div>
   );
 };
-
 export default Membres;

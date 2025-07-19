@@ -6,13 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useActivityReports } from "@/hooks/useActivityReports";
-import { 
-  ActivityReport, 
-  ActivityReportFormData, 
-  Column
-} from "@/types/ActivityReportsSettings";
+import { ActivityReport, ActivityReportFormData, Column } from "@/types/ActivityReportsSettings";
 
 export default function AdminActivityReports() {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -21,17 +16,13 @@ export default function AdminActivityReports() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterYear, setFilterYear] = useState('all');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [form, setForm] = useState<ActivityReportFormData>({
-    report_date: '',
-    pdf: null,
-  });
+  const [form, setForm] = useState<ActivityReportFormData>({ report_date: '', pdf: null });
 
   // Utiliser les hooks personnalisés
   const {
     reports,
     filteredReports,
     availableYears,
-    stats,
     isLoading,
     createReport,
     updateReport,
@@ -46,19 +37,12 @@ export default function AdminActivityReports() {
 
   const handleAdd = () => {
     setSelectedReport(null);
-    setForm({
-      report_date: '',
-      pdf: null,
-    });
+    setForm({ report_date: '', pdf: null });
     setIsFormOpen(true);
   };
 
   const handleEdit = (report: ActivityReport) => {
     setSelectedReport(report);
-    setForm({
-      report_date: report.report_date,
-      pdf: null,
-    });
     setIsFormOpen(true);
   };
 
@@ -75,7 +59,7 @@ export default function AdminActivityReports() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
-    
+
     try {
       setIsSubmitting(true);
 
@@ -88,7 +72,6 @@ export default function AdminActivityReports() {
       setIsFormOpen(false);
       setForm({ report_date: '', pdf: null });
     } catch (error) {
-      // Les erreurs sont déjà gérées par les hooks
       console.error('Erreur lors de la soumission:', error);
     } finally {
       setIsSubmitting(false);
@@ -98,6 +81,7 @@ export default function AdminActivityReports() {
   const handleCancel = () => {
     setIsFormOpen(false);
     setSelectedReport(null);
+    setForm({ report_date: '', pdf: null });
   };
 
   const columns: Column[] = [
@@ -344,7 +328,7 @@ export default function AdminActivityReports() {
                 </label>
                 <Input
                   type="date"
-                  value={form.report_date}
+                  value={form.report_date} // Assurez-vous que cette valeur est correctement mise à jour
                   onChange={(e) => setForm(prev => ({ ...prev, report_date: e.target.value }))}
                   required
                   className="w-full"
@@ -353,15 +337,20 @@ export default function AdminActivityReports() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Fichier PDF *
+                  Fichier PDF {selectedReport ? '' : '*'}
                 </label>
                 <Input
                   type="file"
                   accept=".pdf"
                   onChange={handleFileChange}
-                  required={!selectedReport}
+                  required={!selectedReport} // Si c'est une modification, le champ n'est pas requis
                   className="w-full"
                 />
+                {selectedReport && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    Laissez vide pour conserver le fichier actuel
+                  </p>
+                )}
               </div>
 
               <div className="flex justify-end gap-3">
@@ -387,4 +376,4 @@ export default function AdminActivityReports() {
       )}
     </div>
   );
-} 
+}

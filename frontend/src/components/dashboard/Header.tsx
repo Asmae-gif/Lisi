@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 export default function Header() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const navigate = useNavigate();
-  const { logout, user } = useAuth(); // ← récupère nom/prénom ici
+  const { logout, user } = useAuth();
 
   const handleLogout = async () => {
     try {

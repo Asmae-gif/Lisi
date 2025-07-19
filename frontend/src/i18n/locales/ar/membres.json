@@ -1,15 +1,20 @@
 {
   "search_member": "البحث عن عضو",
-  "search_placeholder": "الاسم، الاسم الأول.",
+  "search_placeholder": "الاسم، النسب.",
   "permanent_members": "الأعضاء الدائمون",
   "associate_members": "الأعضاء المشاركون",
   "phd_students": "طلبة الدكتوراه",
   "other_members": "أعضاء آخرون",
   "undefined_status": "حالة غير محددة",
+  "members_by_category": "الأعضاء حسب الفئة",
+  "total_members": "{{count}} عضوًا إجمالاً",
+ "member_count": "{{count}} أعضاء",
   "name": "الاسم",
   "first_name": "الاسم الأول",
   "email": "البريد الإلكتروني",
-  "no_members_found": "لم يتم العثور على أعضاء.",
+  "biography": "السيرة الذاتية",
+  "external_links": "روابط خارجية",
+  "no_members_found": "لم يتم العثور على أي عضاء",
   "loading": "جاري التحميل...",
   "error_loading": "حدث خطأ أثناء تحميل الأعضاء"
 }

@@ -4,6 +4,10 @@ export interface Entity {
   name?: string;
   title?: string;
   title_fr?: string;
+  name_fr?:string;
+  nom_fr?:string;
+  titre_publication_fr:string;
+  titre_fr:string;
   // Champs spécifiques
   titre_publication?: string;
   titre_projet?: string;
@@ -14,7 +18,7 @@ export interface Entity {
 
 // Types d'entités avec libellés pour les formulaires
 export const galleriesableTypesWithOptions = [
-  { value: "projet", label: "Projet" },
+  { value: "projet", label: "projet" },
   { value: "Partenariats", label: "Partenariat" },
   { value: "Axes de recherche", label: "Axe de recherche" },
   { value: "Publications", label: "Publication" },
@@ -42,17 +46,17 @@ export const getEntityName = (
     // Gérer les différents formats selon le type d'entité
     switch (type) {
       case 'Publications':
-        return entity.titre_publication || entity.title_fr || entity.title || entity.name || `ID: ${id}`;
+        return entity.titre_publication_fr  || `ID: ${id}`;
       case 'projet':
-        return entity.titre_projet || entity.title_fr || entity.title || entity.name || `ID: ${id}`;
+        return entity.name_fr || `ID: ${id}`;
       case 'Partenariats':
-        return entity.nom_partenaire || entity.title_fr || entity.title || entity.name || `ID: ${id}`;
+        return entity.nom_fr || `ID: ${id}`;
       case 'Axes de recherche':
-        return entity.title_fr || entity.title || entity.name || `ID: ${id}`;
+        return entity.title_fr || `ID: ${id}`;
       case 'Prix de distinction':
-        return entity.nom || entity.nom_prix || entity.title_fr || entity.title || entity.name || `ID: ${id}`;
+        return entity.title_fr || `ID: ${id}`;
       default:
-        return entity.title_fr || entity.title || entity.name || `ID: ${id}`;
+        return entity.title_fr || `ID: ${id}`;
     }
   }
   return `ID: ${id}`;

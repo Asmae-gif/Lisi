@@ -1,5 +1,6 @@
 export interface GallerySettings {
   id?: number;
+  page: string;
   galerie_titre_fr: string;
   galerie_sous_titre_fr: string;
   galerie_titre_en: string;
@@ -25,6 +26,7 @@ export interface Section {
 }
 
 export const DEFAULT_GALLERY_SETTINGS: GallerySettings = {
+  page : 'gelerie',
   galerie_titre_fr: 'Galerie',
   galerie_sous_titre_fr: 'Découvrez nos installations, projets et moments marquants à travers cette collection d\'images',
   galerie_titre_en: 'Gallery',

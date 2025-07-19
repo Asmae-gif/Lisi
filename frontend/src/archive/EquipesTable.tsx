@@ -98,22 +98,17 @@ export default function MembresParAxePage() {
   // Optimisation avec useCallback pour les notifications
   const showNotification = useCallback((type: "success" | "error", message: string) => {
     setNotification({ type, message });
-
-  useEffect(() => {
-    loadData()
-  }, [loadData])
-    setTimeout(() => setNotification(null), 5000);
+    setTimeout(() => setNotification(null), 5000); // Nettoyage de la notification après 5 secondes
   }, []);
-
   // Optimisation avec useCallback pour le chargement des données
   const loadData = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const [axesRes, membresRes, axeMembresRes] = await Promise.all([
         axiosClient.get("/api/admin/axes"),
         axiosClient.get("/api/admin/membres"),
         axiosClient.get("/api/admin/axe-membre")
-      ])
+      ]);
 
       // Log raw data
       console.log('Raw API responses:', {

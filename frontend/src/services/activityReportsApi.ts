@@ -40,7 +40,7 @@ export const activityReportsApi = {
    */
   async getById(id: number): Promise<ActivityReport> {
     try {
-      const response = await api.get<ActivityReport>(`/activity-reports/${id}`);
+      const response = await api.get<ActivityReport>(`/admin/activity-reports/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Erreur lors de la récupération du rapport ${id}:`, error);
@@ -60,7 +60,7 @@ export const activityReportsApi = {
         formData.append('pdf_path', data.pdf);
       }
 
-      const response = await api.post<ActivityReport>('/activity-reports', formData, {
+      const response = await api.post<ActivityReport>('/admin/activity-reports', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -86,7 +86,7 @@ export const activityReportsApi = {
         formData.append('pdf_path', data.pdf);
       }
 
-      const response = await api.post<ActivityReport>(`/activity-reports/${id}`, formData, {
+      const response = await api.post<ActivityReport>(`/admin/activity-reports/${id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -104,7 +104,7 @@ export const activityReportsApi = {
    */
   async delete(id: number): Promise<void> {
     try {
-      await api.delete(`/activity-reports/${id}`);
+      await api.delete(`/admin/activity-reports/${id}`);
     } catch (error) {
       console.error(`Erreur lors de la suppression du rapport ${id}:`, error);
       throw new Error('Impossible de supprimer le rapport d\'activité');

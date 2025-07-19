@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { X, ChevronLeft, ChevronRight, Camera, Calendar, Loader2 } from 'lucide-react';
-import { galleryApiService, Gallery as GalleryType } from '../services/galleryApi';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import { X, ChevronLeft, ChevronRight, Camera, Calendar } from 'lucide-react';
+import { galleryApiService, Gallery as GalleryType } from '@/services/galleryApi';
 import { toast } from '@/hooks/use-toast';
 import { useGalerieSettings } from '@/hooks/useGalerieSettings';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +22,6 @@ const Gallery = () => {
   const { i18n, t } = useTranslation(['galerie', 'translation']);
 
   const observer = useRef<IntersectionObserver | null>(null);
-
   const filterCategories = [
     { key: 'all', labelKey: 'all' },
     { key: 'App\\Models\\Partenariat', labelKey: 'partnerships' },
@@ -31,13 +30,12 @@ const Gallery = () => {
     { key: 'App\\Models\\Publication', labelKey: 'publications' },
     { key: 'App\\Models\\Axe', labelKey: 'axes' },
   ];
-  
+
   const getCategoryLabel = (type: string | undefined): string => {
     if (!type) return '';
     const category = filterCategories.find(c => c.key === type);
     return category ? t(category.labelKey) : type.split('\\').pop() || '';
   };
-  
 
   const fetchGalleries = useCallback(async (pageNum: number, category: string, append: boolean) => {
     if (pageNum === 1) setLoading(true);
@@ -87,13 +85,14 @@ const Gallery = () => {
     });
 
     if (node) observer.current.observe(node);
-  }, [loading, loadingMore, hasMore, page, selectedType, fetchGalleries]);
-
-  const handleFilterChange = (categoryKey: string) => {
+  }, [loading, loadingMore, hasMore, page, selectedType, fetchGalleries]);  
+  
+  const handleFilterChange = (key: string) => {
+    setSelectedType(key);
     setGalleryImages([]);
     setPage(1);
     setHasMore(true);
-    setSelectedType(categoryKey);
+    fetchGalleries(1, key, false);
   };
 
   const getLocalizedContent = useCallback(() => {
@@ -129,25 +128,15 @@ const Gallery = () => {
   };
 
   const getLocalizedImageDescription = (image: GalleryType) => {
-      const lang = i18n.language;
-      if (lang === 'en' && image.description_en) return image.description_en;
-      if (lang === 'ar' && image.description_ar) return image.description_ar;
-      return image.description_fr || image.description;
+    const lang = i18n.language;
+    if (lang === 'en' && image.description_en) return image.description_en;
+    if (lang === 'ar' && image.description_ar) return image.description_ar;
+    return image.description_fr || image.description;
   };
 
-  const getLocalizedEntityType = (type: string) => {
-      const typeMap: { [key: string]: string } = {
-          "projet": "project",
-          "Partenariats": "partnerships",
-          "Axes de recherche": "axes",
-          "Publications": "publications",
-          "Prix de distinction": "prize_distinctions"
-      };
-      const translationKey = typeMap[type] || type;
-      return t(translationKey);
-  };
-
-  const filteredImages = galleryImages;
+  const filteredImages = galleryImages.filter(image => {
+    return selectedType === 'all' || image.galleriesable_type === selectedType;
+  });
 
   const openModal = (index: number) => {
     setSelectedImage(index);
@@ -168,6 +157,35 @@ const Gallery = () => {
       setSelectedImage(selectedImage === 0 ? filteredImages.length - 1 : selectedImage - 1);
     }
   };
+  const getLocalizedEntityType = (type: string) => {
+    const baseType = type?.split('\\').pop(); // <-- retire le namespace
+    const typeMap: { [key: string]: string } = {
+      "Projet": "project",
+      "Partenariat": "partnerships",
+      "Axe": "axes",
+      "Publication": "publications",
+      "PrixDistinction": "prize_distinctions"
+    };
+    const translationKey = typeMap[baseType ?? ''] || baseType;
+    return t(translationKey ?? '');
+  };
+  useEffect(() => {
+    if (selectedImage !== null) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [selectedImage]);
+
+  useEffect(() => {
+    if (selectedImage !== null) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+  
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [selectedImage]);
 
   if (loading || settingsLoading) {
     return (
@@ -177,7 +195,7 @@ const Gallery = () => {
           <LoadingSkeleton type="grid" rows={1} />
         </div>
         <Footer />
-          </div>
+      </div>
     );
   }
 
@@ -198,14 +216,27 @@ const Gallery = () => {
       <Header />
       <main>
         {/* Hero Section */}
-        <PageContent
-          hero
-          title={title}
-          subtitle={subtitle}
-          backgroundImage={settings.galerie_image ? buildImageUrlWithDefaults(settings.galerie_image) : undefined}
+        <section 
+          className="bg-gradient-to-br from-green-50 to-indigo-100 py-16"
+          style={settings.galerie_image ? {
+            backgroundImage: `url(${buildImageUrlWithDefaults(settings.galerie_image)})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          } : undefined}
         >
-            <></>
-        </PageContent>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                <span className="block">
+                  {title}
+                </span>
+              </h1>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                {subtitle}
+              </p>
+            </div>
+          </div>
+        </section>
 
         {/* Category Filter */}
         <section className="py-8 bg-white">
@@ -273,7 +304,7 @@ const Gallery = () => {
             )}
             {loadingMore && (
               <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-8">
-                 <LoadingSkeleton type="grid" rows={1} />
+                <LoadingSkeleton type="grid" rows={1} />
               </div>
             )}
           </div>
@@ -282,7 +313,7 @@ const Gallery = () => {
         {/* Modal */}
         {selectedImage !== null && filteredImages[selectedImage] && (
           <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
-            <div className="relative max-w-4xl w-full">
+            <div className="relative max-w-4xl w-full max-h-screen overflow-y-auto">
               <button
                 onClick={closeModal}
                 className="absolute top-4 right-4 z-10 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 transition-all duration-200"
@@ -315,7 +346,7 @@ const Gallery = () => {
                 <img
                   src={filteredImages[selectedImage].image_path}
                   alt={getLocalizedImageTitle(filteredImages[selectedImage])}
-                  className="w-full h-96 object-cover"
+                  className="w-full max-h-[80vh] object-cover"
                   onError={(e) => {
                     console.error('Erreur de chargement image modal:', filteredImages[selectedImage].image_path);
                     e.currentTarget.style.display = 'none';

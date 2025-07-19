@@ -50,11 +50,11 @@ export default function MemberActions({
           variant="default"
           onClick={() => {
             onApprove(localUser.id)
-            setLocalUser(prev => prev ? {
+            setLocalUser((prev) => ({
               ...prev,
               is_approved: true,
-              email_verified_at: new Date().toISOString()
-            } : null)
+              email_verified_at: new Date().toISOString(),
+            }));
           }}
           className="flex items-center text-white bg-green-600 hover:bg-green-700"
         >
@@ -155,19 +155,17 @@ export default function MemberActions({
       <div>
         <Label>Email vérifié</Label>
         <p className="text-sm text-gray-600">
-          {localUser.email_verified_at ? (
-            <>
-              <CheckCircle className="inline w-4 h-4 text-green-600 mr-1" />
-              Oui, le{" "}
-              {new Date(localUser.email_verified_at).toLocaleDateString("fr-FR")}
-              
-            </>
-          ) : (
-            <>
-              <UserX className="inline w-4 h-4 text-red-600 mr-1" />
-              Non vérifié
-            </>
-          )}
+              {localUser.is_approved && !isNaN(new Date(localUser.email_verified_at).getTime()) ? (
+          <>
+            <CheckCircle className="inline w-4 h-4 text-green-600 mr-1" />
+            Oui, le {new Date(localUser.email_verified_at).toLocaleDateString("fr-FR")}
+          </>
+        ) : (
+          <>
+            <UserX className="inline w-4 h-4 text-red-600 mr-1" />
+            Non vérifié
+          </>
+        )}
         </p>
       </div>
       <div>
@@ -180,10 +178,10 @@ export default function MemberActions({
   </div>
 )}
 
-            {/* Informations supplémentaires commentées
+            {/* Informations supplémentaires commentées? */}
             <div>
               <Label>Biographie</Label>
-              <p className="text-sm text-gray-600">{membre.biographie}</p>
+              <p className="text-sm text-gray-600">{membre.biographie|| "Non renseigné"}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -201,7 +199,7 @@ export default function MemberActions({
               <Label>Google Scholar</Label>
               <p className="text-sm text-gray-600">{membre.google_scholar || "Non renseigné"}</p>
             </div>
-            */}
+            
           </div>
         </DialogContent>
       </Dialog>

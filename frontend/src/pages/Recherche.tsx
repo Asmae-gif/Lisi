@@ -1,5 +1,5 @@
 // src/pages/Recherche.tsx
-import React, { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
+import  { useState, useEffect, useCallback, useMemo } from 'react';
 import { axesApi } from '@/services/api';
 import axiosClient from "@/services/axiosClient";
 import { Axe, getAxeContent } from '@/types/axe';
@@ -302,7 +302,7 @@ const Recherche= () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
             <Button asChild size="lg">
-              <Link to="/projets">{t('buttons.view_projects')}</Link>
+              <Link to="/projects">{t('buttons.view_projects')}</Link>
             </Button>
             <Button asChild size="lg" variant="outline">
               <Link to="/publications">{t('buttons.view_publications')}</Link>

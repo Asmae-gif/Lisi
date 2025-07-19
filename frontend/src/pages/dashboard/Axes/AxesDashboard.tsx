@@ -35,7 +35,7 @@ export default function AxesDashboard() {
   const getAxes = async () => {
     try {
       setIsLoading(true);
-      const response = await api.get<ApiResponse<Axe[]>>('/axes');
+      const response = await api.get<ApiResponse<Axe[]>>('/admin/axes');
       const axesData = response.data.data || response.data;
       if (Array.isArray(axesData)) {
         setAxes(axesData);

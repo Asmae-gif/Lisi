@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Filter, Mail, MessageSquare, Eye, LucideIcon } from "lucide-react";
 import { contactAPI, ContactMessage } from "@/services/api";
 import MessageItem from "@/components/MessageItem";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
 import DashboardPageLayout from "@/components/layout/DashboardPageLayout";
 
 const ContactDashboard = () => {

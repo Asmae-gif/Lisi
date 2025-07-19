@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { getMembre } from '../services/api';
-import type { Membre } from '../types/membre';
-import { Mail, Linkedin, ArrowLeft, Phone, MapPin, FileText, User, Building, Globe, BookOpen, Users } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import { getMembre } from '@/services/api';
+import type { Membre } from '@/types/membre';
+import { Mail, Linkedin, ArrowLeft, Globe, BookOpen, Users } from 'lucide-react';
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import UserAvatar from '@/components/common/UserAvatar';
 
@@ -37,7 +37,7 @@ export default function MembreProfile() {
           throw new Error('Aucune donnée reçue du serveur');
         }
         
-        setMembre(membreData);
+        setMembre(membreData.data);
       } catch (e) {
         console.error('Erreur détaillée:', e);
         setError(e instanceof Error ? e.message : "Impossible de charger le membre");
