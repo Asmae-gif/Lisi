@@ -62,7 +62,6 @@ const Gallery: React.FC = () => {
       // Projets
       try {
         const projectsResponse = await api.get('/projects');
-        console.log('[projet] Données reçues:', projectsResponse.data);
         entitiesData['projet'] = projectsResponse.data.data || projectsResponse.data || [];
       } catch (error) {
         console.warn('[projet] Erreur de chargement:', error);
@@ -72,7 +71,6 @@ const Gallery: React.FC = () => {
       // Partenariats
       try {
         const partenairesResponse = await api.get('/partenaires');
-        console.log('[Partenariats] Données reçues:', partenairesResponse.data);
         entitiesData['Partenariats'] = partenairesResponse.data.data || partenairesResponse.data || [];
       } catch (error) {
         console.warn('[Partenariats] Erreur de chargement:', error);
@@ -82,7 +80,6 @@ const Gallery: React.FC = () => {
       // Axes de recherche
       try {
         const axesResponse = await api.get('/axes');
-        console.log('[Axes de recherche] Données reçues:', axesResponse.data);
         entitiesData['Axes de recherche'] = axesResponse.data.data || axesResponse.data || [];
       } catch (error) {
         console.warn('[Axes de recherche] Erreur de chargement:', error);
@@ -92,7 +89,6 @@ const Gallery: React.FC = () => {
       // Publications
       try {
         const publicationsResponse = await api.get('/publications');
-        console.log('[Publications] Données reçues:', publicationsResponse.data);
         entitiesData['Publications'] = publicationsResponse.data.data || publicationsResponse.data || [];
       } catch (error) {
         console.warn('[Publications] Erreur de chargement:', error);
@@ -102,23 +98,16 @@ const Gallery: React.FC = () => {
       // Prix de distinction
       try {
         const prixDistinctionsResponse = await api.get('/prix-distinctions');
-        console.log('[Prix de distinction] Données reçues:', prixDistinctionsResponse.data);
         entitiesData['Prix de distinction'] = prixDistinctionsResponse.data.data || prixDistinctionsResponse.data || [];
       } catch (error) {
         console.warn('[Prix de distinction] Erreur de chargement:', error);
         entitiesData['Prix de distinction'] = [];
       }
-  
-      console.log('[Résumé des entités] Final:', entitiesData);
       setEntities(entitiesData);
-      console.log('Clés disponibles dans entities:', Object.keys(entitiesData));
-console.log('Valeur de galleriesable_type:', galleries.map(g => g.galleriesable_type));
-
     } catch (error) {
       console.error('[Global] Erreur lors du chargement des entités:', error);
     }
   };
-  
 
   useEffect(() => {
     fetchGalleries();

@@ -92,7 +92,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         // Vérifier si l'utilisateur vient de se connecter via Google
         if (socialAuthService.checkSocialLoginStatus()) {
-          console.log('🔐 Détection d\'une connexion sociale...');
           setState((prev: AuthState) => ({ ...prev, loading: true }));
           
           const response = await socialAuthService.handleGoogleCallback();
@@ -107,7 +106,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               title: "Connexion réussie",
               description: `Bienvenue, ${response.user.name} !`,
             });
-            console.log('✅ Connexion sociale réussie:', response.user);
           } else {
             setState((prev: AuthState) => ({ 
               ...prev, 
@@ -128,7 +126,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await checkAuth();
         }
       } catch (error) {
-        console.error('❌ Erreur lors de l\'initialisation de l\'authentification:', error);
+        console.error(' Erreur lors de l\'initialisation de l\'authentification:', error);
         setState((prev: AuthState) => ({ 
           ...prev, 
           loading: false,
@@ -147,19 +145,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (credentials: LoginCredentials): Promise<User> => {
     setState((prev: AuthState) => ({ ...prev, loading: true, error: null }));
     try {
-      console.log('🔐 Tentative de connexion avec Sanctum...');
       
       // Le token CSRF est géré automatiquement par axiosClient
       await axiosClient.post('/api/login', credentials);
-      console.log('✅ Connexion réussie, récupération des données utilisateur...');
       
       const { data } = await axiosClient.get<User>('/api/user');
-      console.log('👤 Données utilisateur récupérées:', data);
       
       setState((prev: AuthState) => ({ ...prev, user: data, error: null, loading: false }));
       return data;
     } catch (error) {
-      console.error('❌ Erreur lors de la connexion:', error);
+      console.error(' Erreur lors de la connexion:', error);
       const authError = error as AuthError;
       setState((prev: AuthState) => ({
         ...prev,
@@ -176,7 +171,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginWithGoogle = async (): Promise<void> => {
     setState((prev: AuthState) => ({ ...prev, loading: true, error: null }));
     try {
-      console.log('🔐 Tentative de connexion via Google...');
       await socialAuthService.redirectToGoogle();
       // La redirection va se faire automatiquement
     } catch (error) {
@@ -246,11 +240,9 @@ export function useAuth() {
  */
 export const register = async (formData: RegisterData): Promise<{ message: string }> => {
   try {
-    console.log('🔐 Tentative d\'inscription avec les données:', formData);
     
     // Le token CSRF est géré automatiquement par axiosClient
     const { data } = await axiosClient.post('/api/register', formData);
-    console.log('✅ Inscription réussie:', data);
     return data;
   } catch (error) {
     console.error('❌ Erreur lors de l\'inscription:', error);

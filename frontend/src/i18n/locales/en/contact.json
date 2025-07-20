@@ -1,5 +1,5 @@
 {
-    "form": {
+    
       "name": "Full Name",
       "namePlaceholder": "Your full name",
       "email": "Email",
@@ -8,8 +8,9 @@
       "subjectPlaceholder": "Subject of your message",
       "message": "Message",
       "messagePlaceholder": "Your message...",
-      "send": "Send Message"
-    },
+      "send": "Send Message",
+      "contact-information":"Contact Information",
+ 
     "Adresse": "Address",
     "Téléphone": "Phone",
     "Email": "Email",

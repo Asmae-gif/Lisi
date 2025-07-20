@@ -1,5 +1,3 @@
-// services/userService.ts
-
 import axiosClient from "@/services/axiosClient";
 import { toast } from "@/components/ui/use-toast";
 import type { User, Membre, MembreFormData, ApiResponse } from "@/types/membre"; 
@@ -139,7 +137,6 @@ export const deleteMembre = async (membreId: number): Promise<boolean> => {
  */
 export const saveMembre = async (data: MembreFormData, membreId?: number): Promise<Membre | null> => {
   try {
-    console.log('Données à envoyer:', data);
     
     const formData = new FormData();
     
@@ -147,7 +144,6 @@ export const saveMembre = async (data: MembreFormData, membreId?: number): Promi
     Object.entries(data).forEach(([key, value]) => {
       if (value !== null && value !== undefined && value !== '') {
         formData.append(key, value.toString());
-        console.log(`Ajout du champ ${key}:`, value);
       }
     });
 
@@ -155,18 +151,9 @@ export const saveMembre = async (data: MembreFormData, membreId?: number): Promi
     if (!membreId) {
       formData.append('create_user', 'false');
       formData.append('password', 'temp_password_' + Date.now());
-      console.log('Ajout des champs de création');
-    }
-
-    // Log du FormData pour debug
-    for (let [key, value] of formData.entries()) {
-      console.log(`FormData ${key}:`, value);
     }
 
     const url = membreId ? `/api/admin/membres/${membreId}` : "/api/admin/membres";
-    const method = membreId ? 'PUT' : 'POST';
-    
-    console.log(`Envoi ${method} vers:`, url);
 
     const response = membreId
       ? await axiosClient.post(url, formData, {
@@ -181,7 +168,6 @@ export const saveMembre = async (data: MembreFormData, membreId?: number): Promi
           }
         });
 
-    console.log('Réponse du serveur:', response.data);
     return response.data.data ? convertMembre(response.data.data) : null;
   } catch (err) {
     const error = err as { response?: { data?: { message?: string } } };

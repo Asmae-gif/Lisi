@@ -7,7 +7,7 @@ export const languages = [
 
 export const navigationItems = [
   { key: 'index', path: '/index', label: 'Accueil' },
-  { key: 'research', path: '/recherche', label: 'research' },
+  { key: 'axes-recherche', path: '/axes-recherche', label: 'research' },
   { key: 'membres', path: '/membres', label: 'Membres' },
   { 
     key: 'resources', 
@@ -18,8 +18,8 @@ export const navigationItems = [
       { key: 'projects', path: '/projects', label: 'projects' },
       { key: 'prix-distinctions', path: '/prix-distinctions', label: 'prix-distinctions' },
       { key: 'partenaires', path: '/partenaires', label: 'partners' },
-      { key: 'gallery', path: '/gallerie', label: 'gallery' },
-      { key: 'activity-reports', path: '/activity-reports', label: 'activity-reports' }
+      { key: 'galerie', path: '/galerie', label: 'gallery' },
+      { key: 'rapports-activite', path: '/rapports-activite', label: 'activity-reports' }
     ]
   },
   { key: 'publications', path: '/publications', label: 'publications' },

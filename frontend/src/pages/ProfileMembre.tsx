@@ -420,12 +420,9 @@ export default function MonProfil() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      console.log("Envoi de la requête GET /api/user");
       const { data } = await axiosClient.get<{
         user: ApiUser;
       }>('/api/user');
-      
-      console.log("Réponse brute reçue:", data);
       
       if (!data) {
         console.error("Aucune donnée reçue du serveur");
@@ -474,7 +471,6 @@ export default function MonProfil() {
         is_comite: false,
       };
       
-      console.log('Profil complet formaté:', fullProfile);
       setProfile(fullProfile);
       setEditedProfile(fullProfile);
       setError(null);

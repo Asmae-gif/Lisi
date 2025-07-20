@@ -103,18 +103,7 @@ const Index = () => {
     if (!result) {
       result = t(fallbackKey);
     }
-    
-    // Debug: afficher les tentatives de récupération
-    console.log(`🔍 getContent Debug Index:`, {
-      baseKey,
-      currentLanguage: i18n.language,
-      langSettingsKeys: langSettings ? Object.keys(langSettings) : [],
-      content: langSettings ? langSettings[baseKey as keyof typeof langSettings] : null,
-      result,
-      fallbackKey
-    });
-    
-    return result;
+      return result;
   };
 
   // Fonction pour récupérer le titre d'une publication selon la langue

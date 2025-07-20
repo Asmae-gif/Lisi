@@ -19,8 +19,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, adminOnly = f
       if (hasCheckedRef.current || loading || user) {
         return;
       }
-
-      console.log('🔒 ProtectedRoute: Vérification de l\'authentification...');
       setIsChecking(true);
       hasCheckedRef.current = true;
       
@@ -28,7 +26,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, adminOnly = f
         // Forcer la vérification de l'authentification pour les routes protégées
         await checkAuth(true);
       } catch (error) {
-        console.log('❌ ProtectedRoute: Erreur lors de la vérification:', error);
+        console.log(' ProtectedRoute: Erreur lors de la vérification:', error);
       } finally {
         setIsChecking(false);
       }
@@ -57,7 +55,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, adminOnly = f
   }
 
   if (!user && hasCheckedRef.current) {
-    console.log('❌ ProtectedRoute: Utilisateur non authentifié, redirection vers login');
+    console.log('ProtectedRoute: Utilisateur non authentifié, redirection vers login');
     return <Navigate to="/auth/login" state={{ from: location }} replace />;
   }
 
@@ -73,7 +71,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, adminOnly = f
   }
 
   if (user) {
-    console.log('✅ ProtectedRoute: Utilisateur authentifié:', user);
     return <>{children}</>;
   }
 

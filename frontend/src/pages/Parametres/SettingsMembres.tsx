@@ -91,7 +91,6 @@ export default function SettingsMembres() {
         headers: { 'Accept': 'application/json' }
       })
       const settingsData = response.data.data
-      console.log('Données reçues depuis la base de données:', settingsData)
       if (settingsData && typeof settingsData === 'object') { 
          
       const defaultValues: MembreSettings = {

@@ -38,7 +38,6 @@ export default function Login() {
         window.location.href = userData.redirect_url;
         return;
       }
-      console.log(userData.roles) 
       // Sinon, logique de fallback
       const role = userData.user && userData.user.roles && Array.isArray(userData.user.roles) && userData.user.roles.length > 0
   ? userData.user.roles[0]?.name
@@ -49,10 +48,6 @@ export default function Login() {
         setError("Votre compte est en attente de validation par un administrateur.");
         return;
       }
-
-      console.log('🎭 Rôle détecté:', role);
-      console.log('🔀 Redirection vers /dashboard...');
-      console.log(userData.user.roles) 
 
       if (role === 'admin') {
         navigate('/dashboard', { replace: true });

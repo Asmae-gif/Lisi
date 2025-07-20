@@ -137,7 +137,6 @@ const sections: Section[] = useMemo(() =>  [
 
   // Initialiser avec les valeurs par défaut dès le départ
   const [values, setValues] = useState<ContactSettings>(() => {
-    console.log('Initialisation avec les valeurs par défaut:', DEFAULT_CONTACT_SETTINGS)
     return { ...DEFAULT_CONTACT_SETTINGS }
   })
   const [files, setFiles] = useState<Record<string, File>>({})
@@ -156,13 +155,9 @@ const sections: Section[] = useMemo(() =>  [
       const response = await axiosClient.get<ApiResponse>('/api/pages/contact/settings', {
         headers: { 'Accept': 'application/json' }
       })
-
-      console.log('Données reçues:', response.data)
-
       const settingsData = response.data.data || response.data
 
       if (settingsData && typeof settingsData === 'object') {
-        console.log('Données à utiliser:', settingsData)
         
         // Utiliser les valeurs par défaut partagées
         const defaultValues: ContactSettings = {
@@ -175,7 +170,6 @@ const sections: Section[] = useMemo(() =>  [
         // Mettre à jour les previews d'images
         Object.entries(defaultValues).forEach(([key, val]) => {
           if (key.endsWith('_image') && val) {
-            console.log('Image trouvée:', key, val)
             setPreview(prev => ({ ...prev, [key]: String(val) }))
           }
         })

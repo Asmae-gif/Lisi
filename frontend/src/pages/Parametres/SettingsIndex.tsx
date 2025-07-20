@@ -163,7 +163,6 @@ export default function SettingsIndex() {
       // Mettre à jour les previews d'images
       Object.entries(flatValues).forEach(([key, val]) => {
         if (key.endsWith('_image') && val) {
-          console.log('Image trouvée:', key, val)
           setPreview(prev => ({ ...prev, [key]: buildImageUrl(String(val)) }))
         }
       })

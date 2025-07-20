@@ -73,14 +73,14 @@ const AppContent = () => {
         <Route path="/index" element={<Index />} />
         <Route path="/test" element={<TestPage />} />
         <Route path="/membres" element={<Membres />} />
-        <Route path="/recherche" element={<Recherche />} />
+        <Route path="/axes-recherche" element={<Recherche />} />
         <Route path="/auth/login" element={<Login />} />
         <Route path="/membres/:id" element={<MembreProfile />} />
         <Route path="/register" element={<Register />} />
         <Route path="/auth/forgot-password" element={<ForgotPassword />} />
         <Route path="/password-reset/:token" element={<ResetPassword />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/gallerie" element={<Gallerie />} />
+        <Route path="/galerie" element={<Gallerie />} />
   
         <Route path="/projects" element={<Projects />} />
         <Route path="/projets/:id" element={<ProjectDetail />} />
@@ -88,7 +88,6 @@ const AppContent = () => {
         <Route path="/publications/:id" element={<PublicationDetail />} />
         <Route path="/prix-distinctions" element={<PrixDistinctions />} />
         <Route path="/partenaires" element={<Partenaires />} />
-        <Route path="/activity-reports" element={<PublicActivityReports />} />
         <Route path="/rapports-activite" element={<PublicActivityReports />} />
         <Route 
           path="/profile" 
@@ -99,7 +98,7 @@ const AppContent = () => {
           } 
         />
 
-        {/* 🛡️ Zone Dashboard protégée avec layout + thème */}
+        {/* Zone Dashboard protégée avec layout + thème */}
         <Route
           path="/dashboard"
           element={
@@ -137,7 +136,7 @@ const AppContent = () => {
           <Route path="mot-directeur" element={<ProtectedRoute><MotDirecteur /></ProtectedRoute>} />
         </Route>
 
-        {/* ❌ Page non trouvée */}
+        {/* Page non trouvée */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       

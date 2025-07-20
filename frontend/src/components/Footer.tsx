@@ -1,9 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getLogoConfig } from '@/config/logos';
-import { navigationItems, languages } from '@/config/navigation';
+import { ArrowLeft, Send, CheckCircle, MapPin, Phone, Mail } from "lucide-react";
 import Logo from '@/components/ui/Logo';
 import { useContactSettings } from '@/hooks/useContactSettings';
+import {  getMultilingualContent } from '@/types/contactSettings';
+
 // Types
 interface Language {
   code: string;
@@ -18,101 +20,92 @@ interface NavigationItem {
   hasDropdown?: boolean;
   dropdownItems?: NavigationItem[];
 }
-
+ 
 const Footer = () => {
   const { t, i18n } = useTranslation('header');
   const { t: tContact } = useTranslation('contact');
+  
   const location = useLocation();
   const logoConfig = getLogoConfig(i18n.language);
+  const { settings, loading, error, refetch } = useContactSettings();
   const { settings: contactSettings, loading: contactLoading } = useContactSettings();
+  
+
 
   const handleLogoError = (e) => {
     if (i18n.language === 'ar') {
       e.currentTarget.src = "/images/logoen.png";
     }
   };
+    // Fonction pour récupérer le contenu dans la langue actuelle
+    const getContent = (baseKey: string, fallback?: string) => {
+      if (!settings) return fallback || '';
+      return getMultilingualContent(settings, baseKey, i18n.language, fallback);
+    };
 
   return (
-    <footer className="bg-[#437a49] border-t py-10 text-white">
+    <footer className="bg-[#437a49] border-t text-white pt-8 pb-6">
       <div className="container mx-auto px-6">
-        <div className="flex flex-col lg:flex-row justify-between mb-12 items-center gap-8">
-          <Link to="/" className="flex items-center space-x-4 logo-container">
-            <Logo currentLanguage={i18n.language} getLogoConfig={getLogoConfig} onError={handleLogoError} />
-          </Link>
-          <nav className="flex flex-wrap gap-6 justify-center md:justify-start">
-            {navigationItems.map((item) => (
-              item.hasDropdown && item.dropdownItems ? (
-                <div key={item.key}>
-      <h4 className="text-lg font-medium mb-6 text-white">{t(item.label)}</h4>
-      <ul className="space-y-3">
-        {item.hasDropdown && item.dropdownItems ? (
-          item.dropdownItems.map((dropdownItem) => (
-            <li key={dropdownItem.key}>
-              <Link
-                to={dropdownItem.path}
-                className="text-white/80 hover:text-white text-base transition-colors"
-              >
-                {t(dropdownItem.label)}
-              </Link>
-            </li>
-          ))
-        ) : (
-          <li>
-            <Link
-              to={item.path}
-              className="text-white/80 hover:text-white text-base transition-colors"
-            >
-              {t(item.label)}
-            </Link>
-          </li>
-        )}
-      </ul>
-    </div>
-              ) : (
-                <Link
-                  key={item.key}
-                  to={item.path}
-                  className="text-white/80 hover:text-white transition-colors"
-                >
-                  {t(item.label)}
-                </Link>
-              )
-            ))}
-          </nav>
+        {/* Haut du footer : logo + navigation */}
+        <div className="flex flex-col lg:flex-row items-start justify-between mb-12 gap-6 lg:gap-12">
+  <div className="w-full max-w-sm lg:max-w-xs shrink-0">
+    <Link to="/index" className="block w-fit">
+      <Logo currentLanguage={i18n.language} getLogoConfig={getLogoConfig} onError={handleLogoError} />
+    </Link>
+  </div>
+
+  <nav className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 text-base">
+      <div className="flex flex-col space-y-2">
+        <Link to="/" className="hover:underline">{t("Accueil")}</Link>
+        <Link to="/axes-recherche" className="hover:underline">{t("research")}</Link>
+        <Link to="/membres" className="hover:underline">{t("Membres")}</Link>
+      </div>
+      <div className="flex flex-col space-y-2">
+        <Link to="/projects" className="hover:underline">{t("projects")}</Link>
+        <Link to="/prix-distinctions" className="hover:underline">{t("prix-distinctions")}</Link>
+        <Link to="/partenaires" className="hover:underline">{t("partners")}</Link>
+        <Link to="/galerie" className="hover:underline">{t("gallery")}</Link>
+        <Link to="/rapports-activite" className="hover:underline">{t("activity-reports")}</Link>
+      </div>
+      <div className="flex flex-col space-y-2">
+        <Link to="/publications" className="hover:underline">{t("publications")}</Link>
+        <Link to="/contact" className="hover:underline">{t("contact")}</Link>
+      </div>
+    </nav>   
+</div>
+  
+        {/* Section contact + réseaux */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 py-8 border-t border-white/20">
+  <div>
+    <h4 className="text-lg font-medium mb-4">{tContact("Contact")}</h4>
+
+    {contactLoading ? (
+      <div className="space-y-2">
+        <div className="h-4 bg-white/20 rounded animate-pulse w-3/4"></div>
+        <div className="h-4 bg-white/20 rounded animate-pulse w-1/2"></div>
+        <div className="h-4 bg-white/20 rounded animate-pulse w-2/3"></div>
+      </div>
+    ) : contactSettings ? (
+      <>
+        <div className="flex items-center text-white mb-2 space-x-2">
+          <MapPin className="h-5 w-5 text-white shrink-0" />
+          <span>{getContent('contact_adresse', "Av Abdelkrim Khattabi, B.P. 511 - 40000 – Marrakech")}</span>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-8 border-t border-b border-white/10">
-          <div>
-            <h4 className="text-lg font-medium mb-4">Contact</h4>
-            {contactLoading ? (
-              <div className="space-y-2">
-                <div className="h-4 bg-white/20 rounded animate-pulse"></div>
-                <div className="h-4 bg-white/20 rounded animate-pulse w-3/4"></div>
-                <div className="h-4 bg-white/20 rounded animate-pulse w-1/2"></div>
-              </div>
-            ) : contactSettings ? (
-              <>
-                {contactSettings[`contact_adresse_${i18n.language}` as keyof typeof contactSettings] && (
-                  <p className="text-white/80 mb-2">
-                    <strong>{tContact('Adresse')}:</strong> {contactSettings[`contact_adresse_${i18n.language}` as keyof typeof contactSettings]}
-                  </p>
-                )}
-                {contactSettings.contact_telephone && (
-                  <p className="text-white/80 mb-2">
-                    <strong>{tContact('Téléphone')}:</strong> {contactSettings.contact_telephone}
-                  </p>
-                )}
-                {contactSettings.contact_email && (
-                  <p className="text-white/80">
-                    <strong>{tContact('Email')}:</strong> {contactSettings.contact_email}
-                  </p>
-                )}
-              </>
-            ) : (
-              <p className="text-white/60">Informations de contact non disponibles</p>
-            )}
-          </div>
-          
+
+        <div className="flex items-center text-white mb-2 space-x-2">
+          <Phone className="h-5 w-5 text-white shrink-0" />
+          <span>{getContent('contact_telephone', "06 70 09 85 53 / 06 70 09 89 50")}</span>
+        </div>
+
+        <div className="flex items-center text-white mb-2 space-x-2">
+          <Mail className="h-5 w-5 text-white shrink-0" />
+          <span>{getContent('contact_email', "contact@example.com")}</span>
+        </div>
+      </>
+    ) : (
+      <p className="text-white/60">Informations de contact non disponibles</p>
+    )}
+  </div>
           <div>
             <h4 className="text-lg font-medium mb-4">Suivez-nous</h4>
             <div className="flex gap-4">
@@ -163,58 +156,19 @@ const Footer = () => {
                   <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
                 </svg>
               </a>
-              <a href="#" aria-label="YouTube" className="flex items-center justify-center w-9 h-9 rounded-full bg-white/10 hover:bg-amber-700 transition-colors">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
-                  <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
-                </svg>
-              </a>
             </div>
           </div>
-          
-          <div>
-            <h4 className="text-lg font-medium mb-4">Newsletter</h4>
-            <p className="text-white/80 mb-4">Inscrivez-vous pour recevoir nos dernières actualités</p>
-            <form className="flex">
-              <input 
-                type="email" 
-                placeholder="Votre email" 
-                required 
-                className="flex-grow px-4 py-2 bg-white/10 border border-white/20 rounded-l-md text-white focus:outline-none focus:border-amber-500"
-              />
-              <button 
-                type="submit" 
-                className="px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white font-medium rounded-r-md transition-colors"
-              >
-                S'inscrire
-              </button>
-            </form>
-          </div>
         </div>
-        
-        <div className="flex flex-col md:flex-row justify-between items-center pt-8">
-          <div className="text-white/60 text-sm mb-4 md:mb-0">
-            <p>&copy; 2025 LISI - Laboratoire d'Informatique et de Systèmes Intelligents. Tous droits réservés.</p>
-          </div>
-          <div className="flex flex-wrap gap-6">
-            <a href="#" className="text-white/60 hover:text-white text-sm transition-colors">Mentions légales</a>
-            <a href="#" className="text-white/60 hover:text-white text-sm transition-colors">Politique de confidentialité</a>
-            <a href="#" className="text-white/60 hover:text-white text-sm transition-colors">Plan du site</a>
-            <a href="#" className="text-white/60 hover:text-white text-sm transition-colors">Accessibilité</a>
-          </div>
+  
+        {/* Bas de page */}
+        <div className="pt-6 border-t border-white/10 text-center text-white text-sm">
+          &copy; 2025 LISI - Laboratoire d'Informatique et de Systèmes Intelligents. Tous droits réservés.
         </div>
       </div>
     </footer>
-  )
+  );
+  
+
+  
 }
 export default Footer;

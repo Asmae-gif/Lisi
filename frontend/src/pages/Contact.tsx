@@ -9,11 +9,10 @@ import { contactAPI, ContactFormData } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import axiosClient from "@/services/axiosClient";
 import LoadingSkeleton from "@/components/common/LoadingSkeleton";
 import { buildImageUrl } from '@/utils/imageUtils';
 import { useTranslation } from 'react-i18next';
-import { ContactSettings, getMultilingualContent, DEFAULT_CONTACT_SETTINGS } from '@/types/contactSettings';
+import { ContactSettings, getMultilingualContent, mergeSettingsWithDefaults,DEFAULT_CONTACT_SETTINGS } from '@/types/contactSettings';
 import GoogleMap from "@/components/common/GoogleMap";
 import { useContactSettings } from '@/hooks/useContactSettings';
 /**
@@ -31,7 +30,9 @@ const Contact = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
 
-  const { settings, loading, error, refetch } = useContactSettings();
+  const {loading, error, refetch } = useContactSettings();
+  const [settings, setSettings] = useState<ContactSettings>(DEFAULT_CONTACT_SETTINGS);
+
   
 
   const sendMessageMutation = useMutation({
@@ -180,35 +181,36 @@ const Contact = () => {
               {/* Informations de contact */}
               <div>
                 <h2 className="text-3xl font-bold text-gray-900 mb-8" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
-                  {getContent('contact_titre2', "Informations de Contact")}
+                  {t ('contact-information')}
                 </h2>
                 
                 <div className="space-y-8">
-                  <div className="flex items-start space-x-4">
+                  <div className="flex items-start rtl:space-x-reverse space-x-3">
                     <div className="bg-green-100 p-3 rounded-lg">
                       <MapPin className="h-6 w-6 text-green-600" />
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('Adresse')}</h3>
-                      <p className="text-gray-600" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+                      <p className="text-gray-600" >
                         {getContent('contact_adresse', "Av Abdelkrim Khattabi, B.P. 511 - 40000 –Marrakech")}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start space-x-4">
-                    <div className="bg-green-100 p-3 rounded-lg">
-                      <Phone className="h-6 w-6 text-green-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('Téléphone')}</h3>
-                      <p className="text-gray-600">
-                        {settings['contact_telephone'] || "06 70 09 85 53 / 06 70 09 89 50"}
-                      </p>
-                    </div>
-                  </div>
+                  <div className="flex items-start rtl:space-x-reverse space-x-3">
+  <div className="bg-green-100 p-3 rounded-lg ">
+    <Phone className="h-6 w-6 text-green-600" />
+  </div>
+  <div className="ml-6">
+    <h3 className="text-lg font-semibold text-gray-900 mb-2>">{t('Téléphone')}</h3>
+    <p className="text-gray-600">
+      {settings['contact_telephone'] || "06 70 09 85 53 / 06 70 09 89 50"}
+    </p>
+  </div>
+</div>
 
-                  <div className="flex items-start space-x-4">
+
+                  <div className="flex items-start space-x-4 rtl:space-x-reverse space-x-3">
                     <div className="bg-green-100 p-3 rounded-lg">
                       <Mail className="h-6 w-6 text-green-600" />
                     </div>
@@ -267,19 +269,19 @@ const Contact = () => {
                         value={formData.email}
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        placeholder={t('form.emailPlaceholder')}
+                        placeholder={t('emailPlaceholder')}
                       />
                     </div>
 
                     <div>
                       <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-                        {t('form.subject')}
+                        {t('subject')}
                       </label>
                       <Input
                         id="subject"
                         name="subject"
                         type="text"
-                        placeholder={t('form.subjectPlaceholder')}
+                        placeholder={t('subjectPlaceholder')}
                         value={formData.subject}
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gren-500 focus:border-transparent"
@@ -287,7 +289,7 @@ const Contact = () => {
                     </div>          
                     <div>
                       <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                        {t('form.message')}
+                        {t('message')}
                       </label>
                       <textarea
                         id="message"
@@ -297,7 +299,7 @@ const Contact = () => {
                         value={formData.message}
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        placeholder={t('form.messagePlaceholder')}
+                        placeholder={t('messagePlaceholder')}
                       />
                     </div>
 
@@ -306,7 +308,7 @@ const Contact = () => {
                       className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
                     >
                       <Send className="h-4 w-4" />
-                      {t('form.send')}
+                      {t('send')}
                     </button>
                   </form>
                 </div>

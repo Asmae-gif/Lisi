@@ -48,9 +48,6 @@ const Register: React.FC = () => {
       return;
     }
 
-    // Log pour déboguer
-    console.log('Données du formulaire à envoyer:', formData);
-
     try {
       await register(formData);
       setSuccess("Inscription réussie ! Votre compte doit être validé par un administrateur avant de pouvoir vous connecter.");

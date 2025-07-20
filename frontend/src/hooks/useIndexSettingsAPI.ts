@@ -18,7 +18,6 @@ interface UseIndexSettingsAPIReturn {
  */
 const mergeSettingsWithDefaults = (apiData: Partial<IndexSettings> | null | undefined): IndexSettings => {
   if (!apiData || typeof apiData !== 'object') {
-    console.log('🔄 Aucune donnée API, utilisation des valeurs par défaut');
     return DEFAULT_INDEX_SETTINGS;
   }
   
@@ -40,14 +39,7 @@ const mergeSettingsWithDefaults = (apiData: Partial<IndexSettings> | null | unde
     ...DEFAULT_INDEX_SETTINGS,
     ...apiData,
     ...mergedLanguages
-  };
-  
-  console.log('🔄 Fusion des données:', {
-    apiData: Object.keys(apiData),
-    merged: Object.keys(result),
-    languages: Object.keys(mergedLanguages)
-  });
-  
+  };  
   return result;
 };
 
@@ -61,23 +53,16 @@ export const useIndexSettingsAPI = (): UseIndexSettingsAPIReturn => {
     try {
       setLoading(true);
       setError(null);
-      
-      console.log('🔄 Chargement des paramètres depuis l\'API...');
+  
       const settingsData = await indexSettingsApi.getSettings();
-      console.log('📊 Données reçues de l\'API:', settingsData);
-      
-      // Fusionner avec les valeurs par défaut de manière profonde
       const mergedSettings = mergeSettingsWithDefaults(settingsData);
-      
+  
       setSettings(mergedSettings);
-      console.log('✅ Paramètres fusionnés et appliqués');
     } catch (err: unknown) {
-      console.error('❌ Erreur lors du chargement des paramètres:', err);
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement';
       setError(errorMessage);
-      
+     
       // En cas d'erreur, utiliser les valeurs par défaut
-      console.log('🔄 Utilisation des valeurs par défaut suite à l\'erreur');
       setSettings(DEFAULT_INDEX_SETTINGS);
     } finally {
       setLoading(false);

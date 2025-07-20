@@ -71,7 +71,6 @@ export default function SettingsGalerie() {
 
   // Initialiser avec les valeurs par défaut dès le départ
   const [values, setValues] = useState<GallerySettings>(() => {
-    console.log('Initialisation avec les valeurs par défaut:', DEFAULT_GALLERY_SETTINGS)
     return { ...DEFAULT_GALLERY_SETTINGS }
   })
   const [files, setFiles] = useState<Record<string, File>>({})
@@ -92,12 +91,9 @@ export default function SettingsGalerie() {
         headers: { 'Accept': 'application/json' }
       })
 
-      console.log('Données reçues:', response.data)
-
       const settingsData = response.data.data || response.data
 
       if (settingsData && typeof settingsData === 'object') {
-        console.log('Données à utiliser:', settingsData)
         
         // Utiliser les valeurs par défaut partagées
         const defaultValues: GallerySettings = {
@@ -110,7 +106,6 @@ export default function SettingsGalerie() {
         // Mettre à jour les previews d'images avec les URLs correctes
         Object.entries(defaultValues).forEach(([key, val]) => {
           if (key.endsWith('_image') && val) {
-            console.log('Image trouvée:', key, val)
             const imageUrl = buildImageUrl(String(val))
             if (imageUrl) {
               setPreview(prev => ({ ...prev, [key]: imageUrl }))

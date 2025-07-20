@@ -29,10 +29,7 @@ export default function MembreProfile() {
       try {
         setLoading(true);
         setError(null);
-        console.log('Chargement du membre avec ID:', id);
-        const membreData = await getMembre(parseInt(id));
-        console.log('Données du membre reçues:', membreData);
-        
+        const membreData = await getMembre(parseInt(id));     
         if (!membreData) {
           throw new Error('Aucune donnée reçue du serveur');
         }
@@ -51,7 +48,6 @@ export default function MembreProfile() {
 
   // Log pour déboguer l'état du membre
   useEffect(() => {
-    console.log('État actuel du membre:', membre);
   }, [membre]);
 
   // Correction : accès aux vraies données du membre
