@@ -86,19 +86,19 @@ const sections: Section[] = useMemo(() =>  [
       
       { 
         key: "contact_adresse_fr", 
-        label: "Adresse", 
+        label: "Adresse_fr", 
         type: "text", 
         placeholder: "Av Abdelkrim Khattabi, B.P. 511 - 40000 –Marrakech "
       },
       {
         key: "contact_adresse_en", 
-        label: "Adresse", 
+        label: "Adresse_en", 
         type: "text", 
         placeholder: "Av Abdelkrim Khattabi, B.P. 511 - 40000 –Marrakech "
       },
       {
         key: "contact_adresse_ar", 
-        label: "Adresse", 
+        label: "Adresse_ar", 
         type: "text", 
         placeholder: "شارع عبد الكريم الخطابي، ص. ب 511 - 40000 – مراكش"
       },

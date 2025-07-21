@@ -46,12 +46,6 @@ export interface ContactSettings {
     contact_image: '/images/hero.png'
   }
   
-
-  export interface Section {
-    title: string;
-    fields: Field[];
-    description?: string;
-  }
   export interface ApiResponse {
     success?: boolean;
     message?: string;

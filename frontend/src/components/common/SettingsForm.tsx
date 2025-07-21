@@ -40,6 +40,7 @@ interface SettingsFormProps {
   submitText?: string;
   loadingText?: string;
   className?: string;
+  
 }
 
 const SettingsForm = React.memo(({

@@ -2,15 +2,12 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { activityReportsSettingsApi } from '@/services/settingsApi';
 import { buildImageUrl } from '@/utils/imageUtils';
-import { 
-  ActivityReportsSettings, 
-  DEFAULT_ACTIVITY_REPORTS_SETTINGS,
-  Section 
-} from '@/types/ActivityReportsSettings';
+import { ActivityReportsSettings, DEFAULT_ACTIVITY_REPORTS_SETTINGS,Section } from '@/types/ActivityReportsSettings';
 
 interface UseActivityReportsSettingsReturn {
   // État
   settings: ActivityReportsSettings;
+  setSettings: React.Dispatch<React.SetStateAction<ActivityReportsSettings>>;
   isLoading: boolean;
   error: string | null;
   
@@ -280,6 +277,7 @@ export function useActivityReportsSettings(): UseActivityReportsSettingsReturn {
   return {
     // État
     settings,
+    setSettings,
     isLoading,
     error,
     

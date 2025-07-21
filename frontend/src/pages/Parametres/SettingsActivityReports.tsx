@@ -6,10 +6,12 @@ import { useActivityReportsSettings } from '@/hooks/useActivityReportsSettings'
  * Composant de paramètres pour la page Rapports d'Activité
  * Permet de configurer les titres, sous-titres, descriptions et images de la page en 3 langues
  */
+
 export default function SettingsActivityReports() {
   // Utiliser le hook personnalisé
   const {
     settings,
+    setSettings,
     isLoading,
     files,
     preview,
@@ -19,6 +21,7 @@ export default function SettingsActivityReports() {
     handleFileChange,
     clearMessage
   } = useActivityReportsSettings();
+  
 
   // Gérer les changements de valeurs du formulaire
   const handleChange = (key: string, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -26,11 +29,12 @@ export default function SettingsActivityReports() {
       const file = (e.target as HTMLInputElement).files?.[0] || null;
       handleFileChange(key, file);
     } else {
-      // Pour les champs texte, on met à jour directement les settings
-      // Note: cette logique pourrait être déplacée dans le hook
       const value = e.target.value || '';
-      // Ici on pourrait appeler une fonction du hook pour mettre à jour les settings localement
-      // Pour l'instant, on garde la logique existante du formulaire
+      setSettings(prev => ({
+        ...prev,
+        [key]: value
+      }));
+      
     }
   };
 
@@ -61,7 +65,6 @@ export default function SettingsActivityReports() {
         onChange={handleChange}
         submitText="Enregistrer"
         loadingText="Enregistrement…"
-        onMessageDismiss={clearMessage}
       />
     </div>
   )

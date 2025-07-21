@@ -80,7 +80,7 @@ export const DEFAULT_ACTIVITY_REPORTS_SETTINGS: ActivityReportsSettings = {
   activity_reports_description_ar: "يقدم تقرير نشاط المختبر مجموعة مختارة من النتائج العلمية للأبحاث المنجزة، غالباً بالتعاون مع الجامعات ومؤسسات البحث والمدارس العليا والشركات ومؤسسات البحث الأجنبية.",
   
   // Image
-  activity_reports_image: ""
+  activity_reports_image: '/images/hero.png'
 };
 
 // Fonctions utilitaires partagées

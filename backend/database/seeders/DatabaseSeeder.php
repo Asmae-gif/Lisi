@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
         );
         $admin->assignRole('admin');
         $admin->is_approved = true;
-$admin->save();
+        $admin->save();
 
         // Créer un utilisateur spécifique
         $utilisateur = User::firstOrCreate(

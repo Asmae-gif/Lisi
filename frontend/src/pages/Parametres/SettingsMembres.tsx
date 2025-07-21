@@ -90,7 +90,7 @@ export default function SettingsMembres() {
       const response = await axiosClient.get<ApiResponse>('/api/pages/membres/settings', {  
         headers: { 'Accept': 'application/json' }
       })
-      const settingsData = response.data.data
+      const settingsData = response.data
       if (settingsData && typeof settingsData === 'object') { 
          
       const defaultValues: MembreSettings = {
@@ -104,12 +104,7 @@ export default function SettingsMembres() {
     setPreview(prev => ({ ...prev, [key]: String(val) }))
   }
 })
-} else {
-setMessage({ 
-  type: 'error', 
-  text: 'Format de données invalide reçu du serveur' 
-})
-}
+} 
 } catch (err: unknown) {
 const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des données';
 setMessage({ 
@@ -124,6 +119,8 @@ setLoading(false)
 useEffect(() => {
 loadSettings()
 }, [loadSettings])
+
+console.log(values);
 
  // Optimisation avec useCallback pour la gestion des changements
  const handleChange = useCallback((key: string, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

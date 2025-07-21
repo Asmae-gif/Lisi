@@ -8,7 +8,6 @@ import { useGalerieSettings } from '@/hooks/useGalerieSettings';
 import { useTranslation } from 'react-i18next';
 import { buildImageUrl, buildImageUrlWithDefaults } from '@/utils/imageUtils';
 import LoadingSkeleton from '@/components/common/LoadingSkeleton';
-import PageContent from '@/components/common/PageContent';
 
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);

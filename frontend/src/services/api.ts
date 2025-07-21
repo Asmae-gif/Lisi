@@ -239,6 +239,7 @@ export const usersApi = {
 
 // ===== GESTION DES CONTACTS =====
 export const contactAPI = {
+  
   // Envoyer un message de contact
   sendMessage: (data: ContactFormData) => 
     axiosClient.post('/api/contact', data),

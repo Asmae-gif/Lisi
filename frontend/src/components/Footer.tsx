@@ -65,10 +65,11 @@ const Footer = () => {
         <Link to="/prix-distinctions" className="hover:underline">{t("prix-distinctions")}</Link>
         <Link to="/partenaires" className="hover:underline">{t("partners")}</Link>
         <Link to="/galerie" className="hover:underline">{t("gallery")}</Link>
-        <Link to="/rapports-activite" className="hover:underline">{t("activity-reports")}</Link>
+        
       </div>
       <div className="flex flex-col space-y-2">
         <Link to="/publications" className="hover:underline">{t("publications")}</Link>
+        <Link to="/rapports-activite" className="hover:underline">{t("activity-reports")}</Link>
         <Link to="/contact" className="hover:underline">{t("contact")}</Link>
       </div>
     </nav>   

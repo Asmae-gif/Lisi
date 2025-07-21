@@ -43,11 +43,6 @@ export default function Login() {
   ? userData.user.roles[0]?.name
   : undefined;
 
-      // Vérifie si le membre est en attente de validation
-      if (userData.user && userData.user.is_approved === false) {
-        setError("Votre compte est en attente de validation par un administrateur.");
-        return;
-      }
 
       if (role === 'admin') {
         navigate('/dashboard', { replace: true });
