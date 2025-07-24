@@ -52,23 +52,36 @@ const PrixDistinctionForm: React.FC<PrixDistinctionFormProps> = ({ prix, onSave,
                 organisme: prix.organisme || '',
                 image_url: prix.image_url || '',
                 lien_externe: prix.lien_externe || '',
-                membres: prix.membres.map(m => ({
-                    membre_id: m.id,
-                    role: m.role || '',
-                    ordre: m.ordre || 1
+                membres: Array.isArray(prix.membres)
+                ? prix.membres.map(m => ({
+                membre_id: m.id,
+                role: m.role || '',
+                ordre: m.ordre || 1
                 }))
+    : []
+
             });
         }
     }, [prix]);
 
     const fetchMembres = async () => {
-        try {
-            const response = await api.get('/api/admin/membres');
-            setMembres(response.data);
-        } catch (error) {
-            console.error('Erreur lors du chargement des membres:', error);
+    try {
+        const response = await api.get('/api/membres');
+        console.log("Réponse de l'API membres:", response.data);
+        let membresArray = Array.isArray(response.data) ? response.data : [];
+        // Filtrer pour ne garder que les membres valides
+        membresArray = membresArray.filter(m => typeof m.id === 'number' && m.nom && m.prenom);
+        if (membresArray.length === 0) {
+            console.error('Aucun membre trouvé. Format de la réponse:', response.data);
         }
-    };
+        console.log("Membres filtrés:", membresArray);
+        setMembres(membresArray);
+    } catch (error) {
+        console.error('Erreur lors du chargement des membres:', error);
+        setMembres([]);
+    }
+};
+
 
     const validateForm = () => {
         const newErrors: Record<string, string> = {};
@@ -276,10 +289,15 @@ const PrixDistinctionForm: React.FC<PrixDistinctionFormProps> = ({ prix, onSave,
                                         className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
                                         <option value="">Sélectionner un membre</option>
-                                        {membres.map(m => (
-                                            <option key={m.id} value={m.id}>
-                                                {m.nom} {m.prenom}
-                                            </option>
+                                        {Array.isArray(membres) && membres.length === 0 && (
+                                            <option disabled>Chargement...</option>
+                                        )}
+                                        {Array.isArray(membres) && membres.length > 0 && membres.map(m => (
+                                            (typeof m.id === 'number' && m.nom && m.prenom) ? (
+                                                <option key={m.id} value={m.id}>
+                                                    {m.nom} {m.prenom}
+                                                </option>
+                                            ) : null
                                         ))}
                                     </select>
                                 </div>

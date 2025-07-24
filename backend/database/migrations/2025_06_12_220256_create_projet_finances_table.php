@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('project_id')->constrained('projects')->onDelete('cascade');
             $table->string('financeur');
-            $table->decimal('montant', 12, 2);
+            $table->bigInteger('montant')->unsigned();
             $table->string('type_financement');
             $table->date('date_financement')->nullable();
             $table->timestamps();

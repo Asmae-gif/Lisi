@@ -63,9 +63,9 @@ const ProjectIncubeForm: React.FC<ProjectIncubeFormProps> = ({
             };
 
             if (incubeId) {
-                await api.put(`/projet-incubes/${incubeId}`, data);
+                await api.put(`/admin/projet-incubes/${incubeId}`, data);
             } else {
-                await api.post('/projet-incubes', data);
+                await api.post('/admin/projet-incubes', data);
             }
             onSuccess();
         } catch (err: any) {

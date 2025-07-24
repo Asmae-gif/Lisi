@@ -19,13 +19,13 @@ class Membre extends Model
         'photo',
         'statut',
         'biographie',
-        //'slug',
+        // 'slug',
         'google_id',
         'linkedin',
         'researchgate',
         'google_scholar',
-        //'grade',
-        //'is_comite',
+        // 'grade',
+        // 'is_comite',
     ];
     protected $appends = ['photo_url', 'email_complet'];
 
@@ -57,7 +57,7 @@ class Membre extends Model
     }
 
     // Méthode pour ajouter un membre à un axe
-    public function addToAxe(Axe $axe, string $position = null)
+    public function addToAxe(Axe $axe, ?string $position = null)
     {
         return $this->axes()->attach($axe->id, ['position' => $position]);
     }

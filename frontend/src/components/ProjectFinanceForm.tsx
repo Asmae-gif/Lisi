@@ -64,9 +64,9 @@ const ProjectFinanceForm: React.FC<ProjectFinanceFormProps> = ({
             };
 
             if (financeId) {
-                await api.put(`/projet-finances/${financeId}`, data);
+                await api.put(`/admin/projet-finances/${financeId}`, data);
             } else {
-                await api.post('/projet-finances', data);
+                await api.post('/admin/projet-finances', data);
             }
             onSuccess();
         } catch (err: any) {
