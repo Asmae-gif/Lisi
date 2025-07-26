@@ -4,11 +4,11 @@ Le projet utilise une architecture **frontend-backend** :
 - Frontend : React.js + TypeScript (avec Tailwind CSS)
 - Base de données : MySQL
 
-- Installation:
+Installation:
 -git clone https://github.com/Asmae-gif/Lisi.git
 -cd Lisi
 
--Installer les dépendances:
+Installer les dépendances:
 -Backend (Laravel)
 -cd backend
 -composer install
