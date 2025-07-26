@@ -5,8 +5,8 @@ Le projet utilise une architecture **frontend-backend** :
 - Base de données : MySQL
 
 ## Installation:
-git clone https://github.com/Asmae-gif/Lisi.git
-cd Lisi
+- git clone https://github.com/Asmae-gif/Lisi.git
+- cd Lisi
 
 ## Installer les dépendances:
 ### Backend (Laravel)
