@@ -10,18 +10,18 @@ Le projet utilise une architecture **frontend-backend** :
 
 ## Installer les dépendances:
 ### Backend (Laravel)
-cd backend
-composer install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate --seed
-php artisan storage:link
-php artisan serve
+- cd backend
+- composer install
+- cp .env.example .env
+- php artisan key:generate
+- php artisan migrate --seed
+- php artisan storage:link
+- php artisan serve
 
 ### Frontend (React + Vite): 
-cd frontend
-npm install
-npm run dev
+- cd frontend
+- npm install
+- npm run dev
 
 ### Création d’un administrateur:
-php artisan user:make-admin email@example.com --password=motdepasse
+- php artisan user:make-admin email@example.com --password=motdepasse
