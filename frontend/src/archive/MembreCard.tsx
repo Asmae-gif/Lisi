@@ -59,7 +59,7 @@ const MembreCard: React.FC<MembreCardProps> = React.memo(({
           {membre.prenom} {membre.nom}
         </CardTitle>
         {membre.statut && <p className="text-gray-600 text-center">{membre.statut}</p>}
-        {membre.grade && <p className="text-gray-600 text-center">{membre.grade}</p>}
+        {/*membre.grade && <p className="text-gray-600 text-center">{membre.grade}</p>*/}
       </CardHeader>
       <CardContent>
         <div className="flex justify-center space-x-4">

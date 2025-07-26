@@ -10,14 +10,14 @@ export function Sidebar() {
     { path: '/dashboard', icon: Home, label: 'Tableau de bord' },
     { path: '/dashboard/parametres', icon: Settings, label: 'Paramètres' },
     { path: '/dashboard/membres', icon: Users, label: 'Membres' },
-    { path: '/dashboard/axes', icon: FileText, label: 'Axes' },
+    { path: '/dashboard/axes', icon: FileText, label: 'Axes de Recherche' },
     { path: '/dashboard/projets', icon: FolderKanban, label: 'Projets' },
     { path: '/dashboard/publications', icon: FileText, label: 'Publications' },
     { path: '/dashboard/prix-distinctions', icon: Award, label: 'Prix et Distinctions' },
     { path: '/dashboard/partenaires', icon: Building2, label: 'Partenaires' },
     { path: '/dashboard/contact', icon: Contact, label: 'Contact' },
-    { path: '/dashboard/gallery', icon: Image, label: 'Galerie' },
-    { path: '/dashboard/activity-reports', icon: FileText, label: 'Activités' },
+    { path: '/dashboard/gallery', icon: Image, label: 'Galeries' },
+    { path: '/dashboard/activity-reports', icon: FileText, label: "Rapports d'activité" },
   ];
 
   return (

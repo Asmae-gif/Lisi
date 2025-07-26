@@ -144,11 +144,6 @@ export function MembersByStatus({ className }: MembersByStatusProps) {
                           <p className="text-sm font-medium truncate">
                             {membre.prenom} {membre.nom}
                           </p>
-                          {membre.grade && (
-                            <p className="text-xs text-gray-500 truncate">
-                              {membre.grade}
-                            </p>
-                          )}
                         </div>
                       </div>
                     ))}

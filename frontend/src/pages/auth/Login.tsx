@@ -52,11 +52,18 @@ export default function Login() {
         setError("Vous n'avez pas l'autorisation d'accéder à cette application.");
       }
     } catch (err: unknown) {
-      if (err instanceof AxiosError && err.response && err.response.status === 401) {
-        setError("Email ou mot de passe incorrect.");
+      if (err instanceof AxiosError && err.response) {
+        if (err.response.status === 401) {
+          setError("Email ou mot de passe incorrect.");
+        } else if (err.response.status === 403) {
+          setError(err.response.data.message || "Accès interdit.");
+        } else {
+          setError("Une erreur s'est produite. Veuillez réessayer.");
+        }
       } else {
         setError((err as Error).message || 'Erreur de connexion');
       }
+      
     } finally {
       setLoading(false);
     }

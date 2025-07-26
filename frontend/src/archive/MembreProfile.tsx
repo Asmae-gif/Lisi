@@ -132,7 +132,7 @@ export default function MembreProfile() {
                     {m.prenom} {m.nom}
                   </h3>
                   {m.statut && <Badge className="mt-2">{m.statut}</Badge>}
-                  {m.grade && <p className="text-sm text-gray-600 mt-1">{m.grade}</p>}
+                  {/*m.grade && <p className="text-sm text-gray-600 mt-1">{m.grade}</p>*/}
                 </div>
               </CardContent>
             </Card>

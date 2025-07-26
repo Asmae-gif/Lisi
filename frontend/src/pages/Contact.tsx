@@ -7,9 +7,8 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, Send, CheckCircle, MapPin, Phone, Mail } from "lucide-react";
 import { contactAPI, ContactFormData } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import axiosClient from "@/services/axiosClient";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import LoadingSkeleton from "@/components/common/LoadingSkeleton";
 import { buildImageUrl } from '@/utils/imageUtils';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +30,8 @@ const Contact = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
 
-  const { settings, loading, error, refetch } = useContactSettings();
+  const { loading, error, refetch } = useContactSettings();
+  const [settings, setSettings] = useState<ContactSettings>(DEFAULT_CONTACT_SETTINGS);
   
 
   const sendMessageMutation = useMutation({
@@ -150,14 +150,16 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-indigo-100">
       <Header />
-      <section 
+    
+<section 
         className="bg-gradient-to-br from-green-50 to-indigo-100 py-16"
-        style={settings['contact_image'] ? {
-          backgroundImage: `url(${buildImageUrl(settings['contact_image'])})`,
+        style={settings.contact_image ? {
+          backgroundImage: `url(${buildImageUrl(settings.contact_image)})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         } : undefined}
       >
+      
       {/* Contact Form */}
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

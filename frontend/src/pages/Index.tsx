@@ -247,7 +247,7 @@ const Index = () => {
 </Link>
 
                   <Link
-                    to="/recherche"
+                    to="/axes-recherche"
                     className="border border-[#C2A060] text-[#C2A060] px-8 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors text-center"
                   >
                     {t('nos_domaines_recherche')}
@@ -414,7 +414,7 @@ const Index = () => {
                 {getContent('domaines_texte_final', 'domaines_texte_final')}
               </p>
               <Link 
-  to="/recherche" 
+  to="/axes-recherche" 
   className={`inline-flex items-center bg-primary text-primary-foreground px-8 py-4 rounded-xl font-semibold hover:bg-primary/90 transition-all duration-300 hover:shadow-lg hover:scale-105 ${i18n.language === 'ar' ? 'flex-row-reverse' : ''}`}
   dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
 >

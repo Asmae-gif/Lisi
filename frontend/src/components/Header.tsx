@@ -202,11 +202,11 @@ const Header: React.FC = () => {
             setIsOpen={setIsRessourcesOpen}
             label={t('resources')}
             items={[
-              { path: '/projets', label: t('projects') },
+              { path: '/projects', label: t('projects') },
               {path: '/prix-distinctions', label: 'prix-distinctions' },               
-              { path: '/partenariats', label:t('partners') },
-              { path: '/gallerie', label: t('gallery') },
-              {path: '/activity-reports', label: t('activity-reports' )}
+              { path: '/partenaires', label:t('partners') },
+              { path: '/galerie', label: t('gallery') },
+              {path: '/rapports-activite', label: t('activity-reports' )}
 
             ]}
           />

@@ -22,7 +22,7 @@ const IndexSettingsValidation: React.FC<IndexSettingsValidationProps> = ({
     const errors: ValidationError[] = [];
 
     // Validation des champs requis
-    if (!settings.hero_titre_principal?.trim()) {
+    if (!String(settings.hero_titre_principal)?.trim()) {
       errors.push({
         field: 'hero_titre_principal',
         message: 'Le titre principal est requis',
@@ -30,7 +30,7 @@ const IndexSettingsValidation: React.FC<IndexSettingsValidationProps> = ({
       });
     }
 
-    if (!settings.hero_sous_titre?.trim()) {
+    if (!String(settings.hero_sous_titre)?.trim()) {
       errors.push({
         field: 'hero_sous_titre',
         message: 'Le sous-titre est requis',
@@ -39,7 +39,7 @@ const IndexSettingsValidation: React.FC<IndexSettingsValidationProps> = ({
     }
 
     // Validation des statistiques
-    if (!settings.stats_chercheurs?.trim()) {
+    if (!String(settings.stats_chercheurs)?.trim()) {
       errors.push({
         field: 'stats_chercheurs',
         message: 'Le nombre de chercheurs est requis',
@@ -47,7 +47,7 @@ const IndexSettingsValidation: React.FC<IndexSettingsValidationProps> = ({
       });
     }
 
-    if (!settings.stats_publications?.trim()) {
+    if (!String(settings.stats_publications)?.trim()) {
       errors.push({
         field: 'stats_publications',
         message: 'Le nombre de publications est requis',
@@ -55,7 +55,7 @@ const IndexSettingsValidation: React.FC<IndexSettingsValidationProps> = ({
       });
     }
 
-    if (!settings.stats_projets?.trim()) {
+    if (!String(settings.stats_projets)?.trim()) {
       errors.push({
         field: 'stats_projets',
         message: 'Le nombre de projets est requis',
@@ -63,7 +63,7 @@ const IndexSettingsValidation: React.FC<IndexSettingsValidationProps> = ({
       });
     }
 
-    if (!settings.stats_partenaires?.trim()) {
+    if (!String(settings.stats_partenaires)?.trim()) {
       errors.push({
         field: 'stats_partenaires',
         message: 'Le nombre de partenaires est requis',
@@ -72,7 +72,7 @@ const IndexSettingsValidation: React.FC<IndexSettingsValidationProps> = ({
     }
 
     // Validation des piliers de mission
-    if (!settings.pilier_innovation_titre?.trim()) {
+    if (!String(settings.pilier_innovation_titre)?.trim()) {
       errors.push({
         field: 'pilier_innovation_titre',
         message: 'Le titre du pilier Innovation est requis',
@@ -80,7 +80,7 @@ const IndexSettingsValidation: React.FC<IndexSettingsValidationProps> = ({
       });
     }
 
-    if (!settings.pilier_formation_titre?.trim()) {
+    if (!String(settings.pilier_formation_titre)?.trim()) {
       errors.push({
         field: 'pilier_formation_titre',
         message: 'Le titre du pilier Formation est requis',
@@ -88,7 +88,7 @@ const IndexSettingsValidation: React.FC<IndexSettingsValidationProps> = ({
       });
     }
 
-    if (!settings.pilier_impact_titre?.trim()) {
+    if (!String(settings.pilier_impact_titre)?.trim()) {
       errors.push({
         field: 'pilier_impact_titre',
         message: 'Le titre du pilier Impact est requis',
@@ -96,7 +96,7 @@ const IndexSettingsValidation: React.FC<IndexSettingsValidationProps> = ({
       });
     }
 
-    if (!settings.pilier_partenariats_titre?.trim()) {
+    if (!String(settings.pilier_partenariats_titre)?.trim()) {
       errors.push({
         field: 'pilier_partenariats_titre',
         message: 'Le titre du pilier Partenariats est requis',
@@ -105,7 +105,7 @@ const IndexSettingsValidation: React.FC<IndexSettingsValidationProps> = ({
     }
 
     // Validation des domaines de recherche
-    if (!settings.domaine_ia_titre?.trim()) {
+    if (!String(settings.domaine_ia_titre)?.trim()) {
       errors.push({
         field: 'domaine_ia_titre',
         message: 'Le titre du domaine IA est requis',
@@ -113,7 +113,7 @@ const IndexSettingsValidation: React.FC<IndexSettingsValidationProps> = ({
       });
     }
 
-    if (!settings.domaine_donnees_titre?.trim()) {
+    if (!String(settings.domaine_donnees_titre)?.trim()) {
       errors.push({
         field: 'domaine_donnees_titre',
         message: 'Le titre du domaine Données est requis',
@@ -139,7 +139,7 @@ const IndexSettingsValidation: React.FC<IndexSettingsValidationProps> = ({
     }
 
     // Validation de la longueur des textes
-    if (settings.hero_sous_titre && settings.hero_sous_titre.length > 200) {
+    if (settings.hero_sous_titre && String(settings.hero_sous_titre).length > 200) {
       errors.push({
         field: 'hero_sous_titre',
         message: 'Le sous-titre est trop long (max 200 caractères)',
@@ -147,7 +147,8 @@ const IndexSettingsValidation: React.FC<IndexSettingsValidationProps> = ({
       });
     }
 
-    if (settings.mission_description && settings.mission_description.length > 300) {
+
+    if (settings.mission_description && String(settings.mission_description).length > 300) {
       errors.push({
         field: 'mission_description',
         message: 'La description de la mission est trop longue (max 300 caractères)',

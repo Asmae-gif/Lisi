@@ -31,7 +31,7 @@ const parametresPages = [
   { 
     path: '/dashboard/settings-membres', 
     name: 'Paramètres de Nos Membres',
-    description: 'Configuration des titres et images de la page équipe/membres',
+    description: 'Configuration des titres et images de la page membres',
     icon: Users,
     color: 'bg-purple-500'
   },

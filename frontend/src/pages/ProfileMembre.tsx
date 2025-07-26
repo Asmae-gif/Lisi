@@ -535,18 +535,18 @@ export default function MonProfil() {
         prenom: (editedProfile.prenom ?? '').trim(),
         email: (editedProfile.email ?? '').trim(),
         statut: editedProfile.statut ?? '',
-        position: editedProfile.position ?? '',
+        //position: editedProfile.position ?? '',
         biographie: (editedProfile.biographie ?? '').trim(),
         linkedin: (editedProfile.linkedin ?? '').trim(),
         researchgate: (editedProfile.researchgate ?? '').trim(),
         google_scholar: (editedProfile.google_scholar ?? '').trim(),
-        grade: (editedProfile.grade ?? '').trim(),
-        slug: generateSlug(editedProfile.nom, editedProfile.prenom),
+        //grade: (editedProfile.grade ?? '').trim(),
+        //slug: generateSlug(editedProfile.nom, editedProfile.prenom),
         axe_ids: editedProfile.axe_ids,
         google_id: editedProfile.google_id,
-        photo: editedProfile.photo,
+        //photo: editedProfile.photo,
         user: editedProfile.user,
-        is_comite: editedProfile.is_comite,
+        //is_comite: editedProfile.is_comite,
       };
 
       const result = await updateMemberProfile(editedProfile.id, payload);
