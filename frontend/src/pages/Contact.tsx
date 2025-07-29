@@ -30,8 +30,18 @@ const Contact = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
 
-  const { loading, error, refetch } = useContactSettings();
-  const [settings, setSettings] = useState<ContactSettings>(DEFAULT_CONTACT_SETTINGS);
+  const { settings: apiSettings, loading, error, refetch } = useContactSettings();
+const [settings, setSettings] = useState<ContactSettings>(DEFAULT_CONTACT_SETTINGS);
+
+useEffect(() => {
+  if (apiSettings) {
+    setSettings(prev => ({
+      ...DEFAULT_CONTACT_SETTINGS,
+      ...apiSettings,
+    }));
+  }
+}, [apiSettings]);
+
   
 
   const sendMessageMutation = useMutation({
