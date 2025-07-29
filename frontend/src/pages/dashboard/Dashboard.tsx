@@ -150,32 +150,6 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <RecentActivities activities={recentActivities} />
-
-        <div className="bg-background rounded-lg border p-6">
-          <h2 className="text-lg font-semibold mb-4">Prochains événements</h2>
-          <div className="space-y-4">
-            <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-              <div className="text-center">
-                <p className="text-sm font-medium">15</p>
-                <p className="text-xs text-muted-foreground">MAI</p>
-              </div>
-              <div>
-                <p className="font-medium">Conférence LISI 2024</p>
-                <p className="text-sm text-muted-foreground">Présentation des derniers travaux</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-              <div className="text-center">
-                <p className="text-sm font-medium">22</p>
-                <p className="text-xs text-muted-foreground">MAI</p>
-              </div>
-              <div>
-                <p className="font-medium">Séminaire de recherche</p>
-                <p className="text-sm text-muted-foreground">Nouvelles avancées en IA</p>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

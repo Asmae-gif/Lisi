@@ -1,5 +1,6 @@
 { 
-  "hero_titre_principal": "Laboratory of Computer Science and Smart Systems",
+  "hero_titre_principal1": "Laboratory of Computer",
+  "hero_titre_principal2":"Science and Smart Systems",
   "hero_sous_titre": "The LISI crosses computer science with other disciplines to innovate and respond to the scientific and social challenges of tomorrow.",
   "hero_image_side": "Hero side image",
   "stats_membres": "Members",

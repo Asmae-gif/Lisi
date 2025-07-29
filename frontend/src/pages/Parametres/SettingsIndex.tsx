@@ -38,10 +38,11 @@ const createLanguageSections = (language: LanguageCode) => {
       title: `Section Hero (${langLabel})`,
       description: `Configuration du titre principal et sous-titre en ${langLabel}`,
       fields: [
-        { key: `hero_titre_principal_${language}`, label: "Titre Principal", type: "text" as const },
+        { key: `hero_titre_principal1_${language}`, label: "Titre Principal - Ligne 1", type: "text" as const },
+        { key: `hero_titre_principal2_${language}`, label: "Titre Principal - Ligne 2", type: "text" as const },
         { key: `hero_sous_titre_${language}`, label: "Sous-titre", type: "textarea" as const },
       ],
-    },
+    },    
     {
       title: `Section Mission (${langLabel})`,
       description: `Configuration de la section mission en ${langLabel}`,
@@ -58,7 +59,6 @@ const createLanguageSections = (language: LanguageCode) => {
       description: `Configuration de la section actualités en ${langLabel}`,
       fields: [
         { key: `actualites_titre_${language}`, label: "Titre de la section", type: "text" as const },
-        { key: `actualites_description_${language}`, label: "Description", type: "textarea" as const },
       ],
     },
     {

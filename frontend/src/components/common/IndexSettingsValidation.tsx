@@ -22,13 +22,17 @@ const IndexSettingsValidation: React.FC<IndexSettingsValidationProps> = ({
     const errors: ValidationError[] = [];
 
     // Validation des champs requis
-    if (!String(settings.hero_titre_principal)?.trim()) {
+    if (
+      !String(settings.hero_titre_principal1)?.trim() ||
+      !String(settings.hero_titre_principal2)?.trim()
+    ) {
       errors.push({
         field: 'hero_titre_principal',
-        message: 'Le titre principal est requis',
+        message: 'Les deux lignes du titre principal sont requises',
         type: 'error'
       });
     }
+    
 
     if (!String(settings.hero_sous_titre)?.trim()) {
       errors.push({

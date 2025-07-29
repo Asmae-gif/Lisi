@@ -1,6 +1,7 @@
 export interface LanguageSettings {
   // Hero Section
-  hero_titre_principal: string;
+  hero_titre_principal1: string;
+  hero_titre_principal2: string;
   hero_sous_titre: string;
 
   // Mission Section
@@ -62,7 +63,8 @@ export interface IndexSettings {
 // --- VALEURS PAR DÉFAUT ---
 
 const DEFAULT_FRENCH_SETTINGS: LanguageSettings = {
-  hero_titre_principal: "Laboratoire d'Informatique et de Systèmes Intelligents",
+  hero_titre_principal1: "Laboratoire d'Informatique et",
+  hero_titre_principal2:"de Systèmes Intelligents",
   hero_sous_titre: "Le LISI repousse les frontières de l’informatique pour relever les défis scientifiques, sociétaux et industriels de demain",
   mission_titre: "Au cœur de l'innovation technologique",
   mission_sous_titre: "NOTRE MISSION",
@@ -90,7 +92,8 @@ const DEFAULT_FRENCH_SETTINGS: LanguageSettings = {
 };
 
 const DEFAULT_ARABIC_SETTINGS: LanguageSettings = {
-  hero_titre_principal: "مختبر المعلوماتية والأنظمة الذكية",
+  hero_titre_principal1: "مختبر المعلوماتية والأنظمة الذكية",
+  hero_titre_principal2:"",
   hero_sous_titre: "يدفع مختبر LISI حدود المعلوماتية لمواجهة التحديات العلمية والمجتمعية والصناعية المستقبلية",
   mission_titre: "في قلب الابتكار التكنولوجي",
   mission_sous_titre: "مهمتنا",
@@ -117,7 +120,8 @@ const DEFAULT_ARABIC_SETTINGS: LanguageSettings = {
 };
 
 const DEFAULT_ENGLISH_SETTINGS: LanguageSettings = {
-  hero_titre_principal: "Laboratory of Computer Science and Intelligent Systems",
+  hero_titre_principal1: "Laboratory of Computer",
+  hero_titre_principal2: "Science and Smart Systems",
   hero_sous_titre: "LISI pushes the frontiers of computer science to address tomorrow’s scientific, societal, and industrial challenges.",
   mission_titre: "At the heart of technological innovation",
   mission_sous_titre: "OUR MISSION",

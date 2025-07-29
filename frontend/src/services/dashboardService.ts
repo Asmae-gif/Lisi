@@ -94,7 +94,7 @@ export const dashboardService = {
           id: membre.id,
           type: 'membre',
           title: 'Nouveau membre',
-          description: `${membre.prenom} ${membre.nom} a rejoint l'équipe`,
+          description: `${membre.prenom} ${membre.nom} a rejoint`,
           created_at: membre.created_at
         });
       });

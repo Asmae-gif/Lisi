@@ -218,14 +218,16 @@ const Index = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div className="animate-fade-in">
-                {(() => {
-                  const titrePrincipal = getContent('hero_titre_principal', 'hero_titre_principal');
-                  const sousTitre = getContent('hero_sous_titre', 'hero_sous_titre');
+                  {(() => {
+                    const titreLigne1 = getContent('hero_titre_principal1', 'hero_titre_principal1');
+                    const titreLigne2 = getContent('hero_titre_principal2', 'hero_titre_principal2');
+                    const sousTitre = getContent('hero_sous_titre', 'hero_sous_titre');
                   
                   return (
                     <>
                       <h1 className="text-4xl font-bold text-gray-900 mb-6">
-                        <span className="block">{titrePrincipal}</span>
+                      <span className="block">{titreLigne1}</span>
+                      <span className="block">{titreLigne2}</span>
                       </h1>
                       <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                         {sousTitre}
